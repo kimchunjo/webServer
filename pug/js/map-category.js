@@ -35,10 +35,10 @@ function createListingsMap(options) {
 
     var map = L.map(settings.mapId, {
         zoom: 14,
-        scrollWheelZoom: false,
+      //  scrollWheelZoom: false,
         dragging: dragging,
         tap: tap,
-        scrollWheelZoom: false
+      //  scrollWheelZoom: false
     });
 
     map.once('focus', function () {
