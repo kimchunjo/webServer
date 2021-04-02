@@ -1,0 +1,27 @@
+// Price Slider
+script(src='vendor/nouislider/nouislider.min.js')
+script.
+    var snapSlider = document.getElementById('slider-snap-distance');
+
+    noUiSlider.create(snapSlider, {
+        start: [ 0, 100 ],
+        snap: false,
+        connect: true,
+        step: 0.5,
+        range: {
+            'min': 0,
+            'max': 100
+        }
+    });
+    var snapValues = [
+        document.getElementById('slider-snap-distance-value-from'),
+        document.getElementById('slider-snap-distance-value-to'),
+    ];
+    var inputValues = [
+        document.getElementById('slider-snap-distance-input-from'),
+        document.getElementById('slider-snap-distance-input-to'),
+    ];
+    snapSlider.noUiSlider.on('update', function( values, handle ) {
+        snapValues[handle].innerHTML = " " + values[handle] + "km";
+        inputValues[handle].value = values[handle];
+    })
