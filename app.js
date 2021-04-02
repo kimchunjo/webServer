@@ -41,15 +41,23 @@ app.get('/signup', function (req, res) {
 });
 
 app.get('/category', function(req, res) {
-    res.render('category_custom', {title:'검색결과'});
+    let searchWord = req.query.search;
+    console.log(searchWord);
+    res.render('category-custom', {
+        path:'',
+        title:'검색결과',
+        searchWord:searchWord,
+
+    });
 });
 
 app.get('/category-map', function(req, res) {
-    res.render('category-map_custom', {title:'지도 검색결과'});
-});
-
-app.get('/index', function(req, res) {
-    res.render('index_custom', {title:'메인'});
+    let searchWord = req.query.search;
+    res.render('category-map-custom', {
+        path:'',
+        title:'지도 검색결과',
+        searchWord:searchWord
+    });
 });
 
 app.listen(8080, function(){
