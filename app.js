@@ -11,13 +11,13 @@ app.set('view engine', 'pug'); /* pug template engine 을 사용 */
 app.set('views', './pug'); /* template file 은 pug 라는 폴더 및에 위치 */
 app.use(express.static('public'));
 
-restaurantsJson = JSON.parse(fs.readFileSync('public/js/restaurants-geojson.json', {
+restaurantsJson = JSON.parse(fs.readFileSync('pug/js/restaurants-geojson.json', {
     encoding: 'utf8'
 }));
-roomsJson = JSON.parse(fs.readFileSync('public/js/rooms-geojson.json', {
+roomsJson = JSON.parse(fs.readFileSync('pug/js/rooms-geojson.json', {
     encoding: 'utf8'
 }));
-bookingsJson = JSON.parse(fs.readFileSync('public/js/bookings.json', {
+bookingsJson = JSON.parse(fs.readFileSync('pug/js/bookings.json', {
     encoding: 'utf8'
 }));
 
@@ -40,14 +40,38 @@ app.get('/signup', function (req, res) {
     })
 });
 
+// 장소 추가
+app.get('/user-add-0',function (req,res){
+    res.render('user-add-0')
+});
+app.get('/user-add-1',function (req,res){
+    res.render('user-add-1')
+});
+app.get('/user-add-2',function (req,res){
+    res.render('user-add-2')
+});
+app.get('/user-add-3',function (req,res){
+    res.render('user-add-3')
+});
+app.get('/user-add-4',function (req,res){
+    res.render('user-add-4')
+});
+app.get('/user-add-5',function (req,res){
+    res.render('user-add-5')
+});
+
 app.get('/category', function(req, res) {
     let searchWord = req.query.search;
-    console.log(searchWord);
+    let location = req.query.location;
+    if(location===undefined || location==="") // 장소를 입력하변지 않은 경우 내 주변으로 검색
+        location ='근처'
+    if(searchWord===undefined || searchWord==="") // 검색어를 입력하변지 않은 경우 사용자 취향을 고려한 검
+        searchWord ='내 취향에 맞는 장소'
     res.render('category-custom', {
         path:'',
         title:'검색결과',
         searchWord:searchWord,
-
+        location:location,
     });
 });
 
@@ -60,6 +84,4 @@ app.get('/category-map', function(req, res) {
     });
 });
 
-app.listen(8080, function(){
-    console.log("실행")
-});
+app.listen(8080);

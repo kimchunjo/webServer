@@ -10,7 +10,7 @@ block content
     .container-fluid.py-5.px-lg-5
             .row.border-bottom.mb-4
                 .col-12
-                    h1.display-4.font-weight-bold.text-serif.mb-4 #{searchWord}
+                    h1.display-5.font-weight-bold.text-serif.mb-4 #{location} "#{searchWord}"에 대한 결과
                 // 지도로 표시하기 버튼 추가
                 .col-12
                      a.btn.btn-outline-primary.mb-4.float-right(href=`/category-map?search=${searchWord}`)
@@ -25,16 +25,13 @@ block content
                         // 방문 시간 추가
                         .mb-4
                             label.form-label 방문시간
-                            - var time = ['오전', '오후']
+                            - var time = ['오전', '오후','저녁']
                             ul.list-unstyled.mb-0
                                 each val,index in time
                                     li
                                         .custom-control.custom-radio
-                                            input.custom-control-input(type='radio', id=`time_${index}`, name="time")
+                                            input.custom-control-input(type='checkbox', id=`time_${index}`, name="time")
                                             label.custom-control-label(for=`time_${index}`) #{val}
-                            .mb-2
-                                input.custom-control-inline.form-control-sm.border-0.shadow-0.bg-gray-200(id="time_search", placeholder="time", aria-label="time")
-
 
                         //거리 표시 추가
                         .mb-4
@@ -48,35 +45,34 @@ block content
                                     span#slider-snap-distance-value-to
                             input(type="hidden", name="distancefrom", id="slider-snap-distance-input-from", value="0")
                             input(type="hidden", name="distanceto",  id="slider-snap-distance-input-to", value="100")
-
-                        .mb-4
-                            label.form-label(for="form_search") Keyword
-                            .input-label-absolute.input-label-absolute-right
-                                .label-absolute
-                                    i.fa.fa-search
-                                input.form-control.pr-4(type="search", name="search", placeholder="Keywords", id="form_search")
-                        .mb-4
-                            label.form-label(for="form_neighbourhood") Neighbourhood
-                            select.selectpicker.form-control(name="neighbourhood", id="form_neighbourhood", multiple, data-style="btn-selectpicker", data-live-search="true", data-selected-text-format="count > 1", title="")
-                                each val, index in neighbourhoods
-                                    option(value=`neighbourhood_${index}`) #{val}    
-                        .mb-4
-                            - var restaurantTypes = ['Hipster', 'Music club', 'Bar', 'Pub', 'Deli', 'Bistro']
-                            label.form-label(for="form_category") Category
-                            select.selectpicker.form-control(name="category", id="form_category", multiple, data-style="btn-selectpicker", data-selected-text-format="count > 1", title="")
-                                each val, index in restaurantTypes
-                                    option(value=`category_${index}`) #{val}    
-                        .mb-4
-                            - var restaurantTypes = ['Hipster', 'Music club', 'Bar', 'Pub', 'Deli', 'Bistro']
-                            label.form-label Tag
-                            ul.list-unstyled.mb-0
-                                each val,index in restaurantTypes
-                                    li
-                                        .custom-control.custom-checkbox
-                                            input.custom-control-input(type='checkbox', id=`type_${index}`, name="type[]")
-                                            label.custom-control-label(for=`type_${index}`) #{val}
                         .pb-4
                             #moreFilters.collapse
+                                .mb-4
+                                    label.form-label(for="form_search") Keyword
+                                    .input-label-absolute.input-label-absolute-right
+                                        .label-absolute
+                                            i.fa.fa-search
+                                        input.form-control.pr-4(type="search", name="search", placeholder="Keywords", id="form_search")
+                                .mb-4
+                                    label.form-label(for="form_neighbourhood") Neighbourhood
+                                    select.selectpicker.form-control(name="neighbourhood", id="form_neighbourhood", multiple, data-style="btn-selectpicker", data-live-search="true", data-selected-text-format="count > 1", title="")
+                                        each val, index in neighbourhoods
+                                            option(value=`neighbourhood_${index}`) #{val}
+                                .mb-4
+                                    - var restaurantTypes = ['Hipster', 'Music club', 'Bar', 'Pub', 'Deli', 'Bistro']
+                                    label.form-label(for="form_category") Category
+                                    select.selectpicker.form-control(name="category", id="form_category", multiple, data-style="btn-selectpicker", data-selected-text-format="count > 1", title="")
+                                        each val, index in restaurantTypes
+                                            option(value=`category_${index}`) #{val}
+                                .mb-4
+                                    - var restaurantTypes = ['Hipster', 'Music club', 'Bar', 'Pub', 'Deli', 'Bistro']
+                                    label.form-label Tag
+                                    ul.list-unstyled.mb-0
+                                        each val,index in restaurantTypes
+                                            li
+                                                .custom-control.custom-checkbox
+                                                    input.custom-control-input(type='checkbox', id=`type_${index}`, name="type[]")
+                                                    label.custom-control-label(for=`type_${index}`) #{val}
                                 .mb-4
                                     - var cuisineTypes = ['Fusion', 'Indian', 'French', 'American', 'Mexican', 'Other']
                                     label.form-label Cuisine

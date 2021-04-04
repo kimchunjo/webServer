@@ -10,18 +10,20 @@ header(class=headerClass)
             
             .d-flex.align-items-center
                 if inlineLogo
-                    a.navbar-brand.py-3(href=`${path}index`, style="line-height: 0;")
+                    // 상단 로고의 주소를 변경
+                    a.navbar-brand.py-3(href=`${path}/`, style="line-height: 0;")
                         include inc-logo.pug
                 else
-                    a.navbar-brand.py-1(href=`${path}index.html`)
+                    a.navbar-brand.py-1(href=`${path}/`)
                         img(src=`${path}img/logo.svg`, alt="Directory logo")
 
-                form.form-inline.d-none.d-sm-flex(action="#", id="search")
+                form.form-inline.d-none.d-sm-flex(action="/category", id="search")
+                    // action 의 값을 "/category"로 변경
                     .input-label-absolute.input-label-absolute-left.input-reset.input-expand.ml-lg-2.ml-xl-3 
                         label.label-absolute(for="search_search")
                             i.fa.fa-search
                             span.sr-only What are you looking for?
-                        input.form-control.form-control-sm.border-0.shadow-0.bg-gray-200(id="search_search", placeholder="Search", aria-label="Search")
+                        input.form-control.form-control-sm.border-0.shadow-0.bg-gray-200(name="search" id="search_search", placeholder="Search", aria-label="Search")
                         button.btn.btn-reset.btn-sm(type="reset")
                             i.fa-times.fas
 
@@ -92,7 +94,7 @@ header(class=headerClass)
                         //    a.nav-link(href=`${path}signup.html`) Sign up
                         //
                         li.nav-item.mt-3.mt-lg-0.ml-lg-3.d-lg-none.d-xl-inline-block
-                            a.btn.btn-primary(href=`${path}user-add-0.html`) Add a listing
+                            a.btn.btn-primary(href=`${path}user-add-0`) Add a listing
                     else
                         li.nav-item.dropdown.ml-lg-3
                             a#userDropdownMenuLink(href="#",data-toggle='dropdown', aria-haspopup='true', aria-expanded='false') 
