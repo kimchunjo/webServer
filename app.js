@@ -23,64 +23,65 @@ bookingsJson = JSON.parse(fs.readFileSync('pug/js/bookings.json', {
 
 
 app.get('/', function (req, res) {
-    res.render('index',{
-        path:'',
+    res.render('index', {
+        path: '',
     })
 });
 
 app.get('/login', function (req, res) {
-    res.render('login',{
-        path:'',
+    res.render('login', {
+        path: '',
     })
 });
 
 app.get('/signup', function (req, res) {
-    res.render('signup',{
-        path:'',
+    res.render('signup', {
+        path: '',
     })
 });
 
 // 장소 추가
-app.get('/user-add-0',function (req,res){
+app.get('/user-add-0', function (req, res) {
     res.render('user-add-0')
 });
-app.get('/user-add-1',function (req,res){
+app.get('/user-add-1', function (req, res) {
     res.render('user-add-1')
 });
-app.get('/user-add-2',function (req,res){
+app.get('/user-add-2', function (req, res) {
     res.render('user-add-2')
 });
-app.get('/user-add-3',function (req,res){
+app.get('/user-add-3', function (req, res) {
     res.render('user-add-3')
 });
-app.get('/user-add-4',function (req,res){
+app.get('/user-add-4', function (req, res) {
     res.render('user-add-4')
 });
-app.get('/user-add-5',function (req,res){
+app.get('/user-add-5', function (req, res) {
     res.render('user-add-5')
 });
 
-app.get('/category', function(req, res) {
+// 검색 결과 페이지
+app.get('/category', function (req, res) {
     let searchWord = req.query.search;
-    let location = req.query.location;
-    if(location===undefined || location==="") // 장소를 입력하변지 않은 경우 내 주변으로 검색
-        location ='근처'
-    if(searchWord===undefined || searchWord==="") // 검색어를 입력하변지 않은 경우 사용자 취향을 고려한 검
-        searchWord ='내 취향에 맞는 장소'
+    let searchLocation = req.query.location;
+    if (searchWord === undefined || searchWord === "") // 검색어를 입력하변지 않은 경우 사용자 취향을 고려한 검색
+        searchWord = '내 취향에 맞는 장소'
+    if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
+        searchLocation = '근처'
     res.render('category-custom', {
-        path:'',
-        title:'검색결과',
-        searchWord:searchWord,
-        location:location,
+        path: '',
+        title: '검색결과',
+        searchWord: searchWord,
+        searchLocation: searchLocation,
     });
 });
 
-app.get('/category-map', function(req, res) {
+app.get('/category-map', function (req, res) {
     let searchWord = req.query.search;
     res.render('category-map-custom', {
-        path:'',
-        title:'지도 검색결과',
-        searchWord:searchWord
+        path: '',
+        title: '지도 검색결과',
+        searchWord: searchWord
     });
 });
 
