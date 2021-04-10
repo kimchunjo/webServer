@@ -183,7 +183,8 @@ mixin venue(val, itemClass)
         .card.h-100.border-0.shadow
             .card-img-top.overflow-hidden.dark-overlay.bg-cover(style=`background-image: url(${imgBasePath}${val.image}); min-height: 200px;`)
                 //- img.img-fluid(src=`${imgBasePath}${val.image}`, alt=val.name)
-                a.tile-link(href="detail.html")
+                a.tile-link(href=val.link)
+                //a.tile-link(href="detail.html")
                 .card-img-overlay-bottom.z-index-20
                     h4.text-white.text-shadow #{val.name}
                     p.mb-2.text-xs
@@ -392,4 +393,3 @@ mixin escape()
     - buf = [];
     block
     - buf  = oldBuf.concat(buf.map(jade.escape));
-

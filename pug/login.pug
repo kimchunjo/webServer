@@ -16,7 +16,7 @@ block content
                         img.img-fluid.mb-3(src='img/logo-square.svg', alt='...', style='max-width: 4rem;')            
                         h2 Welcome back
 
-                    form.form-validate
+                    form.form-validate(action="/user-profile")
                         .form-group
                             label.form-label(for='loginUsername')  Email Address
                             input.form-control(name="loginUsername", id="loginUsername", type='email', placeholder='name@address.com', autocomplete='off', required, data-msg="Please enter your email")
@@ -35,7 +35,7 @@ block content
                                     span.text-sm Remember me for 30 days
 
                         // Submit
-                        button.btn.btn-lg.btn-block.btn-primary
+                        button.btn.btn-lg.btn-block.btn-primary(link="user-profile")
                             | Sign in
 
                         hr.my-3.hr-text.letter-spacing-2(data-content="OR")

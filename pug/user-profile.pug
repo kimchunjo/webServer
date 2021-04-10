@@ -22,8 +22,10 @@ block content
                 .col-lg-3.mr-lg-auto
                     .card.border-0.shadow.mb-6.mb-lg-0
                         .card-header.bg-gray-100.py-4.border-0.text-center
-                            a.d-inline-block(href="#")
-                                img.d-block.avatar.avatar-xxl.p-2.mb-2(src=`${path}img/avatar/avatar-10.jpg`, alt="")       
+                            a.d-inline-block(href="/user-account")
+                                svg.theme-line-0.d-block.avatar.avatar-xxl.p-2.mb-2
+                                    use(xlink:href="#user-1")
+                                //img.d-block.avatar.avatar-xxl.p-2.mb-2(src=`${path}img/avatar/avatar-10.jpg`, alt="")
                             h5 Jack London
                             p.text-muted.text-sm.mb-0 Los Angeles, CA  
                         .card-body.p-4

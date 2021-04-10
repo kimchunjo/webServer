@@ -95,8 +95,10 @@ header(class=headerClass)
                             a.btn.btn-primary(href=`${path}user-add-0.html`) Add a listing
                     else
                         li.nav-item.dropdown.ml-lg-3
-                            a#userDropdownMenuLink(href="#",data-toggle='dropdown', aria-haspopup='true', aria-expanded='false') 
-                                img.avatar.avatar-sm.avatar-border-white.mr-2(src=`${path}img/avatar/avatar-10.jpg`, alt='Jack London')
+                            a#userDropdownMenuLink(href="#",data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
+                                svg.theme-line-0.avatar.avatar-sm.avatar-border-white.mr-2
+                                    use(xlink:href="#user-1")
+                                //img.avatar.avatar-sm.avatar-border-white.mr-2(src=`${path}img/avatar/avatar-10.jpg`, alt='Jack London')
                             .dropdown-menu.dropdown-menu-right(aria-labelledby='userDropdownMenuLink')
                                 - userDropdownLinks = {'user-booking-1.html' : 'Booking process - 4 pages', 'user-grid.html' : 'Bookings &mdash; grid view', 'user-booking-detail.html' : 'Booking detail'}
                                 +dropdownList('Components', userDropdownLinks, true)

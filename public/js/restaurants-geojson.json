@@ -5,8 +5,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -73.99967,
-          40.73723
+          35.17677897378695, 126.9080703722805
         ]
       },
       "properties": {
@@ -17,7 +16,7 @@
         "image": "restaurant-1430931071372-38127bd472b8.jpg",
         "link": "detail.html",
         "url": "#",
-        "name": "Blue Hill",
+        "name": "전남대",
         "category": "Restaurants",
         "email": "biancabriggs@bluehill.com",
         "stars": 4,
@@ -35,8 +34,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -73.9906951,
-          40.7384555
+          35.16549504427961, 126.90948805935477
         ]
       },
       "properties": {
@@ -47,7 +45,7 @@
         "image": "restaurant-1436018626274-89acd1d6ec9d.jpg",
         "link": "detail.html",
         "url": "#",
-        "name": "Plutorque",
+        "name": "광주역",
         "category": "Restaurant",
         "email": "biancabriggs@plutorque.com",
         "stars": 5,
@@ -65,8 +63,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -74.0014247,
-          40.732346
+          35.167930042359465,
+          126.88937588343343
         ]
       },
       "properties": {
@@ -77,7 +75,7 @@
         "image": "restaurant-1466978913421-dad2ebd01d17.jpg",
         "link": "detail.html",
         "url": "#",
-        "name": "Junipoor",
+        "name": "챔피언스필드",
         "category": "Music club",
         "email": "biancabriggs@junipoor.com",
         "stars": 5,
