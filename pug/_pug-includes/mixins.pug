@@ -342,8 +342,8 @@ mixin stepsAdd(step, finalStep, urlPrefix)
     - finalStep = finalStep || 4
     - urlPrefix = urlPrefix || 'user-add-'
 
-    - previousUrl = urlPrefix + previous + '.html'
-    - nextUrl = urlPrefix + next + '.html'
+    - previousUrl = urlPrefix + previous + ''
+    - nextUrl = urlPrefix + next + ''
 
     if (step == 4) 
         - var text = 'Finish'
