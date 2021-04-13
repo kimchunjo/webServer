@@ -17,7 +17,7 @@ block content
                         h2 Sign up
                         p.text-muted #{dummyText[2]}
 
-                    form.form-validate
+                    form.form-validate(action=`${path}coming-soon` method="post")
                         .form-group
                             label.form-label(for='loginUsername')  Email Address
                             input.form-control(name="loginUsername", id="loginUsername", type='email', placeholder='name@address.com', autocomplete='off', required, data-msg="Please enter your email")
@@ -27,20 +27,28 @@ block content
                         .form-group.mb-4
                             label.form-label(for='loginPassword2')  Confirm your password
                             input.form-control(name="loginPassword2",  id="loginPassword2",  placeholder="Password", type='password', required, data-msg="Please enter your password")
-
-                        button.btn.btn-lg.btn-block.btn-primary(type="submit")
+                        .form-group.mb-4
+                            label.form-label(for='loginUserage')  age
+                            input.form-control(name="loginUserage",  id="loginUserage", placeholder="Age", required, data-msg="Please enter your age")
+                        .form-group.mb-4
+                            label.form-label(for='loginUsersex')  sex
+                            select.form-control(name="loginUsersex",  id="loginUsersex", type="select", required)
+                                option(selected) Sex
+                                option(value="0") man
+                                option(value="1") woman
+                        button.btn.btn-lg.btn-block.btn-primary(type="submit" )
                             | Sign up
 
-                        hr.my-3.hr-text.letter-spacing-2(data-content="OR")
-                        
-                        button.btn.btn.btn-outline-primary.btn-block.btn-social.mb-3
-                            i.fa-2x.fa-facebook-f.fab.btn-social-icon 
-                            | Connect <span class="d-none d-sm-inline">with Facebook</span>
-
-                        button.btn.btn.btn-outline-muted.btn-block.btn-social.mb-3
-                            i.fa-2x.fa-google.fab.btn-social-icon 
-                            | Connect <span class="d-none d-sm-inline">with Google</span>
-
+                        //hr.my-3.hr-text.letter-spacing-2(data-content="OR")
+                        //
+                        //button.btn.btn.btn-outline-primary.btn-block.btn-social.mb-3
+                        //    i.fa-2x.fa-facebook-f.fab.btn-social-icon
+                        //    | Connect <span class="d-none d-sm-inline">with Facebook</span>
+                        //
+                        //button.btn.btn.btn-outline-muted.btn-block.btn-social.mb-3
+                        //    i.fa-2x.fa-google.fab.btn-social-icon
+                        //    | Connect <span class="d-none d-sm-inline">with Google</span>
+                        //
                         hr.my-4
 
                         p.text-sm.text-muted By signing up you agree to Directory's <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a>.

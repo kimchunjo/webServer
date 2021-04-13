@@ -1,6 +1,24 @@
 var express = require('express');
 var app = express();
 const fs = require('fs');
+var mysql = require('mysql');
+var moment = require('moment');
+
+require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
+
+console.log(moment().format('YYYY-MM-DD HH:mm:ss'));
+
+
+// 비밀번호는 별도의 파일로 분리해서 버전관리에 포함시키지 않아야 합니다.
+var connection = mysql.createConnection({
+    host     : 'ghp.cchzr2v2ry4q.ap-northeast-2.rds.amazonaws.com',
+    user     : 'admin',
+    password : '!eogus123',
+    database : 'ghp'
+});
+
+
 
 /* body parser */
 app.use(express.json());
@@ -36,8 +54,26 @@ app.get('/login', function (req, res) {
 
 app.get('/signup', function (req, res) {
     res.render('signup', {
-        path: '',
     })
+});
+
+app.post('/coming-soon', function (req, res) {
+    res.render('coming-soon', {
+    });
+
+    var body = req.body;
+    var id = body.loginUsername;
+    var password = body.loginPassword;
+    var age = body.loginUserage;
+    var sex = body.l5oginUsersex;
+
+    connection.query('INSERT INTO user(id, password, age, sex, created) VALUES("' + id + '","' + password + '","' + age + '","' + sex + '","' + date +'")', function (error, results, fields) {
+        if (error) {
+            console.log(error);
+        }
+        console.log(results);
+    });
+
 });
 
 // 장소 추가
@@ -107,5 +143,7 @@ app.get('/category-map', function (req, res) {
         searchWord: searchWord
     });
 });
+
+
 
 app.listen(8080);
