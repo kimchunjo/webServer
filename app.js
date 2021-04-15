@@ -3,6 +3,7 @@ var app = express();
 const fs = require('fs');
 var mysql = require('mysql');
 var moment = require('moment');
+var multer = require('multer');
 
 require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
@@ -18,6 +19,17 @@ var connection = mysql.createConnection({
     database : 'ghp'
 });
 
+
+const upload = multer({
+    storage: multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'uploads/');
+        },
+        filename: function (req, file, cb) {
+            cb(null, file.originalname);
+        }
+    }),
+});
 
 
 /* body parser */
@@ -38,7 +50,6 @@ roomsJson = JSON.parse(fs.readFileSync('pug/js/rooms-geojson.json', {
 bookingsJson = JSON.parse(fs.readFileSync('pug/js/bookings.json', {
     encoding: 'utf8'
 }));
-
 
 app.get('/', function (req, res) {
     res.render('index', {
@@ -76,24 +87,50 @@ app.post('/coming-soon', function (req, res) {
 
 });
 
+
+//place = JSON.stringify(place)
+//fs.writeFileSync("pug/js/place.json", place, 'utf-8')
+
+
+let place
 // 장소 추가
 app.get('/user-add-0', function (req, res) {
     res.render('user-add-0')
 });
 app.get('/user-add-1', function (req, res) {
     res.render('user-add-1')
+    place = {
+        "name": "",
+        "location": "",
+        "explanation": "",
+        "price": 0,
+        "categorie": "",
+        "hotplacescore": 0,
+        "usetime_start": "",
+        "usetime_end": ""
+    }
 });
-app.get('/user-add-2', function (req, res) {
+app.post('/user-add-2', function (req, res) {
     res.render('user-add-2')
+    var body = req.body;
+    place.name = body.form_name;
+    console.log(place.name);
 });
-app.get('/user-add-3', function (req, res) {
+app.post('/user-add-3', function (req, res) {
     res.render('user-add-3')
+
 });
-app.get('/user-add-4', function (req, res) {
+app.post('/user-add-4', function (req, res) {
     res.render('user-add-4')
 });
-app.get('/user-add-5', function (req, res) {
+
+app.post('/upload', upload.single('file'), (req, res) => {
+
+});
+
+app.post('/user-add-5',function(req, res){
     res.render('user-add-5')
+
 });
 
 
@@ -143,7 +180,5 @@ app.get('/category-map', function (req, res) {
         searchWord: searchWord
     });
 });
-
-
 
 app.listen(8080);

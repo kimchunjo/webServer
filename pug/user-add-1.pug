@@ -21,7 +21,7 @@ block content
 
             +stepsHeading('Basic information', 1)
 
-            form
+            form(action=`${path}user-add-2` method="post")
                 .row.form-block
                     .col-lg-4
                         h4 Basic
@@ -31,7 +31,7 @@ block content
 
                         .form-group
                             label.form-label(for="form_name") Property name
-                            input.form-control(name="name", id="form_name")
+                            input.form-control(name="form_name", id="form_name")
 
                         .form-group
                             - var types = ['Entire place', 'Private room', 'Shared room']

@@ -171,8 +171,8 @@ var Dropzone = function (_Emitter) {
         timeout: 30000,
 
         /**
-         * How many file uploads to process in parallel (See the
-         * Enqueuing file uploads* documentation section for more info)
+         * How many file upload to process in parallel (See the
+         * Enqueuing file upload* documentation section for more info)
          */
         parallelUploads: 2,
 
@@ -353,7 +353,7 @@ var Dropzone = function (_Emitter) {
          * files (or if you want want all files sent at once).
          * If you're ready to send the file simply call `myDropzone.processQueue()`.
          *
-         * See the [enqueuing file uploads](#enqueuing-file-uploads) documentation
+         * See the [enqueuing file upload](#enqueuing-file-upload) documentation
          * section for more information.
          */
         autoProcessQueue: true,
@@ -426,7 +426,7 @@ var Dropzone = function (_Emitter) {
         /**
          * The text that replaces the default message text it the browser is not supported.
          */
-        dictFallbackMessage: "Your browser does not support drag'n'drop file uploads.",
+        dictFallbackMessage: "Your browser does not support drag'n'drop file upload.",
 
         /**
          * The text that will be added before the fallback form.
@@ -500,8 +500,8 @@ var Dropzone = function (_Emitter) {
          * that gets invoked with the `files`, `xhr` and, if it's a chunked upload, `chunk` arguments. In case
          * of a function, this needs to return a map.
          *
-         * The default implementation does nothing for normal uploads, but adds relevant information for
-         * chunked uploads.
+         * The default implementation does nothing for normal upload, but adds relevant information for
+         * chunked upload.
          *
          * This is the same as adding hidden input fields in the form element.
          */
@@ -2383,7 +2383,7 @@ var Dropzone = function (_Emitter) {
       }
     }
 
-    // This function actually uploads the file(s) to the server.
+    // This function actually upload the file(s) to the server.
     // If dataBlocks contains the actual data to upload (meaning, that this could either be transformed
     // files, or individual chunks for chunked upload).
 

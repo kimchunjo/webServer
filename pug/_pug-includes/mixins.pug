@@ -351,11 +351,11 @@ mixin stepsAdd(step, finalStep, urlPrefix)
     .row.form-block.flex-column.flex-sm-row
         .col.text-center.text-sm-left
             if (previous != 0)
-                a.btn.btn-link.text-muted(href=previousUrl) 
+                a.btn.btn-link.text-muted(href=previousUrl)
                     i.fa-chevron-left.fa.mr-2
                     | Back
         .col.text-center.text-sm-right
-            a.btn.btn-primary.px-3(href=nextUrl) 
+            button.btn.btn-primary.px-3(type="submit" id='btn-upload-file')
                 | #{text}
                 i.fa-chevron-right.fa.ml-2
 

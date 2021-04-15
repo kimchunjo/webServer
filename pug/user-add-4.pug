@@ -19,41 +19,67 @@ block content
         .container
             
             +stepsHeading('Photos', 4)
-            
-            .row.form-block
-                .col-lg-4
-                    h4 Photos
-                    p.text-muted.text-sm #{dummyText[2]}
-                .col-lg-7.ml-auto
-                    .form-group            
-                        form#demo-upload.dropzone(action='/upload')
-                            .dz-message.text-muted
-                                p Drop files here or click to upload.
-                                p
-                                    span.note (This is just a demo dropzone. Selected files are <STRONG>not</STRONG> actually uploaded.)
 
-                    #dropzoneTemplate.d-none
-                        .dz-preview.dz-file-preview
-                            .dz-image
-                                img(data-dz-thumbnail='', alt='', src=`${path}img/logo-square.svg`)
-                            .dz-details
-                                .dz-filename
-                                    span(data-dz-name='')
-                                .dz-size(data-dz-size='')
-                            .dz-progress
-                                span.dz-upload(data-dz-uploadprogress='')
-                            .dz-success-mark
-                                span.dz-icon
-                                    i.fa-check.fa
-                            .dz-error-mark
-                                span.dz-icon
-                                    i.fa-times.fa
-                            .dz-error-message
-                                span(data-dz-errormessage='')
-            
-            +stepsAdd(4)
+            form(action=`${path}user-add-5` method="post")
+                .row.form-block
+                    .col-lg-4
+                        h4 Photos
+                        p.text-muted.text-sm #{dummyText[2]}
+                    .col-lg-7.ml-auto
+
+                        .form-group
+                            #fileDropzone.dropzone(action='/upload' method="post" enctype= "multipart/form-data")
+                                .dz-message.text-muted
+                                    p Drop files here or click to upload.
+                                    p
+                                        span.note (This is just a demo dropzone. Selected files are <STRONG>not</STRONG> actually uploaded.)
+
+                        .d-none
+                            .dz-preview.dz-file-preview
+                                .dz-image
+                                    img(data-dz-thumbnail='', alt='', src=`${path}img/logo-square.svg`)
+                                .dz-details
+                                    .dz-filename
+                                        span(data-dz-name='')
+                                    .dz-size(data-dz-size='')
+                                .dz-progress
+                                    span.dz-upload(data-dz-uploadprogress='')
+                                .dz-success-mark
+                                    span.dz-icon
+                                        i.fa-check.fa
+                                .dz-error-mark
+                                    span.dz-icon
+                                        i.fa-times.fa
+                                .dz-error-message
+                                    span(data-dz-errormessage='')
+                +stepsAdd(4)
+
 
 block additionalScripts
     // Dropzone.js
     script(src='vendor/dropzone/dropzone.js')
     // Dropzone Init
+    script.
+        Dropzone.options.fileDropzone = {
+            paramName: 'file',
+            maxFilesize: 2, // MB
+            maxFiles: 5,
+            acceptedFiles: 'image/*',
+            autoProcessQueue: false,
+            addRemoveLinks: true, // 삭제버튼 표시 여부
+            dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
+
+            init: function () {
+                /* 최초 dropzone 설정시 init을 통해 호출 */
+                var submitButton = document.querySelector("#btn-upload-file");
+                var myDropzone = this; //closure
+                submitButton.addEventListener("click", function () {
+                    myDropzone.processQueue();
+                });
+
+            }
+        }
+
+
+
+
