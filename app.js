@@ -5,6 +5,17 @@ var mysql = require('mysql');
 var moment = require('moment');
 var multer = require('multer');
 
+/* 파이썬 연동을 위한 모듈  */
+const spawn = require("child_process").spawn;
+const pythonProcess = spawn('python',['./user_history.py', '카페아바나']);
+pythonProcess.stdout.on('data',(data)=>{
+    console.log(data.toString())
+})
+pythonProcess.stderr.on('data', (data)=>{
+    console.log(data.toString());
+});
+/* -- 파이썬 연동을 위한 모듈 --  */
+
 require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 
