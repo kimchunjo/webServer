@@ -14,45 +14,67 @@ block content
     
     //- include _pug-includes/inc-hero
     
-    +progress(20)
+    +progress(50)
 
     section.py-5
         .container
 
-            +stepsHeading('Basic information', 1)
+            +stepsHeading('장소 추가')
 
-            form(action=`${path}user-add-2` method="post")
+            form(action=`${path}user-add-5` method="post")
                 .row.form-block
                     .col-lg-4
-                        h4 Basic
-                        p.text-muted.text-sm #{dummyText[2]}
+                        h4 기본정보
+
                     .col-lg-7.ml-auto
                         .form-group
 
                         .form-group
-                            label.form-label(for="form_name") Property name
-                            input.form-control(name="form_name", id="form_name")
+                            label.form-label(for="form_name") 이름
+                            input.form-control(name="form_name", id="form_name", required)
 
                         .form-group
-                            - var types = ['Entire place', 'Private room', 'Shared room']
-                            label.form-label(for="form_type") Home type
-                            select.selectpicker.form-control(name="type", id="form_type", data-style="btn-selectpicker", title="", aria-describedby="propertyTypeHelp")
+                            - var types = ['카페', '음식점', '공연', '명소']
+                            label.form-label(for="form_type") 장소
+                            select.selectpicker.form-control(name="type", id="form_type", data-style="btn-selectpicker", title="", aria-describedby="propertyTypeHelp", required)
+                                option(selected) 장소
                                 each val, index in types
-                                    option(value=`type_${index}`) #{val}                         
-                            small#propertyTypeHelp.form-text.text-muted #{dummyText[5]}
+                                    option(value=`${val}`) #{val}
+                            //small#propertyTypeHelp.form-text.text-muted #{dummyText[5]}
 
                         .form-group
-                            - var choices = ['Yes, it\'s primarily set up for guests', 'No, I keep my personal belongings there']
-                            label.form-label Is your property set as a dedicated guest space?
-                            each val,index in choices
-                                .custom-control.custom-radio
-                                    input.custom-control-input(type='radio', id=`guests_${index}`, name="guests")
-                                    label.custom-control-label(for=`guests_${index}`) #{val}
+                            label.form-label 실내외
+                            select.selectpicker.form-control(name="door", id="door", data-style="btn-selectpicker", title="", aria-describedby="propertyTypeHelp", required)
+                                option(selected) 실내외
+                                option(value="0") 실내
+                                option(value="1") 야외
+                                option(value="2") 실내 및 야외
+                .row.form-block
+                    .col-lg-4
+                        h4 장소 설명
+                        //p.text-muted.text-sm  #{dummyText[3]}
+                    .col-lg-7.ml-auto
+                        .form-group.mb-5
+                            label.form-label(for="form_description") 장소의 특징을 알려주세요
+                            textarea.form-control(name="explanation", id="form_description", rows="5", aria-describedby="descriptionHelp", required)
+                            //small#descriptionHelp.form-text.text-muted.mt-2 #{dummyText[1]}
+                        .row
+                            .col-md-6
+                                .form-group
+                                    label.form-label(for="open_time") 여는 시간
+                                    input.form-control(type="time", name="oTime", id="open_time", required)
+                            .col-md-6
+                                .form-group
+                                    label.form-label(for="close_time") 닫는 시간
+                                    input.form-control(type="time", name="cTime", id="close_time", required )
+
+
+
 
                 .row.form-block
                     .col-lg-4
-                        h4 Location
-                        p.text-muted.text-sm #{dummyText[3]}
+                        h4 위치
+                        //p.text-muted.text-sm #{dummyText[3]}
                     .col-lg-7.ml-auto
                         // Country
                         .form-group
@@ -82,6 +104,61 @@ block content
                             .col-md-6
                                 .form-group
                                     label.form-label(for="form_zip") ZIP Code
-                                    input.form-control(name="name", id="form_zip")                                                                       
+                                    input.form-control(name="name", id="form_zip")
+                .row.form-block
+                    .col-lg-4
+                        h4 사진
+                        //p.text-muted.text-sm #{dummyText[2]}
+                    .col-lg-7.ml-auto
 
+                        .form-group
+                            #fileDropzone.dropzone(action='/upload' method="post" enctype= "multipart/form-data")
+                                .dz-message.text-muted
+                                    p 드래그하거나 클릭해서 사진을 업로드하세요
+
+                        .d-none
+                            .dz-preview.dz-file-preview
+                                .dz-image
+                                    img(data-dz-thumbnail='', alt='', src=`${path}img/logo-square.svg`)
+                                .dz-details
+                                    .dz-filename
+                                        span(data-dz-name='')
+                                    .dz-size(data-dz-size='')
+                                .dz-progress
+                                    span.dz-upload(data-dz-uploadprogress='')
+                                .dz-success-mark
+                                    span.dz-icon
+                                        i.fa-check.fa
+                                .dz-error-mark
+                                    span.dz-icon
+                                        i.fa-times.fa
+                                .dz-error-message
+                                    span(data-dz-errormessage='')
                 +stepsAdd(1)
+
+
+block additionalScripts
+    // Dropzone.js
+    script(src='vendor/dropzone/dropzone.js')
+    // Dropzone Init
+    script.
+        Dropzone.options.fileDropzone = {
+            paramName: 'file',
+            maxFilesize: 2, // MB
+            maxFiles: 5,
+            acceptedFiles: 'image/*',
+            autoProcessQueue: false,
+            addRemoveLinks: true, // 삭제버튼 표시 여부
+            dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
+
+            init: function () {
+                /* 최초 dropzone 설정시 init을 통해 호출 */
+                var submitButton = document.querySelector("#btn-upload-file");
+                var myDropzone = this; //closure
+                submitButton.addEventListener("click", function () {
+                    myDropzone.processQueue();
+                });
+
+            }
+        }
+

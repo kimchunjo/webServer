@@ -26,7 +26,7 @@ const upload = multer({
             cb(null, 'uploads/');
         },
         filename: function (req, file, cb) {
-            cb(null, file.originalname);
+            cb(null, `${Date.now()}_${file.originalname}`);
         }
     }),
 });
@@ -76,7 +76,7 @@ app.post('/coming-soon', function (req, res) {
     var id = body.loginUsername;
     var password = body.loginPassword;
     var age = body.loginUserage;
-    var sex = body.l5oginUsersex;
+    var sex = body.loginUsersex;
 
     connection.query('INSERT INTO user(id, password, age, sex, created) VALUES("' + id + '","' + password + '","' + age + '","' + sex + '","' + date +'")', function (error, results, fields) {
         if (error) {
@@ -92,46 +92,58 @@ app.post('/coming-soon', function (req, res) {
 //fs.writeFileSync("pug/js/place.json", place, 'utf-8')
 
 
-let place
+let place = {
+    "name": "",
+    "location": "",
+    "explanation": "",
+    "price": 0,
+    "categorie": "",
+    "hotplacescore": 0,
+    "usetime_start": "",
+    "usetime_end": ""
+};
 // 장소 추가
 app.get('/user-add-0', function (req, res) {
     res.render('user-add-0')
 });
 app.get('/user-add-1', function (req, res) {
     res.render('user-add-1')
-    place = {
-        "name": "",
-        "location": "",
-        "explanation": "",
-        "price": 0,
-        "categorie": "",
-        "hotplacescore": 0,
-        "usetime_start": "",
-        "usetime_end": ""
-    }
 });
-app.post('/user-add-2', function (req, res) {
-    res.render('user-add-2')
+app.post('/user-add-5', function (req, res) {
+    res.render('user-add-5')
     var body = req.body;
-    place.name = body.form_name;
-    console.log(place.name);
-});
-app.post('/user-add-3', function (req, res) {
-    res.render('user-add-3')
+    var name = body.form_name;
+    var category = body.type;
+    var door = body.door;
+    var explanation = body.explanation;
+    var oTime = body.oTime;
+    var cTime = body.cTime;
+
+    console.log(oTime);
+
+    connection.query('INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime +'")', function (error, results, fields) {
+        if (error) {
+            console.log(error);
+        }
+        console.log(results);
+    });
+
 
 });
-app.post('/user-add-4', function (req, res) {
-    res.render('user-add-4')
-});
+
 
 app.post('/upload', upload.single('file'), (req, res) => {
+    console.log(req.file);
+    connection.query('INSERT INTO image(filename, originalname) VALUES("' + req.file.filename + '","' + req.file.originalname +'")', function (error, results, fields) {
+        if (error) {
+            console.log(error);
+        }
+        console.log(results);
+    });
+
 
 });
 
-app.post('/user-add-5',function(req, res){
-    res.render('user-add-5')
-
-});
 
 
 

@@ -332,7 +332,7 @@ mixin componentDocItem(name, desc, showCode)
 
 mixin progress(value)
     .progress.rounded-0.sticky-top(style="height: 8px; top: 71px;")
-        .progress-bar(role='progressbar', style=`width: ${value}%`, aria-valuenow=value, aria-valuemin='0', aria-valuemax='100')
+        .progress-bar(role='progressbar', style=`width: ${value}%`, aria-valuenow=value, ariast-valuemin='0', aria-valuemax='100')
     
 mixin stepsAdd(step, finalStep, urlPrefix)
     - var previous = step - 1;
@@ -356,15 +356,18 @@ mixin stepsAdd(step, finalStep, urlPrefix)
                     | Back
         .col.text-center.text-sm-right
             button.btn.btn-primary.px-3(type="submit" id='btn-upload-file')
-                | #{text}
+                | 장소추가하기
                 i.fa-chevron-right.fa.ml-2
 
 mixin stepsHeading(name, step, heading)
     
-    - heading = heading || 'Add new listing'
+    - heading = heading || '당신의 장소를 공유해주세요'
+
+    //p.subtitle.text-primary #{heading}
+    //h1.h2.mb-5  #{name} <span class="text-muted float-right">Step #{step}</span>
 
     p.subtitle.text-primary #{heading}
-    h1.h2.mb-5  #{name} <span class="text-muted float-right">Step #{step}</span>      
+    h1.h2.mb-5  #{name}
 
 mixin stars(stars, divClass)
 
