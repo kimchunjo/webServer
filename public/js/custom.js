@@ -40,7 +40,6 @@ function checkTag(self){
 
             for(let j=0; j< tagBox.children().length; j++){
                 if(tag == tagBox.children().eq(j).text()){
-                    console.log("이미존재"+tagBox.children().eq(j).text())
                     alreadyExistsTag = true;
                     break;
                 }
@@ -67,5 +66,11 @@ function checkTag(self){
         if(temp === false){
             tagBox.children().eq(i).remove();
         }
+    }
+
+    let temp = "";
+    for(let i=0; i<tagBox.children().length;i++){
+        temp =  temp + tagBox.children().eq(i).text()+" ";
+        $('#hide_tag_box').text(temp);
     }
 }
