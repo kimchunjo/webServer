@@ -57,6 +57,7 @@ block content
                         .form-group.mb-5
                             label.form-label(for="form_description") 장소의 특징을 알려주세요
                             textarea.form-control(name="explanation", id="form_description", onchange="checkTag(this)", rows="5", aria-describedby="descriptionHelp", required)
+                            textarea.form-control(name="tag" id="hide_tag_box")
                             div(id="description_tag_box")
                         .row
                             .col-md-6
