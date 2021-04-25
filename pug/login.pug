@@ -16,7 +16,7 @@ block content
                         img.img-fluid.mb-3(src='img/logo-square.svg', alt='...', style='max-width: 4rem;')            
                         h2 Sign in
 
-                    form.form-validate(action="/user-profile")
+                    form.form-validate(action="/login-confirm" method="POST")
                         .form-group
                             label.form-label(for='loginUsername')  ID
                             input.form-control(name="loginUsername", id="loginUsername", type='email', placeholder='name@address.com', autocomplete='off', required, data-msg="Please enter your email")

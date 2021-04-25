@@ -41,6 +41,15 @@ const upload = multer({
 });
 
 
+var session = require('express-session');
+
+app.use(session({
+    secret: '1234DSFs@adf1234!@#asd',
+    resave: false,
+    saveUninitialized: true
+}));
+
+
 /* body parser */
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
@@ -62,9 +71,18 @@ bookingsJson = JSON.parse(fs.readFileSync('pug/js/bookings.json', {
 
 /* routing */
 app.get('/', function (req, res) {
-    res.render('index', {
-        path: '',
-    })
+    if(req.session.id1){
+        res.render('index', {
+            loggedUser: true
+        })
+    }
+    else{
+        res.render('index', {
+            loggedUser: false
+        })
+    }
+
+
 });
 
 app.get('/login', function (req, res) {
@@ -135,6 +153,37 @@ app.post('/user-add-5', function (req, res) {
 
 
 });
+
+
+app.post('/login-confirm', function (req, res){
+    var id = req.body.loginUsername;
+    var password = req.body.loginPassword;
+    console.log(id);
+    console.log(password);
+    connection.query('SELECT COUNT(*) FROM user WHERE id = ? and password = ?', [id, password], function (error, results, fields) {
+
+            for (var keyNm in results[0]) {
+                if(results[0][keyNm] == 1){
+                    console.log("로그인 성공");
+                    req.session.id1 = id;
+                    req.session.pw1 = password;
+                    res.redirect('/');
+                }
+
+
+                else{
+                    console.log("로그인 실패");
+                }
+
+            }
+            if (error) {
+                console.log(error);
+            }
+        }
+    )
+});
+
+
 
 
 app.post('/upload', upload.single('file'), (req, res) => {
