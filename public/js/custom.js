@@ -40,12 +40,14 @@ function checkTag(self){
 
             for(let j=0; j< tagBox.children().length; j++){
                 if(tag == tagBox.children().eq(j).text()){
+                    console.log("이미존재"+tagBox.children().eq(j).text())
                     alreadyExistsTag = true;
                     break;
                 }
             }
 
             if(alreadyExistsTag === false){
+
                 let html=`<span class="badge badge-secondary" style="margin-right: 3px">${tag}</span>`;
                 tagBox.append(html);
             }
@@ -67,7 +69,6 @@ function checkTag(self){
             tagBox.children().eq(i).remove();
         }
     }
-
     let temp = "";
     for(let i=0; i<tagBox.children().length;i++){
         temp =  temp + tagBox.children().eq(i).text()+" ";

@@ -101,9 +101,9 @@ header(class=headerClass)
                                     use(xlink:href="#user-1")
                                 //img.avatar.avatar-sm.avatar-border-white.mr-2(src=`${path}img/avatar/avatar-10.jpg`, alt='Jack London')
                             .dropdown-menu.dropdown-menu-right(aria-labelledby='userDropdownMenuLink')
-                                - userDropdownLinks = {'user-booking-1.html' : 'Booking process - 4 pages', 'user-grid.html' : 'Bookings &mdash; grid view', 'user-booking-detail.html' : 'Booking detail'}
+                                - userDropdownLinks = {'/user-profile' : 'User Profile'}
                                 +dropdownList('Components', userDropdownLinks, true)
                                 .dropdown-divider
-                                a.dropdown-item(href=`${path}login`) <i class="fas fa-sign-out-alt mr-2 text-muted"></i> Sign out
+                                a.dropdown-item(href=`${path}/logout`) <i class="fas fa-sign-out-alt mr-2 text-muted"></i> Sign out
 
     // /Navbar 
