@@ -1,9 +1,6 @@
 var express = require('express');
 var app = express();
 const fs = require('fs');
-var mysql = require('mysql');
-var moment = require('moment');
-var multer = require('multer');
 
 /* 파이썬 연동을 위한 모듈  */
 const spawn = require("child_process").spawn;
@@ -14,23 +11,24 @@ pythonProcess.stdout.on('data',(data)=>{
 pythonProcess.stderr.on('data', (data)=>{
     console.log(data.toString());
 });
-/* -- 파이썬 연동을 위한 모듈 --  */
 
-require('moment-timezone');
+/* 현재 시간을 얻기 위한 모듈 */
+var moment = require('moment');
+require('moment-timezone'); // 필요 ?
 moment.tz.setDefault("Asia/Seoul");
 
-console.log(moment().format('YYYY-MM-DD HH:mm:ss'));
-
-
-// 비밀번호는 별도의 파일로 분리해서 버전관리에 포함시키지 않아야 합니다.
+/* connect DB */
+var mysql = require('mysql');
 var connection = mysql.createConnection({
     host     : 'ghp.cchzr2v2ry4q.ap-northeast-2.rds.amazonaws.com',
     user     : 'admin',
     password : '!eogus123',
     database : 'ghp'
 });
+// 비밀번호는 별도의 파일로 분리해서 버전관리에 포함시키지 않아야 합니다.
 
-
+/* 무엇을 위한? */
+var multer = require('multer');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -62,6 +60,7 @@ bookingsJson = JSON.parse(fs.readFileSync('pug/js/bookings.json', {
     encoding: 'utf8'
 }));
 
+/* routing */
 app.get('/', function (req, res) {
     res.render('index', {
         path: '',
@@ -80,28 +79,25 @@ app.get('/signup', function (req, res) {
 });
 
 app.post('/coming-soon', function (req, res) {
-    res.render('coming-soon', {
-    });
-
-    var body = req.body;
-    var id = body.loginUsername;
-    var password = body.loginPassword;
-    var age = body.loginUserage;
-    var sex = body.loginUsersex;
-
-    connection.query('INSERT INTO user(id, password, age, sex, created) VALUES("' + id + '","' + password + '","' + age + '","' + sex + '","' + date +'")', function (error, results, fields) {
+    let body = req.body;
+    let id = body.loginUsername;
+    let password = body.loginPassword;
+    let age = body.loginUserage;
+    let sex = body.loginUsersex;
+    let now = moment().format('YYYY-MM-DD HH:mm:ss')
+    connection.query('INSERT INTO user(id, password, age, sex, created) VALUES("' + id + '","' + password + '","' + age + '","' + sex + '","' + now +'")', function (error, results, fields) {
         if (error) {
             console.log(error);
         }
         console.log(results);
     });
 
+    res.render('coming-soon', {
+    });
 });
-
 
 //place = JSON.stringify(place)
 //fs.writeFileSync("pug/js/place.json", place, 'utf-8')
-
 
 let place = {
     "name": "",
@@ -129,8 +125,6 @@ app.post('/user-add-5', function (req, res) {
     var explanation = body.explanation;
     var oTime = body.oTime;
     var cTime = body.cTime;
-
-    console.log(oTime);
 
     connection.query('INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime +'")', function (error, results, fields) {
         if (error) {
