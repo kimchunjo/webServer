@@ -135,7 +135,8 @@ app.get('/user-add-1', function (req, res) {
     res.render('user-add-1')
 });
 app.post('/user-add-5', function (req, res) {
-    res.render('user-add-5')
+    res.render('user-add-5');
+
     var body = req.body;
     var name = body.form_name;
     var category = body.type;
@@ -143,6 +144,8 @@ app.post('/user-add-5', function (req, res) {
     var explanation = body.explanation;
     var oTime = body.oTime;
     var cTime = body.cTime;
+    var tag = body.tag;
+    tag = tag.split("");
 
     connection.query('INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime +'")', function (error, results, fields) {
         if (error) {
