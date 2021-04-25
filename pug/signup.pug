@@ -17,26 +17,25 @@ block content
                         h2 Sign up
                         p.text-muted Allplace에 오신 것을 환영합니다.
 
-                    form.form-validate(action=`${path}coming-soon` method="post")
+                    form.form-validate(action=`${path}coming-soon` method="post" id="signupForm")
                         .form-group
-                            label.form-label(for='loginUsername')  ID
+                            label.form-label(for='loginUsername') ID
                             input.form-control(name="loginUsername", id="loginUsername", type='email', placeholder='name@address.com', autocomplete='off', required, data-msg="Please enter your email")
                         .form-group
-                            label.form-label(for='loginPassword')  비밀번호
-                            input.form-control(name="loginPassword",  id="loginPassword",  placeholder="Password", type='password', required, data-msg="Please enter your password")
+                            label.form-label(for='loginPassword') 비밀번호
+                            input.form-control(name="loginPassword",  id="loginPassword",  placeholder="Password", type='password', required, data-msg="Please enter your password" oninput="checkPassword()")
                         .form-group.mb-4
-                            label.form-label(for='loginPassword2')  비밀번호 확인
-                            input.form-control(name="loginPassword2",  id="loginPassword2",  placeholder="Password", type='password', required, data-msg="Please enter your password")
+                            label.form-label(for='loginPassword2') 비밀번호 확인
+                            input.form-control(name="loginPassword2",  id="loginPassword2",  placeholder="Password", type='password', required, data-msg="Please enter your password" oninput="checkPassword()")
                         .form-group.mb-4
-                            label.form-label(for='loginUserage')  나이
-                            input.form-control(name="loginUserage",  id="loginUserage", placeholder="00", required, data-msg="Please enter your age")
+                            label.form-label(for='loginUserage') 나이
+                            input.form-control(name="loginUserage",  id="loginUserage", placeholder="20", required, data-msg="Please enter your age")
                         .form-group.mb-4
-                            label.form-label(for='loginUsersex')  성별
+                            label.form-label(for='loginUsersex') 성별
                             select.selectpicker.form-control(name="loginUsersex", data-style="btn-selectpicker", title="", aria-describedby="propertyTypeHelp", id="loginUsersex", type="select", required)
-                                option(selected) 성별
                                 option(value="0") 남자
-                                option(value="1") 여자
-                        button.btn.btn-lg.btn-block.btn-primary(type="submit" )
+                                option(value="1" selected) 여자
+                        button.btn.btn-lg.btn-block.btn-muted(type="submit" id="signupSubmit" disabled)
                             | Sign up
 
                         //hr.my-3.hr-text.letter-spacing-2(data-content="OR")
