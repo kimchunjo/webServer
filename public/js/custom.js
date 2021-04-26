@@ -1,5 +1,6 @@
 $(document).ready(function (){
-    $('#sample6_address').on('propertychange change keyup paste input', function(){
+    /* 장소 추가 페이지*/
+    $('#sample6_address').on('propertychange change keyup paste input', function(){// 위도 경도 계산
         let address = $('#sample6_address').val();
         let detailAddress = $('#sample6_detailAddress').val();
 
@@ -13,11 +14,12 @@ $(document).ready(function (){
                 console.log(result[0].y);
                 $('#latitude').val(result[0].y);
                 $('#longitude').val(result[0].x);
-
-
-
             }
         });
+    })
+    $('#form_description').on('propertychange change keyup paste input',function (){ // textarea 에서 태그 찾기
+        let target = $('#form_description');
+        checkTag(target);
     })
 })
 
@@ -155,26 +157,4 @@ function sample6_execDaumPostcode() {
              }
         }
     }).open();
-}
-
-
-function getLatLon(){
-    // let address = $('#sample6_address').val();
-    // let detailAddress = $('#sample6_detailAddress').val();
-    //
-    // // 주소-좌표 변환 객체를 생성합니다
-    // var geocoder = new kakao.maps.services.Geocoder();
-    // // 주소로 좌표를 검색합니다
-    // geocoder.addressSearch(address + " " + detailAddress, function(result, status) {
-    //
-    //     // 정상적으로 검색이 완료됐으면
-    //     if (status === kakao.maps.services.Status.OK) {
-    //         console.log(result[0].y);
-    //         $('#latitude').val(result[0].y);
-    //         $('#longitude').val(result[0].x);
-    //
-    //
-    //
-    //     }
-    // });
 }
