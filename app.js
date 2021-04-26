@@ -45,7 +45,7 @@ const upload = multer({
             cb(null, './public/uploads/');
         },
         filename: function (req, file, cb) {
-            cb(null, `${Date.now()}_${file.originalname}`);
+            cb(null, `${file.originalname}`);
         }
     }),
 });
@@ -131,14 +131,14 @@ app.post('/user-add-5', function (req, res) {
     tag = tag.trim();
     tag = tag.split(" ");
     var address = body.address + " " + body.detailAddress;
-    var imageName = body.fileName;
+    var filename = body.filename;
 
     var latitude = body.latitude;
     var longitude = body.longitude;
     console.log(latitude);
     console.log(longitude);
 
-    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '")'
+    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","'+filename+'")'
     connection.query(query, function (error, results, fields) {
         if (error) {
             console.log(error);
@@ -254,14 +254,29 @@ app.get('/category', function (req, res) {
             connection.query(searchPlaceNameQuery, function (err4, places) {
                 // searchWord에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
                 var allPlace = [];
-                for (var i = 0; i < places.length; i++) allPlace.push(places[i]);
-                
+                var count = places.length;
+                if(count===1){
+                    for (var i = 0; i < count; i++){
+                        let temp = places[i].image;
+                        temp= temp.split("@#");
+                        places[i].image = temp[1];
+                        allPlace.push(places[i]);
+                    }
+                }else{
+                    for (var i = 0; i < count; i++){
+                        let temp = places[i][0].image;
+                        temp= temp.split("@#");
+                        places[i][0].image = temp[1];
+                        allPlace.push(places[i][0]);
+                    }
+                }
+
                 res.render('category-custom', {
                     path: '',
                     title: '검색결과',
                     searchWord: searchWord,
                     searchLocation: searchLocation,
-                    example: allPlace
+                    example: allPlace,
                 });
             });
         });
