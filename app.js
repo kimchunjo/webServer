@@ -132,11 +132,8 @@ app.post('/user-add-5', function (req, res) {
     tag = tag.split(" ");
     var address = body.address + " " + body.detailAddress;
     var filename = body.filename;
-
     var latitude = body.latitude;
     var longitude = body.longitude;
-    console.log(latitude);
-    console.log(longitude);
 
     var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","'+filename+'")'
     connection.query(query, function (error, results, fields) {
@@ -200,17 +197,6 @@ app.post('/login-confirm', function (req, res) {
         }
     )
 });
-
-
-app.post('/upload', upload.single('file'), (req, res) => {
-    connection.query('INSERT INTO image(filename, originalname) VALUES("' + req.file.filename + '","' + req.file.originalname + '")', function (error, results, fields) {
-        if (error) {
-            console.log(error);
-        }
-        console.log(results);
-    });
-});
-
 
 app.get('/detail', function (req, res) {
     res.render('detail', {
