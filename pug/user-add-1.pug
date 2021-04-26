@@ -140,6 +140,7 @@ block additionalScripts
 
     // Dropzone Init
     script.
+        let now = new Date().getTime();
         Dropzone.options.fileDropzone = {
             // url:'/upload',
             paramName: 'file',
@@ -149,11 +150,13 @@ block additionalScripts
             autoProcessQueue: false,
             addRemoveLinks: true, // 삭제버튼 표시 여부
             dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
+            renameFile: function (file){
+                let newName = now + file.name;
+                return newName;
+            },
 
             accept: function (file , done){
-                let date = new Date().getTime();
-                // file.name = date + file.name;
-                $('#filename').append("@#"+file.name+"@#");
+                $('#filename').append("@#"+now+file.name+"@#");
                 done();
             },
 
@@ -175,6 +178,11 @@ block additionalScripts
                 submitButton.addEventListener("click", function () {
                     myDropzone.processQueue();
                 });
-            }
+
+                this.on("sending",function (file){ // 파일 네임 수정
+                    file.myCustomName = new Date().getDate() + file.name;
+                })
+            },
+
         }
 
