@@ -3,14 +3,14 @@ var app = express();
 const fs = require('fs');
 
 /* 파이썬 연동을 위한 모듈  */
-const spawn = require("child_process").spawn;
-const pythonProcess = spawn('python', ['./user_history.py', '카페아바나']);
-pythonProcess.stdout.on('data', (data) => {
-    console.log(data.toString())
-})
-pythonProcess.stderr.on('data', (data) => {
-    console.log(data.toString());
-});
+// const spawn = require("child_process").spawn;
+// const pythonProcess = spawn('python', ['./user_history.py', '카페아바나']);
+// pythonProcess.stdout.on('data', (data) => {
+//     console.log(data.toString())
+// })
+// pythonProcess.stderr.on('data', (data) => {
+//     console.log(data.toString());
+// });
 
 /* 현재 시간을 얻기 위한 모듈 */
 var moment = require('moment');
