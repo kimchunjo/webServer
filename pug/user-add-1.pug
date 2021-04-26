@@ -150,6 +150,8 @@ block additionalScripts
             dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
 
             accept: function (file , done){
+                let date = new Date().getTime();
+                // file.name = date + file.name;
                 $('#filename').append("@#"+file.name+"@#");
                 done();
             },
