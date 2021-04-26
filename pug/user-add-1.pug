@@ -141,11 +141,12 @@ block additionalScripts
     // Dropzone Init
     script.
         Dropzone.options.fileDropzone = {
+            // url:'/upload',
             paramName: 'file',
             maxFilesize: 4, // MB
             maxFiles: 5,
             acceptedFiles: 'image/*',
-            autoProcessQueue: true,
+            autoProcessQueue: false,
             addRemoveLinks: true, // 삭제버튼 표시 여부
             dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
 
