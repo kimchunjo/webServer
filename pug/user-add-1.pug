@@ -56,7 +56,7 @@ block content
                     .col-lg-7.ml-auto
                         .form-group.mb-5
                             label.form-label(for="form_description") 장소의 특징을 알려주세요
-                            textarea.form-control(name="explanation", id="form_description", onchange="checkTag(this)", rows="5", aria-describedby="descriptionHelp", required)
+                            textarea.form-control(name="explanation", id="form_description", rows="5", aria-describedby="descriptionHelp", required)
                             textarea.d-none.form-control(name="tag" id="hide_tag_box")
                             div(id="description_tag_box")
                         .row
@@ -87,12 +87,12 @@ block content
                                     input.form-control(type='button', onclick='sample6_execDaumPostcode()', value='우편번호 찾기', style="vertical-align: buttom")
                         .form-group
                             label.form-label(for="sample6_address") 주소
-                            input.form-control#sample6_address(name = 'address', type='text', onchange="getLatLon()", required)
+                            input.form-control#sample6_address(name = 'address', type='text', required)
                         .row
                             .col-md-8
                                 .form-group
                                     label.form-label(for="sample6_detailAddress") 상세주소
-                                    input.form-control#sample6_detailAddress(name='detailAddress', type='text', onchange="getLatLon()")
+                                    input.form-control#sample6_detailAddress(name='detailAddress', type='text')
                             .col-md-4
                                 .form-group
                                     label.form-label(for="sample6_extraAddress") 참고항목
