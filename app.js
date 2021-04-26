@@ -4,11 +4,11 @@ const fs = require('fs');
 
 /* 파이썬 연동을 위한 모듈  */
 const spawn = require("child_process").spawn;
-const pythonProcess = spawn('python',['./user_history.py', '카페아바나']);
-pythonProcess.stdout.on('data',(data)=>{
+const pythonProcess = spawn('python', ['./user_history.py', '카페아바나']);
+pythonProcess.stdout.on('data', (data) => {
     console.log(data.toString())
 })
-pythonProcess.stderr.on('data', (data)=>{
+pythonProcess.stderr.on('data', (data) => {
     console.log(data.toString());
 });
 
@@ -29,10 +29,10 @@ app.use(express.static('public'));
 /* connect DB */
 var mysql = require('mysql');
 var connection = mysql.createConnection({
-    host     : 'ghp.cchzr2v2ry4q.ap-northeast-2.rds.amazonaws.com',
-    user     : 'admin',
-    password : '!eogus123',
-    database : 'ghp',
+    host: 'ghp.cchzr2v2ry4q.ap-northeast-2.rds.amazonaws.com',
+    user: 'admin',
+    password: '!eogus123',
+    database: 'ghp',
     multipleStatements: true
 });
 // 비밀번호는 별도의 파일로 분리해서 버전관리에 포함시키지 않아야 합니다.
@@ -42,7 +42,7 @@ var multer = require('multer');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, '/uploads/');
+            cb(null, './public/uploads/');
         },
         filename: function (req, file, cb) {
             cb(null, `${Date.now()}_${file.originalname}`);
@@ -50,7 +50,7 @@ const upload = multer({
     }),
 });
 
-
+/* 로그인 */
 var session = require('express-session');
 
 app.use(session({
@@ -59,11 +59,7 @@ app.use(session({
     saveUninitialized: true
 }));
 
-
-// example = JSON.parse(fs.readFileSync('pug/js/example.json', {
-//     encoding: 'utf8'
-// }));
-
+/* 추후 삭제해야 함 */
 restaurantsJson = JSON.parse(fs.readFileSync('pug/js/restaurants-geojson.json', {
     encoding: 'utf8'
 }));
@@ -74,14 +70,13 @@ bookingsJson = JSON.parse(fs.readFileSync('pug/js/bookings.json', {
     encoding: 'utf8'
 }));
 
-/* routing */
+/* ******** routing ******** */
 app.get('/', function (req, res) {
-    if(req.session.id1){
+    if (req.session.id1) {
         res.render('index', {
             loggedUser: true
         })
-    }
-    else{
+    } else {
         res.render('index', {
             loggedUser: false
         })
@@ -95,8 +90,7 @@ app.get('/login', function (req, res) {
 });
 
 app.get('/signup', function (req, res) {
-    res.render('signup', {
-    })
+    res.render('signup', {})
 });
 
 app.post('/coming-soon', function (req, res) {
@@ -106,17 +100,15 @@ app.post('/coming-soon', function (req, res) {
     let age = body.loginUserage;
     let sex = body.loginUsersex;
     let now = moment().format('YYYY-MM-DD HH:mm:ss')
-    connection.query('INSERT INTO user(id, password, age, sex, created) VALUES("' + id + '","' + password + '","' + age + '","' + sex + '","' + now +'")', function (error, results, fields) {
+    connection.query('INSERT INTO user(id, password, age, sex, created) VALUES("' + id + '","' + password + '","' + age + '","' + sex + '","' + now + '")', function (error, results, fields) {
         if (error) {
             console.log(error);
         }
         console.log(results);
     });
 
-    res.render('coming-soon', {
-    });
+    res.render('coming-soon', {});
 });
-
 
 
 // 장소 추가
@@ -138,15 +130,15 @@ app.post('/user-add-5', function (req, res) {
     var tag = body.tag;
     tag = tag.trim();
     tag = tag.split(" ");
-    var address = body.address + " " +body.detailAddress;
-    console.log(address);
+    var address = body.address + " " + body.detailAddress;
+    var imageName = body.fileName;
 
     var latitude = body.latitude;
     var longitude = body.longitude;
     console.log(latitude);
     console.log(longitude);
 
-    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude+ '","' + longitude +'")'
+    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '")'
     connection.query(query, function (error, results, fields) {
         if (error) {
             console.log(error);
@@ -155,19 +147,19 @@ app.post('/user-add-5', function (req, res) {
     });
 
     var query = `INSERT INTO hashtag(name) VALUES (?);`;
-   // var query2 = `insert into place_hashtag(fk_place_number, fk_hashtag_number) values ((select place.number from place where place.name = ?), (select hashtag.number from hashtag where hashtag.name = ?));`;
+    // var query2 = `insert into place_hashtag(fk_place_number, fk_hashtag_number) values ((select place.number from place where place.name = ?), (select hashtag.number from hashtag where hashtag.name = ?));`;
     var getPlaceNumberQuery = `select place.number from place where place.name = ?`;
     var getHashtagNumberQuery = `select hashtag.number from hashtag where hashtag.name = ?`;
     var insertPlaceHashtagQuery = `insert into place_hashtag(fk_place_number, fk_hashtag_number) values (?, ?)`;
 
-    for(var i = 0; i< tag.length; i++){
+    for (var i = 0; i < tag.length; i++) {
         let temp = tag[i];
-        connection.query(query, temp, function(err1, result1){
-            connection.query(getPlaceNumberQuery, name, function (err2, result2){
+        connection.query(query, temp, function (err1, result1) {
+            connection.query(getPlaceNumberQuery, name, function (err2, result2) {
                 console.log(result2[0].number);
-                connection.query(getHashtagNumberQuery, temp, function (err3, result3){
+                connection.query(getHashtagNumberQuery, temp, function (err3, result3) {
                     //console.log(result3);
-                    connection.query(insertPlaceHashtagQuery, [result2[0].number, result3[0].number], function(err4, result4){
+                    connection.query(insertPlaceHashtagQuery, [result2[0].number, result3[0].number], function (err4, result4) {
                         //console.log(result4);
 
                     });
@@ -177,30 +169,28 @@ app.post('/user-add-5', function (req, res) {
     }
 
 
-
 });
 
-app.get('/logout', function (req, res){
-   delete req.session.id1;
-   delete req.session.pw1;
-   res.redirect('/');
+app.get('/logout', function (req, res) {
+    delete req.session.id1;
+    delete req.session.pw1;
+    res.redirect('/');
     console.log("로그아웃 성공");
 });
 
-app.post('/login-confirm', function (req, res){
+app.post('/login-confirm', function (req, res) {
     var id = req.body.loginUsername;
     var password = req.body.loginPassword;
 
     connection.query('SELECT COUNT(*) FROM user WHERE id = ? and password = ?', [id, password], function (error, results, fields) {
 
             for (var keyNm in results[0]) {
-                if(results[0][keyNm] == 1){
+                if (results[0][keyNm] == 1) {
                     req.session.id1 = id;
                     req.session.pw1 = password;
                     res.redirect('/');
                     console.log("로그인 성공");
-                }
-                else{
+                } else {
                     console.log("로그인 실패");
                 }
             }
@@ -212,39 +202,31 @@ app.post('/login-confirm', function (req, res){
 });
 
 
-
-
 app.post('/upload', upload.single('file'), (req, res) => {
-    console.log(req.file);
-    connection.query('INSERT INTO image(filename, originalname) VALUES("' + req.file.filename + '","' + req.file.originalname +'")', function (error, results, fields) {
+    connection.query('INSERT INTO image(filename, originalname) VALUES("' + req.file.filename + '","' + req.file.originalname + '")', function (error, results, fields) {
         if (error) {
             console.log(error);
         }
         console.log(results);
     });
-
-
 });
 
 
-
-
 app.get('/detail', function (req, res) {
-    res.render('detail',{
-        path:'',
+    res.render('detail', {
+        path: '',
     })
 });
 
 app.get('/user-account', function (req, res) {
-    res.render('user-account',{
-        path:'',
+    res.render('user-account', {
+        path: '',
     })
 });
 
-app.get('/user-profile', function (req ,res) {
-
-    res.render('user-profile',{
-        path:'',
+app.get('/user-profile', function (req, res) {
+    res.render('user-profile', {
+        path: '',
     })
 });
 
@@ -258,48 +240,32 @@ app.get('/category', function (req, res) {
     if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
         searchLocation = '근처'
 
+    /* DB 조회를 위한 쿼리 */
     var searchHashtagQuery = `select number from hashtag where hashtag.name = ?`;
-   // var searchPlaceNameQuery = `select name from place where place.name = ?`;
     var searchPlaceNumberQuery = `select fk_place_number from place_hashtag where fk_hashtag_number = ?`;
     var searchPlaceNameQuery = "";
 
-
-
-
-    connection.query(searchHashtagQuery, searchWord, function (err1, result1){
-           connection.query(searchPlaceNumberQuery, result1[0].number , function (err3, result3){
-                for(var i = 0; i< result3.length; i++){
-                    searchPlaceNameQuery += `select * from place where number = ${result3[i].fk_place_number};`;
-                }
-               connection.query(searchPlaceNameQuery, function(err4, result4){
-                   var features = [];
-                   for(var i = 0; i< result4.length; i++){
-                        features.push(result4[i]);
-                   }
-                   console.log(features);
-
-                   res.render('category-custom', {
-                       path: '',
-                       title: '검색결과',
-                       searchWord: searchWord,
-                       searchLocation: searchLocation,
-                       example: features
-                   });
-                    // fs.writeFile('pug/js/example.json', JSON.stringify(features),function(){
-                    //     fs.readFile('pug/js/example.json', {encoding: 'utf8'}, function(err, data){
-                    //
-                    //     });
-                    // });
-               });
-           });
-       });
-
-    // connection.query(searchPlaceNameQuery, searchWord, function(err2, result2){
-    // });
-
-
-
-
+    /* DB 조회를 통해 장소 배열을 생성하고 렌더링 */
+    connection.query(searchHashtagQuery, searchWord, function (err1, hashTag) {
+        // searchWord를 이용해 hashTag Table을 조회하고 해당 해쉬태그의 id(number)를 가져온다.
+        connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err3, placeNumber) {
+            // hashTag Number을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
+            for (var i = 0; i < placeNumber.length; i++) searchPlaceNameQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
+            connection.query(searchPlaceNameQuery, function (err4, places) {
+                // searchWord에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
+                var allPlace = [];
+                for (var i = 0; i < places.length; i++) allPlace.push(places[i]);
+                
+                res.render('category-custom', {
+                    path: '',
+                    title: '검색결과',
+                    searchWord: searchWord,
+                    searchLocation: searchLocation,
+                    example: allPlace
+                });
+            });
+        });
+    });
 });
 
 app.get('/category-map', function (req, res) {
