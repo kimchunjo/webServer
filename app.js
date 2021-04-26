@@ -93,7 +93,7 @@ app.get('/signup', function (req, res) {
 });
 
 app.post('/upload', upload.single('file'), (req, res) => {
-    console.log("upload");
+    console.log(req.file);
 });
 
 app.post('/coming-soon', function (req, res) {
