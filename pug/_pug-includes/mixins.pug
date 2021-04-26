@@ -174,7 +174,7 @@ mixin placeVisited(val, itemClass)
 mixin venue(val, itemClass)
 
     if (!imgBasePath)
-        - var imgBasePath = 'img/photo/'
+        - var imgBasePath = '/uploads'
 
     - stars = [1,2,3,4,5]
 
@@ -199,13 +199,13 @@ mixin venue(val, itemClass)
                         +svgIcon('heart-1', 'text-white')
 
             .card-body
-                p.text-sm.text-muted.mb-3  #{val.about.substr(0, 120) + '...'}
+                p.text-sm.text-muted.mb-3  #{String(val.explanation).substr(0, 120) + '...'}
                 p.text-sm.text-muted.text-uppercase.mb-1 By <a href="#" class="text-dark">Matt Damon</a>
-                p.text-sm.mb-0
-                    each tag, index in val.tags
-                        a.mr-1(href="#") #{tag}
-                            if (index != (val.tags.length - 1))
-                                | ,
+                //p.text-sm.mb-0
+                //    each tag, index in val.tags
+                //        a.mr-1(href="#") #{tag}
+                //            if (index != (val.tags.length - 1))
+                //                | ,
 
 
             

@@ -22,6 +22,8 @@ navigator.geolocation.getCurrentPosition(
 
         map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 
+
+
         // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성
         zoomControl = new kakao.maps.ZoomControl();
         map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
@@ -35,7 +37,18 @@ navigator.geolocation.getCurrentPosition(
 
         jsonUrl = 'js/restaurants-geojson.json';    // 데이터 json 파일
 
-        
+
+        // 주소-좌표 변환 객체를 생성합니다
+        var geocoder = new kakao.maps.services.Geocoder();
+        // 주소로 좌표를 검색합니다
+        geocoder.addressSearch('제주특별자치도 제주시 첨단로 242', function(result, status) {
+
+            // 정상적으로 검색이 완료됐으면
+            if (status === kakao.maps.services.Status.OK) {
+                console.log(result[0].y);
+                console.log(result[0].x);
+            }
+        });
 
         $.getJSON(jsonUrl, function (data) {
             $.each(data, function(key, value){
@@ -51,7 +64,6 @@ navigator.geolocation.getCurrentPosition(
 
             makeMaker(map, positions, imageSrc) // 마커 적용
         })
-
 
 
     },function (error){
@@ -89,4 +101,6 @@ function makeMaker(map, positions, imageSrc){
         });
     }
 }
+
+
 

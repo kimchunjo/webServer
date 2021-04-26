@@ -17,13 +17,23 @@ var moment = require('moment');
 require('moment-timezone'); // 필요 ?
 moment.tz.setDefault("Asia/Seoul");
 
+/* body parser */
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+
+/* template engine */
+app.set('view engine', 'pug'); /* pug template engine 을 사용 */
+app.set('views', './pug'); /* template file 은 pug 라는 폴더 및에 위치 */
+app.use(express.static('public'));
+
 /* connect DB */
 var mysql = require('mysql');
 var connection = mysql.createConnection({
     host     : 'ghp.cchzr2v2ry4q.ap-northeast-2.rds.amazonaws.com',
     user     : 'admin',
     password : '!eogus123',
-    database : 'ghp'
+    database : 'ghp',
+    multipleStatements: true
 });
 // 비밀번호는 별도의 파일로 분리해서 버전관리에 포함시키지 않아야 합니다.
 
@@ -32,7 +42,7 @@ var multer = require('multer');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, 'uploads/');
+            cb(null, '/uploads/');
         },
         filename: function (req, file, cb) {
             cb(null, `${Date.now()}_${file.originalname}`);
@@ -50,14 +60,9 @@ app.use(session({
 }));
 
 
-/* body parser */
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
-
-/* template engine */
-app.set('view engine', 'pug'); /* pug template engine 을 사용 */
-app.set('views', './pug'); /* template file 은 pug 라는 폴더 및에 위치 */
-app.use(express.static('public'));
+// example = JSON.parse(fs.readFileSync('pug/js/example.json', {
+//     encoding: 'utf8'
+// }));
 
 restaurantsJson = JSON.parse(fs.readFileSync('pug/js/restaurants-geojson.json', {
     encoding: 'utf8'
@@ -133,8 +138,16 @@ app.post('/user-add-5', function (req, res) {
     var tag = body.tag;
     tag = tag.trim();
     tag = tag.split(" ");
+    var address = body.address + " " +body.detailAddress;
+    console.log(address);
 
-    connection.query('INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime +'")', function (error, results, fields) {
+    var latitude = body.latitude;
+    var longitude = body.longitude;
+    console.log(latitude);
+    console.log(longitude);
+
+    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude+ '","' + longitude +'")'
+    connection.query(query, function (error, results, fields) {
         if (error) {
             console.log(error);
         }
@@ -248,19 +261,36 @@ app.get('/category', function (req, res) {
     var searchHashtagQuery = `select number from hashtag where hashtag.name = ?`;
    // var searchPlaceNameQuery = `select name from place where place.name = ?`;
     var searchPlaceNumberQuery = `select fk_place_number from place_hashtag where fk_hashtag_number = ?`;
-    var searchPlaceNameQuery = `select name from place where number = ?`;
+    var searchPlaceNameQuery = "";
 
-    var array = new Array();
+
+
 
     connection.query(searchHashtagQuery, searchWord, function (err1, result1){
            connection.query(searchPlaceNumberQuery, result1[0].number , function (err3, result3){
                 for(var i = 0; i< result3.length; i++){
-                    connection.query(searchPlaceNameQuery, result3[i].fk_place_number, function(err4, result4){
-                        // console.log(result4);
-                        array.push(result4[0].name);
-                        console.log(array);
-                    });
+                    searchPlaceNameQuery += `select * from place where number = ${result3[i].fk_place_number};`;
                 }
+               connection.query(searchPlaceNameQuery, function(err4, result4){
+                   var features = [];
+                   for(var i = 0; i< result4.length; i++){
+                        features.push(result4[i]);
+                   }
+                   console.log(features);
+
+                   res.render('category-custom', {
+                       path: '',
+                       title: '검색결과',
+                       searchWord: searchWord,
+                       searchLocation: searchLocation,
+                       example: features
+                   });
+                    // fs.writeFile('pug/js/example.json', JSON.stringify(features),function(){
+                    //     fs.readFile('pug/js/example.json', {encoding: 'utf8'}, function(err, data){
+                    //
+                    //     });
+                    // });
+               });
            });
        });
 
@@ -269,12 +299,7 @@ app.get('/category', function (req, res) {
 
 
 
-    res.render('category-custom', {
-        path: '',
-        title: '검색결과',
-        searchWord: searchWord,
-        searchLocation: searchLocation,
-    });
+
 });
 
 app.get('/category-map', function (req, res) {

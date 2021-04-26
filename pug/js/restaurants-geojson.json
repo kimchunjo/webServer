@@ -1,6 +1,7 @@
 {
   "type": "FeatureCollection",
-  "features": [{
+  "features": [
+    {
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -17,7 +18,7 @@
         "image": "restaurant-1430931071372-38127bd472b8.jpg",
         "link": "detail.html",
         "url": "#",
-        "name": "Blue Hill",
+        "name": "전남대",
         "category": "Restaurants",
         "email": "biancabriggs@bluehill.com",
         "stars": 4,
@@ -48,6 +49,36 @@
         "link": "detail.html",
         "url": "#",
         "name": "Plutorque",
+        "category": "Restaurant",
+        "email": "biancabriggs@plutorque.com",
+        "stars": 5,
+        "phone": "+1 (986) 599-2693",
+        "address": "325 Seton Place, Castleton, Indiana, 3368",
+        "about": "Proident irure eiusmod velit veniam consectetur id minim irure et nostrud mollit magna velit. Commodo amet proident aliqua qui enim exercitation ipsum laborum Lorem. Irure nostrud sint deserunt enim Lorem. Do eu esse consequat mollit labore commodo officia labore voluptate sit voluptate cupidatat.\r\n",
+        "tags": [
+          "Restaurant",
+          "Fusion"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.9906951,
+          40.7384555
+        ]
+      },
+      "properties": {
+        "id": "59c0c8e322f3375db4d89128",
+        "index": 1,
+        "isActive": true,
+        "logo": "http://placehold.it/32x32",
+        "image": "restaurant-1436018626274-89acd1d6ec9d.jpg",
+        "link": "detail.html",
+        "url": "#",
+        "name": "조선대",
         "category": "Restaurant",
         "email": "biancabriggs@plutorque.com",
         "stars": 5,

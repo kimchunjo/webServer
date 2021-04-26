@@ -122,9 +122,12 @@ block content
                     include _pug-includes/inc-category-sortby.pug
                     - var itemClass = 'col-sm-6 col-xl-4 mb-5 hover-animate'
                     
+                    //.row
+                    //    each val, index in restaurantsJson.features
+                    //        +venue(val.properties, itemClass)
                     .row
-                        each val, index in restaurantsJson.features
-                            +venue(val.properties, itemClass)
+                        each val, index in example
+                            +venue(val, itemClass)
 
                     include _pug-includes/inc-pagination.pug
 

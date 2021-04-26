@@ -75,37 +75,66 @@ block content
                 .row.form-block
                     .col-lg-4
                         h4 위치
-                        //p.text-muted.text-sm #{dummyText[3]}
                     .col-lg-7.ml-auto
-                        // Country
-                        .form-group
-                            - var country_list = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua &amp; Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia &amp; Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Cape Verde","Cayman Islands","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cruise Ship","Cuba","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kuwait","Kyrgyz Republic","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Mauritania","Mauritius","Mexico","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Namibia","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","Norway","Oman","Pakistan","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre &amp; Miquelon","Samoa","San Marino","Satellite","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","South Africa","South Korea","Spain","Sri Lanka","St Kitts &amp; Nevis","St Lucia","St Vincent","St. Lucia","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad &amp; Tobago","Tunisia","Turkey","Turkmenistan","Turks &amp; Caicos","Uganda","Ukraine","United Arab Emirates","United Kingdom","Uruguay","Uzbekistan","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"];
-
-                            label.form-label(for="form_country") Country / Region
-                            select.selectpicker.form-control(name="country", id="form_country", data-style="btn-selectpicker", title=" ", data-live-search="true")
-                                each val, index in country_list
-                                    option(value="country_#{index}") !{val}             
-
-                        // Street
-                        .form-group
-                            label.form-label(for="form_street") Street Address
-                            input.form-control(name="name", id="form_street")    
-                        // City + State
                         .row
-                            .col-md-6
+                            .col-md-4
                                 .form-group
-                                    label.form-label(for="form_city") City
-                                    input.form-control(name="name", id="form_city")                                            
-                            .col-md-6
+                                    label.form-label(for="sample6_postcode") 우편번호
+                                    input.form-control#sample6_postcode(name = 'postcode', type='text', required)
+                            .col-md-8
                                 .form-group
-                                    label.form-label(for="form_state") State
-                                    input.form-control(name="name", id="form_state")      
-                        // ZIP Code
+                                    label.form-label &nbsp;
+                                    input.form-control(type='button', onclick='sample6_execDaumPostcode()', value='우편번호 찾기', style="vertical-align: buttom")
+                        .form-group
+                            label.form-label(for="sample6_address") 주소
+                            input.form-control#sample6_address(name = 'address', type='text', onchange="getLatLon()", required)
                         .row
-                            .col-md-6
+                            .col-md-8
                                 .form-group
-                                    label.form-label(for="form_zip") ZIP Code
-                                    input.form-control(name="name", id="form_zip")
+                                    label.form-label(for="sample6_detailAddress") 상세주소
+                                    input.form-control#sample6_detailAddress(name='detailAddress', type='text', onchange="getLatLon()")
+                            .col-md-4
+                                .form-group
+                                    label.form-label(for="sample6_extraAddress") 참고항목
+                                    input.form-control#sample6_extraAddress(type='text')
+                                    input.d-none(id='latitude', type="text", name='latitude')
+                                    input.d-none(id='longitude', type="text", name='longitude')
+
+
+                    //    //p.text-muted.text-sm #{dummyText[3]}
+                    //.col-lg-7.ml-auto
+                    //    // Country
+                    //    .form-group
+                    //        - var country_list = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua &amp; Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia &amp; Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Cape Verde","Cayman Islands","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cruise Ship","Cuba","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kuwait","Kyrgyz Republic","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Mauritania","Mauritius","Mexico","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Namibia","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","Norway","Oman","Pakistan","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre &amp; Miquelon","Samoa","San Marino","Satellite","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","South Africa","South Korea","Spain","Sri Lanka","St Kitts &amp; Nevis","St Lucia","St Vincent","St. Lucia","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad &amp; Tobago","Tunisia","Turkey","Turkmenistan","Turks &amp; Caicos","Uganda","Ukraine","United Arab Emirates","United Kingdom","Uruguay","Uzbekistan","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"];
+                    //
+                    //        label.form-label(for="form_country") Country / Region
+                    //        select.selectpicker.form-control(name="country", id="form_country", data-style="btn-selectpicker", title=" ", data-live-search="true")
+                    //            each val, index in country_list
+                    //                option(value="country_#{index}") !{val}
+                    //
+                    //    // Street
+                    //    .form-group
+                    //        label.form-label(for="form_street") Street Address
+                    //        input.form-control(name="name", id="form_street")
+                    //    // City + State
+                    //    .row
+                    //        .col-md-6
+                    //            .form-group
+                    //                label.form-label(for="form_city") City
+                    //                input.form-control(name="name", id="form_city")
+                    //        .col-md-6
+                    //            .form-group
+                    //                label.form-label(for="form_state") State
+                    //                input.form-control(name="name", id="form_state")
+                    //    // ZIP Code
+                    //    .row
+                    //        .col-md-6
+                    //            .form-group
+                    //                label.form-label(for="form_zip") ZIP Code
+                    //                input.form-control(name="name", id="form_zip")
+                    //
+
+
                 .row.form-block
                     .col-lg-4
                         h4 사진
@@ -141,6 +170,7 @@ block content
 block additionalScripts
     // Dropzone.js
     script(src='vendor/dropzone/dropzone.js')
+
     // Dropzone Init
     script.
         Dropzone.options.fileDropzone = {
