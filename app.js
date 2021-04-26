@@ -52,7 +52,6 @@ const upload = multer({
 
 /* 로그인 */
 var session = require('express-session');
-
 app.use(session({
     secret: '1234DSFs@adf1234!@#asd',
     resave: false,
@@ -94,12 +93,6 @@ app.get('/signup', function (req, res) {
 });
 
 app.post('/upload', upload.single('file'), (req, res) => {
-    connection.query('INSERT INTO image(filename, originalname) VALUES("' + req.file.filename + '","' + req.file.originalname + '")', function (error, results, fields) {
-        if (error) {
-            console.log(error);
-        }
-        console.log(results);
-    });
 });
 
 app.post('/coming-soon', function (req, res) {
@@ -153,7 +146,6 @@ app.post('/user-add-5', function (req, res) {
     });
 
     var query = `INSERT INTO hashtag(name) VALUES (?);`;
-    // var query2 = `insert into place_hashtag(fk_place_number, fk_hashtag_number) values ((select place.number from place where place.name = ?), (select hashtag.number from hashtag where hashtag.name = ?));`;
     var getPlaceNumberQuery = `select place.number from place where place.name = ?`;
     var getHashtagNumberQuery = `select hashtag.number from hashtag where hashtag.name = ?`;
     var insertPlaceHashtagQuery = `insert into place_hashtag(fk_place_number, fk_hashtag_number) values (?, ?)`;
