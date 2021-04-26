@@ -93,6 +93,15 @@ app.get('/signup', function (req, res) {
     res.render('signup', {})
 });
 
+app.post('/upload', upload.single('file'), (req, res) => {
+    connection.query('INSERT INTO image(filename, originalname) VALUES("' + req.file.filename + '","' + req.file.originalname + '")', function (error, results, fields) {
+        if (error) {
+            console.log(error);
+        }
+        console.log(results);
+    });
+});
+
 app.post('/coming-soon', function (req, res) {
     let body = req.body;
     let id = body.loginUsername;
