@@ -1,0 +1,164 @@
+extends _pug-includes/layout.pug
+
+block vars 
+    - var active = 'category'
+    - var mapUsed = true
+    - var hideTopbar = true
+
+block content
+
+    .container-fluid
+        .row
+            .col-lg-6.py-5.p-xl-5
+                .row.ml-0.p-0
+                    h1.display-4.font-weight-bold.text-serif.mb-4 #{searchWord}
+                    .col-12
+                        a.btn.btn-outline-primary.mb-4.float-right(href=`/category?search=${searchWord}`)
+                            | MAP OFF
+
+                include _pug-includes/inc-var-neighbourhoods.pug
+
+                form(action="#")
+                    .row.border-top.pt-3
+                        //.col-12.mb-4
+                        //    label.form-label 방문시간
+                        //    - var time = ['오전', '오후']
+                        //    ul.list-unstyled.mb-0
+                        //        each val,index in time
+                        //            li
+                        //                .custom-control.custom-radio
+                        //                    input.custom-control-input(type='radio', id=`time_${index}`, name="time")
+                        //                    label.custom-control-label(for=`time_${index}`) #{val}
+                        //.mb-4
+                        //    input.custom-control-inline.form-control-sm.border-0.shadow-0.bg-gray-200(id="time_search", placeholder="time", aria-label="time")
+                        //
+                        //
+
+                        //.col-12.mb-4
+                        //    label.form-label Distacne
+                        //
+                        //    #slider-snap-distance.text-primary
+                        //    .nouislider-values
+                        //        .min From
+                        //            span#slider-snap-distance-value-from
+                        //        .max To
+                        //            span#slider-snap-distance-value-to
+                        //    input(type="hidden", name="distancefrom", id="slider-snap-distance-input-from", value="0")
+                        //    input(type="hidden", name="distanceto",  id="slider-snap-distance-input-to", value="100")
+
+                        .col-xl-4.col-md-6.mb-4
+                            label.form-label(for="form_search") Keyword
+                            .input-label-absolute.input-label-absolute-right
+                                .label-absolute
+                                    i.fa.fa-search
+                                input.form-control.pr-4(type="search", name="search", placeholder="Keywords", id="form_search")
+                        .col-xl-4.col-md-6.mb-4
+                            label.form-label(for="form_neighbourhood") Neighbourhood
+                            select.selectpicker.form-control(name="neighbourhood", id="form_neighbourhood", multiple, data-style="btn-selectpicker", data-live-search="true", data-selected-text-format="count > 1", title="")
+                                each val, index in neighbourhoods
+                                    option(value=`neighbourhood_${index}`) #{val}    
+                        .col-xl-4.col-md-6.mb-4
+                            - var restaurantTypes = ['Hipster', 'Music club', 'Bar', 'Pub', 'Deli', 'Bistro']
+                            label.form-label(for="form_category") Category
+                            select.selectpicker.form-control(name="category", id="form_category", multiple, data-style="btn-selectpicker", data-selected-text-format="count > 1", title="")
+                                each val, index in restaurantTypes
+                                    option(value=`category_${index}`) #{val}    
+                        .col-12.mb-4
+                            - var restaurantTypes = ['Hipster', 'Music club', 'Bar', 'Pub', 'Deli', 'Bistro']
+                            label.form-label Tag
+                            ul.list-inline.mb-0
+                                each val,index in restaurantTypes
+                                    li.list-inline-item
+                                        .custom-control.custom-checkbox
+                                            input.custom-control-input(type='checkbox', id=`type_${index}`, name="type[]")
+                                            label.custom-control-label(for=`type_${index}`) #{val}
+
+
+                        .col-12.pb-4
+                            #moreFilters.collapse
+                                .mb-4
+                                    - var cuisineTypes = ['Fusion', 'Indian', 'French', 'American', 'Mexican', 'Other']
+                                    label.form-label Cuisine
+                                    ul.list-inline.mb-0
+                                        each val,index in cuisineTypes
+                                            li.list-inline-item
+                                                .custom-control.custom-checkbox
+                                                    input.custom-control-input(type='checkbox', id=`cuisine_${index}`, name="cuisine[]")
+                                                    label.custom-control-label(for=`cuisine_${index}`) #{val}
+                                .row
+                                    .col-xl-6.mb-4
+                                        label.form-label Price
+                                        
+                                        #slider-snap.text-primary
+                                        .nouislider-values
+                                            .min From $
+                                                span#slider-snap-value-from
+                                            .max To $
+                                                span#slider-snap-value-to
+                                        input(type="hidden", name="pricefrom", id="slider-snap-input-from", value="40")
+                                        input(type="hidden", name="priceto",  id="slider-snap-input-to", value="110")
+                                    
+                                    .col-xl-6.mb-4
+                                        label.form-label Vegetarians
+                                        - var vegetarians = ['All', 'Vegetarian only']
+                                        ul.list-inline.mb-0
+                                            each val,index in vegetarians
+                                                li.list-inline-item
+                                                    .custom-control.custom-radio
+                                                        input.custom-control-input(type='radio', id=`vegetarians_${index}`, name="vegetarians")
+                                                        label.custom-control-label(for=`vegetarians_${index}`) #{val}
+
+                        .col-6.mb-4
+                            button.btn.btn-primary(type="submit") 
+                                i.fas.fa-filter.mr-1
+                                | Filter                
+                        .col-6.mb-4.text-right
+                            +collapseButton('moreFilters', 'More filters', 'Less filters')  
+                        
+                hr.my-4
+
+                include _pug-includes/inc-category-sortby.pug
+
+                - var itemClass = 'col-sm-6 mb-5 hover-animate'
+                
+                //.row
+                    each val, index in restaurantsJson.features
+                        +venue(val.properties, itemClass)
+                .row
+                    each val, index in example
+                        +venue(val, itemClass)
+
+
+                include _pug-includes/inc-pagination.pug
+            // 카카오맵 추가
+            .col-lg-6.map-side-lg.pr-lg-0
+                div(id="map")
+                    // +, - 버튼
+                    //div.leaflet-top.leaflet-left
+                    //    div.leaflet-control-zoom.leaflet-bar.leaflet-control
+                    //        a.leaflet-control-zoom-In(onclick="zoomIn()")
+                    //            |+
+                    //        a.leaflet-control-zoom-Out(onclick="zoomOut()")
+                    //            |-
+
+                //#categorySideMap.map-full.shadow-left
+
+
+block additionalScripts
+
+    include _pug-includes/scripts-map.pug
+    // 카카오맵
+
+    script(src='js/map-custom.js')
+
+
+    //script(src='js/map-category.js')
+    //script.
+    //    createListingsMap({
+    //        mapId: 'categorySideMap',
+    //        jsonFile: 'js/restaurants-geojson.json',
+    //        //tileLayer: tileLayers[5]  - uncomment for a different map styling
+    //    });
+
+    include _pug-includes/scripts-nouislider.pug
+    include _pug-includes/scripts-nouislider-distance.pug

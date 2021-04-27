@@ -1,0 +1,32 @@
+extends _pug-includes/layout.pug
+
+block vars
+    - var loggedUser = true
+
+block content
+       
+    - var breadcrumbs = []
+    - breadcrumbs.push({name: 'Home', link: 'index.html'})
+    - breadcrumbs.push({name: 'Add new listing'})
+    - var heroHeading = 'Add new listing'
+    - var heroHeadingClass = 'hero-heading mb-5'
+    
+    //- include _pug-includes/inc-hero
+    
+    +progress(100)
+
+    section.py-5.py-lg-6
+        .container.text-center
+            
+            //p.subtitle.text-primary Add new listing
+            h1.h2.mb-5  장소가 추가되었습니다.
+
+            p.mb-5
+                img.img-fluid(src="img/illustration/undraw_celebration_0jvk.svg", alt="", style="width: 400px;")
+
+            p.text-muted.mb-5 당신의 장소를 공유해주어서 고맙습니다.
+
+            p.mb-5
+                a.btn.btn-primary.mr-2.mb-2(href="/") 홈으로 가기
+                a.btn.btn-outline-muted.mb-2(href="user-add-0") 장소 더 추가하기
+
