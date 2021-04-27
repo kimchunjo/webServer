@@ -27,6 +27,22 @@ app.set('view engine', 'pug'); /* pug template engine 을 사용 */
 app.set('views', './pug'); /* template file 은 pug 라는 폴더 및에 위치 */
 app.use(express.static('public'));
 
+//Import PythonShell module.
+const {PythonShell} =require('python-shell');
+let options = {
+    mode: 'text',
+    pythonOptions: ['-u'], // get print results in real-time
+    scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
+    args: ['카페아바나'] //An argument which can be accessed in the script using sys.argv[1]
+};
+PythonShell.run('user_history.py', options, function (err, result){
+    if (err) throw err;
+    // result is an array consisting of messages collected
+    //during execution of script.
+    console.log('result: ', result.toString());
+});
+
+
 /* connect DB */
 var mysql = require('mysql');
 var connection = mysql.createConnection({
