@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[14]:
+# In[1]:
 
 
 import sys
@@ -15,12 +15,7 @@ def predict(key):
     model = Word2Vec.load("user_history_model")
     return model.most_similar(key)
     
-
-print(predict(sys.argv[1]))
-sys.stdout.flush()
-
-# In[ ]:
-
-
-
+if __name__ == '__main__': 
+    print(predict(sys.argv[1]))
+    sys.stdout.flush()
 
