@@ -37,12 +37,12 @@ var connection = mysql.createConnection({
 });
 // 비밀번호는 별도의 파일로 분리해서 버전관리에 포함시키지 않아야 합니다.
 
-/* 무엇을 위한? */
+/* 이미지 업로드 */
 var multer = require('multer');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, __dirname+'/public/uploads/');
+            cb(null, __dirname + '/public/uploads/');
         },
         filename: function (req, file, cb) {
             cb(null, `${file.originalname}`);
@@ -138,7 +138,7 @@ app.post('/user-add-5', function (req, res) {
     var latitude = body.latitude;
     var longitude = body.longitude;
 
-    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","'+filename+'")'
+    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","' + filename + '")'
     connection.query(query, function (error, results, fields) {
         if (error) {
             console.log(error);
@@ -166,8 +166,6 @@ app.post('/user-add-5', function (req, res) {
             });
         });
     }
-
-
 });
 
 app.get('/logout', function (req, res) {
@@ -234,40 +232,47 @@ app.get('/category', function (req, res) {
     var searchPlaceNameQuery = "";
 
     /* DB 조회를 통해 장소 배열을 생성하고 렌더링 */
-    connection.query(searchHashtagQuery, searchWord, function (err1, hashTag) {
-        // searchWord를 이용해 hashTag Table을 조회하고 해당 해쉬태그의 id(number)를 가져온다.
-        connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err3, placeNumber) {
-            // hashTag Number을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
-            for (var i = 0; i < placeNumber.length; i++) searchPlaceNameQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
-            connection.query(searchPlaceNameQuery, function (err4, places) {
-                // searchWord에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
-                var allPlace = [];
-                var count = places.length;
-                if(count===1){
-                    for (var i = 0; i < count; i++){
-                        let temp = places[i].image;
-                        temp= temp.split("@#");
-                        places[i].image = temp[1];
-                        allPlace.push(places[i]);
+    connection.query(searchHashtagQuery, searchWord, function (err, hashTag) {
+        // searchWord 를 이용해 hashTag Table 을 조회하고 해당 해쉬태그의 id(number)를 가져온다.
+        if (hashTag.length !== 0) {
+            // searchWord 와 일치하는 해시태그 값을 갖는 장소가 있을 때
+            connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err1, placeNumber) {
+                // hashTag Number 을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
+                for (var i = 0; i < placeNumber.length; i++) searchPlaceNameQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
+                connection.query(searchPlaceNameQuery, function (err2, places) {
+                    // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
+                    var allPlace = [];
+                    var count = places.length;
+                    if (count === 1) {
+                        for (var i = 0; i < count; i++) {
+                            let temp = places[i].image;
+                            temp = temp.split("@#");
+                            places[i].image = temp[1];
+                            allPlace.push(places[i]);
+                        }
+                    } else {
+                        for (var i = 0; i < count; i++) {
+                            let temp = places[i][0].image;
+                            temp = temp.split("@#");
+                            places[i][0].image = temp[1];
+                            allPlace.push(places[i][0]);
+                        }
                     }
-                }else{
-                    for (var i = 0; i < count; i++){
-                        let temp = places[i][0].image;
-                        temp= temp.split("@#");
-                        places[i][0].image = temp[1];
-                        allPlace.push(places[i][0]);
-                    }
-                }
 
-                res.render('category-custom', {
-                    path: '',
-                    title: '검색결과',
-                    searchWord: searchWord,
-                    searchLocation: searchLocation,
-                    example: allPlace,
+                    res.render('category-custom', {
+                        path: '',
+                        title: '검색결과',
+                        searchWord: searchWord,
+                        searchLocation: searchLocation,
+                        example: allPlace,
+                        placeCount: count,
+                    });
                 });
             });
-        });
+        } else {
+            // 검색 결과가 없을 때
+            res.redirect('/');
+        }
     });
 });
 
