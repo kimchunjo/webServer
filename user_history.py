@@ -15,9 +15,9 @@ def predict(key):
     model = Word2Vec.load("user_history_model")
     return model.most_similar(key)
     
-    
-print(predict(sys.argv[1]))
 
+print(predict(sys.argv[1]))
+sys.stdout.flush()
 
 # In[ ]:
 
