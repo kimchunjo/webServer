@@ -229,10 +229,16 @@ app.get('/user-profile', function (req, res) {
 app.get('/category', function (req, res) {
     let searchWord = req.query.search;
     let searchLocation = req.query.location;
+
+    let pagination = req.query.pagination;
+    if(pagination === undefined) pagination = 0;
+    else pagination = parseInt(pagination);
+
     if (searchWord === undefined || searchWord === "") // 검색어를 입력하변지 않은 경우 사용자 취향을 고려한 검색
         searchWord = '내 취향에 맞는 장소'
     if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
         searchLocation = '근처'
+
 
     /* DB 조회를 위한 쿼리 */
     var searchHashtagQuery = `select number from hashtag where hashtag.name = ?`;
@@ -267,6 +273,8 @@ app.get('/category', function (req, res) {
                         }
                     }
 
+                    allPlace = allPlace.slice(12*pagination, 12*(pagination+1));
+                    console.log(pagination);
                     res.render('category-custom', {
                         path: '',
                         title: '검색결과',
@@ -274,6 +282,7 @@ app.get('/category', function (req, res) {
                         searchLocation: searchLocation,
                         example: allPlace,
                         placeCount: count,
+                        pagination:pagination
                     });
                 });
             });
