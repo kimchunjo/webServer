@@ -140,7 +140,7 @@ app.post('/user-add-5', function (req, res) {
     var latitude = body.latitude;
     var longitude = body.longitude;
 
-    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","'+filename+'")'
+    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image, location) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","'+filename+'","'+address+'")'
     connection.query(query, function (error, results, fields) {
         if (error) {
             console.log(error);
