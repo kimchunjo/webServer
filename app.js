@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 const fs = require('fs');
+const url = require('url');
 
 /* 파이썬 연동을 위한 모듈  */
 // const spawn = require("child_process").spawn;
@@ -37,12 +38,12 @@ var connection = mysql.createConnection({
 });
 // 비밀번호는 별도의 파일로 분리해서 버전관리에 포함시키지 않아야 합니다.
 
-/* 이미지 업로드 */
+/* 무엇을 위한? */
 var multer = require('multer');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, __dirname + '/public/uploads/');
+            cb(null, __dirname+'/public/uploads/');
         },
         filename: function (req, file, cb) {
             cb(null, `${file.originalname}`);
@@ -71,6 +72,7 @@ bookingsJson = JSON.parse(fs.readFileSync('pug/js/bookings.json', {
 
 /* ******** routing ******** */
 app.get('/', function (req, res) {
+    req.session.valid = true;
     if (req.session.id1) {
         res.render('index', {
             loggedUser: true
@@ -84,7 +86,7 @@ app.get('/', function (req, res) {
 
 app.get('/login', function (req, res) {
     res.render('login', {
-        path: '',
+        valid: req.session.valid
     })
 });
 
@@ -138,7 +140,7 @@ app.post('/user-add-5', function (req, res) {
     var latitude = body.latitude;
     var longitude = body.longitude;
 
-    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","' + filename + '")'
+    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","'+filename+'")'
     connection.query(query, function (error, results, fields) {
         if (error) {
             console.log(error);
@@ -166,6 +168,8 @@ app.post('/user-add-5', function (req, res) {
             });
         });
     }
+
+
 });
 
 app.get('/logout', function (req, res) {
@@ -188,7 +192,12 @@ app.post('/login-confirm', function (req, res) {
                     res.redirect('/');
                     console.log("로그인 성공");
                 } else {
+                    req.session.valid = false;
                     console.log("로그인 실패");
+                    res.redirect(url.format({
+                        pathname:'/login',
+                        valid: req.session.valid
+                    }));
                 }
             }
             if (error) {
@@ -217,7 +226,6 @@ app.get('/user-profile', function (req, res) {
 });
 
 
-// 검색 결과 페이지
 app.get('/category', function (req, res) {
     let searchWord = req.query.search;
     let searchLocation = req.query.location;
@@ -278,11 +286,60 @@ app.get('/category', function (req, res) {
 
 app.get('/category-map', function (req, res) {
     let searchWord = req.query.search;
-    res.render('category-map-custom', {
-        path: '',
-        title: '지도 검색결과',
-        searchWord: searchWord
+    let searchLocation = req.query.location;
+    if (searchWord === undefined || searchWord === "") // 검색어를 입력하변지 않은 경우 사용자 취향을 고려한 검색
+        searchWord = '내 취향에 맞는 장소'
+    if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
+        searchLocation = '근처'
+
+
+    /* DB 조회를 위한 쿼리 */
+    var searchHashtagQuery = `select number from hashtag where hashtag.name = ?`;
+    var searchPlaceNumberQuery = `select fk_place_number from place_hashtag where fk_hashtag_number = ?`;
+    var searchPlaceNameQuery = "";
+    var searchLatitude = `select latitude from place where hashtag.name = ?`;
+    var searchLongitude;
+
+    /* DB 조회를 통해 장소 배열을 생성하고 렌더링 */
+    connection.query(searchHashtagQuery, searchWord, function (err1, hashTag) {
+        // searchWord를 이용해 hashTag Table을 조회하고 해당 해쉬태그의 id(number)를 가져온다.
+        connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err3, placeNumber) {
+            // hashTag Number을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
+            for (var i = 0; i < placeNumber.length; i++) searchPlaceNameQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
+            connection.query(searchPlaceNameQuery, function (err4, places) {
+                // searchWord에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
+                var allPlace = [];
+                var count = places.length;
+                if(count===1){
+                    for (var i = 0; i < count; i++){
+                        let temp = places[i].image;
+                        temp= temp.split("@#");
+                        places[i].image = temp[1];
+                        allPlace.push(places[i]);
+                    }
+                }else{
+                    for (var i = 0; i < count; i++){
+                        let temp = places[i][0].image;
+                        temp= temp.split("@#");
+                        places[i][0].image = temp[1];
+                        allPlace.push(places[i][0]);
+                    }
+                }
+
+                res.render('category-map-custom', {
+                    path: '',
+                    title: '지도 검색결과',
+                    searchWord: searchWord,
+                    searchLocation: searchLocation,
+                    example: allPlace,
+                    placeCount: count
+                });
+
+            });
+        });
     });
 });
+
+
 
 app.listen(8080);

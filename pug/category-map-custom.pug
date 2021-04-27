@@ -121,9 +121,13 @@ block content
 
                 - var itemClass = 'col-sm-6 mb-5 hover-animate'
                 
-                .row
+                //.row
                     each val, index in restaurantsJson.features
                         +venue(val.properties, itemClass)
+                .row
+                    each val, index in example
+                        +venue(val, itemClass)
+
 
                 include _pug-includes/inc-pagination.pug
             // 카카오맵 추가
@@ -144,6 +148,7 @@ block additionalScripts
 
     include _pug-includes/scripts-map.pug
     // 카카오맵
+
     script(src='js/map-custom.js')
 
 

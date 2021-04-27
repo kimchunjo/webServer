@@ -179,8 +179,12 @@ mixin venue(val, itemClass)
 
     - stars = [1,2,3,4,5]
 
+
+
     // venue item
     div(class=itemClass, data-marker-id=`${val.number || ''}`)
+        input.d-none(type='text' name='latitude' value=`${val.latitude}`)
+        input.d-none(type='text' name='longitude' value=`${val.longitude}`)
         .card.h-100.border-0.shadow
             .card-img-top.overflow-hidden.dark-overlay.bg-cover(style=`background-image: url('${imgBasePath}${val.image}');background-size:100% 100%; min-height: 200px;`)
                 //- img.img-fluid(src=`${imgBasePath}${val.image}`, alt=val.name)
