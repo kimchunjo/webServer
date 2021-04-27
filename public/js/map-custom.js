@@ -5,8 +5,9 @@ var mapContainer;    // Container
 var zoomControl;     // 줌 컨트롤
 var imageSrc = 'img/marker.svg'; // 마커 이미지의 이미지 주소
 var positions = [];  // 장소
-var jsonUrl;     // 장소 데이터
 var points = [];
+
+
 if (navigator.geolocation){
 // 현재 위치값으로 지도 생성
 navigator.geolocation.getCurrentPosition(
@@ -54,23 +55,6 @@ navigator.geolocation.getCurrentPosition(
 
         setBounds(map, longitude, latitude);
         makeMaker(map, positions, imageSrc, true) // 마커 적용
-
-
-        // $.getJSON(jsonUrl, function (data) {
-        //     $.each(data, function(key, value){
-        //         console.log("key: " +key+" : value "+ value)
-        //     });
-        //     for(var i = 0; i< data.features.length; i++) {
-        //         var obj = {
-        //             name: data.features[i].properties.name,
-        //             latlng: new kakao.maps.LatLng(data.features[i].geometry.coordinates[0], data.features[i].geometry.coordinates[1])
-        //         }
-        //         positions.push(obj);
-        //     }
-        //
-        //     makeMaker(map, positions, imageSrc) // 마커 적용
-        // })
-
 
     },function (error){
 

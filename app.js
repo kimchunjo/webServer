@@ -275,15 +275,30 @@ app.get('/category', function (req, res) {
 
                     allPlace = allPlace.slice(12*pagination, 12*(pagination+1));
                     console.log(pagination);
-                    res.render('category-custom', {
-                        path: '',
-                        title: '검색결과',
-                        searchWord: searchWord,
-                        searchLocation: searchLocation,
-                        example: allPlace,
-                        placeCount: count,
-                        pagination:pagination
-                    });
+                    if (req.session.id1){
+                        res.render('category-custom', {
+                            path: '',
+                            title: '검색결과',
+                            searchWord: searchWord,
+                            searchLocation: searchLocation,
+                            example: allPlace,
+                            placeCount: count,
+                            pagination:pagination,
+                            loggedUser: true
+
+                        });
+                    } else {
+                        res.render('category-custom', {
+                            path: '',
+                            title: '검색결과',
+                            searchWord: searchWord,
+                            searchLocation: searchLocation,
+                            example: allPlace,
+                            placeCount: count,
+                            pagination:pagination,
+                            loggedUser: false
+                        });
+                    }
                 });
             });
         } else {
@@ -326,7 +341,7 @@ app.get('/category-map', function (req, res) {
                         places[i].image = temp[1];
                         allPlace.push(places[i]);
                     }
-                }else{
+                } else {
                     for (var i = 0; i < count; i++){
                         let temp = places[i][0].image;
                         temp= temp.split("@#");
@@ -335,15 +350,27 @@ app.get('/category-map', function (req, res) {
                     }
                 }
 
-                res.render('category-map-custom', {
-                    path: '',
-                    title: '지도 검색결과',
-                    searchWord: searchWord,
-                    searchLocation: searchLocation,
-                    example: allPlace,
-                    placeCount: count
-                });
-
+                if (req.session.id1){
+                    res.render('category-map-custom', {
+                        path: '',
+                        title: '지도 검색결과',
+                        searchWord: searchWord,
+                        searchLocation: searchLocation,
+                        example: allPlace,
+                        placeCount: count,
+                        loggedUser: true
+                    });
+                } else {
+                    res.render('category-map-custom', {
+                        path: '',
+                        title: '지도 검색결과',
+                        searchWord: searchWord,
+                        searchLocation: searchLocation,
+                        example: allPlace,
+                        placeCount: count,
+                        loggedUser: false
+                    });
+                }
             });
         });
     });
