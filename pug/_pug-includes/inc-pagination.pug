@@ -2,14 +2,23 @@
 nav(aria-label='Page navigation example')
     ul.pagination.pagination-template.d-flex.justify-content-center
         li.page-item
-            a.page-link(href='#') 
-                i.fa.fa-angle-left
-        li.page-item.active
-            a.page-link(href='#') 1
+            if pagination == 0
+                a.page-link(href=`./category?search=${searchWord}&location=${searchLocation}&pagination=${pagination}`)
+                    i.fa.fa-angle-left
+            else
+                a.page-link(href=`./category?search=${searchWord}&location=${searchLocation}&pagination=${pagination-1}`)
+                    i.fa.fa-angle-left
+        -for(let i =0 ; i< placeCount/12; i++)
+            if pagination == i
+                li.page-item.active
+                    a.page-link(href=`./category?search=${searchWord}&location=${searchLocation}&pagination=${i}`) #{i+1}
+            else
+                li.page-item
+                    a.page-link(href=`./category?search=${searchWord}&location=${searchLocation}&pagination=${i}`) #{i+1}
         li.page-item
-            a.page-link(href='#') 2
-        li.page-item
-            a.page-link(href='#') 3
-        li.page-item
-            a.page-link(href='#') 
-                i.fa.fa-angle-right
+            if pagination == parseInt(placeCount/12)
+                a.page-link(href=`./category?search=${searchWord}&location=${searchLocation}&pagination=${pagination}`)
+                    i.fa.fa-angle-right
+            else
+                a.page-link(href=`./category?search=${searchWord}&location=${searchLocation}&pagination=${pagination+1}`)
+                    i.fa.fa-angle-right
