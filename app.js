@@ -18,14 +18,14 @@ app.set('views', './pug'); /* template file 은 pug 라는 폴더 및에 위치 
 app.use(express.static('public'));
 
 /* 파이썬 연동을 위한 모듈  */
-const {PythonShell} =require('python-shell');
+const {PythonShell} = require('python-shell');
 let options = {
     mode: 'text',
     pythonOptions: ['-u'], // get print results in real-time
     scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
     args: ['카페데일리'] //An argument which can be accessed in the script using sys.argv[1]
 };
-PythonShell.run('user_history.py', options, function (err, result){
+PythonShell.run('user_history.py', options, function (err, result) {
     if (err) throw err;
     console.log('result: ', result.toString());
 });
@@ -46,7 +46,7 @@ var multer = require('multer');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, __dirname+'/public/uploads/');
+            cb(null, __dirname + '/public/uploads/');
         },
         filename: function (req, file, cb) {
             cb(null, `${file.originalname}`);
@@ -75,6 +75,7 @@ bookingsJson = JSON.parse(fs.readFileSync('pug/js/bookings.json', {
 
 /* ******** routing ******** */
 app.get('/', function (req, res) {
+    console.log(req.session)
     req.session.valid = true;
     if (req.session.id1) {
         res.render('index', {
@@ -143,7 +144,7 @@ app.post('/user-add-5', function (req, res) {
     var latitude = body.latitude;
     var longitude = body.longitude;
 
-    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image, location) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","'+filename+'","'+address+'")'
+    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image, location) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","' + filename + '","' + address + '")'
     connection.query(query, function (error, results, fields) {
         if (error) {
             console.log(error);
@@ -185,35 +186,32 @@ app.get('/logout', function (req, res) {
 app.post('/login-confirm', function (req, res) {
     var id = req.body.loginUsername;
     var password = req.body.loginPassword;
-
+    // login 페이지와 detail 페이지에서 로그인 서비스를 제공한다.
+    // 이때 login 페이지에서 로그인을 하면 목적지가 / 이고 detail 페이지에서 로그인을 했을 때 로그인 성공 목적지는 detail 페이지가 되는게 이상적이기 때문에
+    // query 로 목적지를 받는다.
+    var loginDestination = req.body.loginDestination;
     connection.query('SELECT COUNT(*) FROM user WHERE id = ? and password = ?', [id, password], function (error, results, fields) {
-
-            for (var keyNm in results[0]) {
-                if (results[0][keyNm] == 1) {
-                    req.session.id1 = id;
-                    req.session.pw1 = password;
-                    res.redirect('/');
-                    console.log("로그인 성공");
-                } else {
-                    req.session.valid = false;
-                    console.log("로그인 실패");
-                    res.redirect(url.format({
-                        pathname:'/login',
-                        valid: req.session.valid
-                    }));
+            connection.query('SELECT number FROM user WHERE id = ? and password =?', [id, password], function (error1, number, fields1) {
+                for (var keyNm in results[0]) {
+                    if (results[0][keyNm] == 1) {
+                        req.session.id1 = id;
+                        req.session.pw1 = password;
+                        req.session.number = number[0].number;
+                        res.redirect(loginDestination);
+                    } else {
+                        req.session.valid = false;
+                        res.redirect(url.format({
+                            pathname: '/login',
+                            valid: req.session.valid
+                        }));
+                    }
                 }
-            }
-            if (error) {
-                console.log(error);
-            }
+                if (error) {
+                    console.log(error);
+                }
+            })
         }
     )
-});
-
-app.get('/detail', function (req, res) {
-    res.render('detail', {
-        path: '',
-    })
 });
 
 app.get('/user-account', function (req, res) {
@@ -234,7 +232,7 @@ app.get('/category', function (req, res) {
     let searchLocation = req.query.location;
 
     let pagination = req.query.pagination;
-    if(pagination === undefined) pagination = 0;
+    if (pagination === undefined) pagination = 0;
     else pagination = parseInt(pagination);
 
     if (searchWord === undefined || searchWord === "") // 검색어를 입력하변지 않은 경우 사용자 취향을 고려한 검색
@@ -276,9 +274,9 @@ app.get('/category', function (req, res) {
                         }
                     }
 
-                    allPlace = allPlace.slice(12*pagination, 12*(pagination+1));
+                    allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
                     console.log(pagination);
-                    if (req.session.id1){
+                    if (req.session.id1) {
                         res.render('category-custom', {
                             path: '',
                             title: '검색결과',
@@ -286,7 +284,7 @@ app.get('/category', function (req, res) {
                             searchLocation: searchLocation,
                             example: allPlace,
                             placeCount: count,
-                            pagination:pagination,
+                            pagination: pagination,
                             loggedUser: true
 
                         });
@@ -298,7 +296,7 @@ app.get('/category', function (req, res) {
                             searchLocation: searchLocation,
                             example: allPlace,
                             placeCount: count,
-                            pagination:pagination,
+                            pagination: pagination,
                             loggedUser: false
                         });
                     }
@@ -337,23 +335,23 @@ app.get('/category-map', function (req, res) {
                 // searchWord에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
                 var allPlace = [];
                 var count = places.length;
-                if(count===1){
-                    for (var i = 0; i < count; i++){
+                if (count === 1) {
+                    for (var i = 0; i < count; i++) {
                         let temp = places[i].image;
-                        temp= temp.split("@#");
+                        temp = temp.split("@#");
                         places[i].image = temp[1];
                         allPlace.push(places[i]);
                     }
                 } else {
-                    for (var i = 0; i < count; i++){
+                    for (var i = 0; i < count; i++) {
                         let temp = places[i][0].image;
-                        temp= temp.split("@#");
+                        temp = temp.split("@#");
                         places[i][0].image = temp[1];
                         allPlace.push(places[i][0]);
                     }
                 }
 
-                if (req.session.id1){
+                if (req.session.id1) {
                     res.render('category-map-custom', {
                         path: '',
                         title: '지도 검색결과',
@@ -380,5 +378,69 @@ app.get('/category-map', function (req, res) {
 });
 
 
+/* detail */
+app.get('/detail', function (req, res) {
+    let placeId = req.query.placeId;
+
+    /* DB 조회를 위한 쿼리 */
+    var searchPlace = `select * from place where place.number = ?`;
+    var searchReview = `select * from review where review.fk_place_number = ?`
+    connection.query(searchPlace, placeId, function (err, result) {
+        // 이미지
+        result[0].mainImage = ((result[0].image).split("@#"))[1]; // main에 보여질 이미지를 선택한다.
+        let temp = (result[0].image).split("@#");
+        result[0].image = [];
+        for (let i = 0; i < temp.length; i++) {
+            if (temp[i] !== "" && temp[i] !== undefined) {
+                result[0].image.push(temp[i]);
+            }
+        }
+
+        // 평점
+        if (result[0].star > 5) result[0].star = 5;
+        else if (result[0].star < 0) result[0].stack = 0;
+        result[0].star = Math.round(result[0].star);
+
+        // Opening Hours
+        // 수정 필요
+
+
+        // 리뷰
+        connection.query(searchReview, placeId, function (err, reviews) {
+            console.log(reviews);
+
+            if (req.session.id1) {
+                res.render('detail', {
+                    placeInfo: result[0],
+                    userInfo: req.session.id1,
+                    reviews: reviews,
+                    loggedUser: true
+                });
+            } else {
+                res.render('detail', {
+                    placeInfo: result[0],
+                    reviews: reviews,
+                    loggedUser: false
+                });
+            }
+        })
+    })
+})
+
+app.get('/review', function (req, res) {
+    let placeNumber = req.query.placeNumber;
+    let userNumber = req.session.number;
+    let rating = req.query.rating;
+    let writer = req.query.writer;
+    let review = req.query.review;
+    let today = new Date();
+    let month = today.getMonth() + 1
+    let date = today.getFullYear() + "-" + month + "-" + today.getDate()+" "+today.getHours()+":"+today.getMinutes();
+    let writeReviewQuery = `INSERT INTO review (user_id,datetime, starpoint , contents, fk_user_number, fk_place_number) VALUES('${writer}', '${date}', '${rating}', '${review}', '${userNumber}', '${placeNumber}');`;
+    connection.query(writeReviewQuery, function (err, res) {
+        console.log(err);
+    })
+    res.redirect('/detail?placeId=' + placeNumber);
+})
 
 app.listen(8080);
