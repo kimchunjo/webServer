@@ -99,7 +99,7 @@ app.get('/signup', function (req, res) {
 });
 
 app.post('/upload', upload.single('file'), (req, res) => {
-    console.log(req.file);
+    res.redirect('/');
 });
 
 app.post('/coming-soon', function (req, res) {
@@ -386,6 +386,7 @@ app.get('/detail', function (req, res) {
     var searchPlace = `select * from place where place.number = ?`;
     var searchReview = `select * from review where review.fk_place_number = ?`
     connection.query(searchPlace, placeId, function (err, result) {
+
         // 이미지
         let mainImage = ((result[0].image).split("@#"))[1]; // main에 보여질 이미지를 선택한다.
         let temp = (result[0].image).split("@#");
@@ -403,12 +404,9 @@ app.get('/detail', function (req, res) {
 
         // Opening Hours
         // 수정 필요
-
-
+        console.log(result[0]);
         // 리뷰
         connection.query(searchReview, placeId, function (err, reviews) {
-            console.log(reviews);
-
             if (req.session.id1) {
                 res.render('detail', {
                     mainImage: mainImage,
