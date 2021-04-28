@@ -1,31 +1,82 @@
 .py-5
+    if(userInfo != undefined)
+        #leaveReview.collapse.show.mt-4
+            h5.mb-4 Leave a review
 
-    button(type="button", class="btn btn-outline-primary", data-toggle="collapse", data-target="#leaveReview", aria-expanded="false", aria-controls="leaveReview") Leave a review
+            form(id="contact-form", method="get", action="/review", class="form")
+                .row
+                    .col-sm-6
+                        .form-group
+                            label.form-label(for="writer") Your name *
+                            input(type="text", name="writer", id="name", class="form-control", placeholder="Enter your name", value=`${userInfo}`, readonly)
+                    .col-sm-6
+                        .form-group
+                            label.form-label(for="rating") Your rating *
+                            select.custom-select.focus-shadow-0(name="rating", id="rating")
+                                option(value='5') &#9733;&#9733;&#9733;&#9733;&#9733; (5/5)
+                                option(value='4') &#9733;&#9733;&#9733;&#9733;&#9734; (4/5)
+                                option(value='3') &#9733;&#9733;&#9733;&#9734;&#9734; (3/5)
+                                option(value='2') &#9733;&#9733;&#9734;&#9734;&#9734; (2/5)
+                                option(value='1') &#9733;&#9734;&#9734;&#9734;&#9734; (1/5)
+                .form-group
+                    label.form-label(for="review") Review text *
+                    textarea(rows="4", name="review", id="review", class="form-control", placeholder="Enter your review", required="required")
+                input.d-none(name="placeNumber" value=`${placeInfo.number}`)
+                button(type="submit", class="btn btn-primary") Post review
+    else
+        // Button trigger modal
+        button(type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal") LEAVE A REVIEW
 
-    #leaveReview.collapse.mt-4
-        h5.mb-4 Leave a review
+        // Modal
+        div(class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true")
+            div(class="modal-dialog modal-dialog-centered" role="document")
+                div(class="modal-content")
+                    div(class="modal-header")
+                        h5(class="modal-title" id="exampleModalLabel") AllPlace
+                        button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                            span(aria-hidden="true") &times;
+                    div(class="modal-body")
+                        form.form-validate(action="/login-confirm" method="POST")
+                            .form-group
+                                label.form-label(for='loginUsername')  ID
+                                input.form-control(name="loginUsername", id="loginUsername", type='email', placeholder='name@address.com', autocomplete='off', required, data-msg="Please enter your email")
+                            .form-group.mb-4
+                                .row
+                                    .col
+                                        label.form-label(for='loginPassword')  비밀번호
+                                    .col-auto
+                                        a.form-text.small(href='#') 비밀번호를 잊어버렸습니까?
 
-        form(id="contact-form", method="get", action="#",class="form")
-            .row
-                .col-sm-6
-                    .form-group
-                        label.form-label(for="name") Your name *
-                        input(type="text", name="name", id="name", class="form-control", placeholder="Enter your name", required="required")
-                .col-sm-6
-                    .form-group
-                        label.form-label(for="rating") Your rating *
-                        select.custom-select.focus-shadow-0(name="rating", id="rating")
-                            option(value='5') &#9733;&#9733;&#9733;&#9733;&#9733; (5/5)
-                            option(value='4') &#9733;&#9733;&#9733;&#9733;&#9734; (4/5)
-                            option(value='3') &#9733;&#9733;&#9733;&#9734;&#9734; (3/5)
-                            option(value='2') &#9733;&#9733;&#9734;&#9734;&#9734; (2/5)
-                            option(value='1') &#9733;&#9734;&#9734;&#9734;&#9734; (1/5)
+                                input.form-control(name="loginPassword",  id="loginPassword", placeholder="Password", type='password', required, data-msg="Please enter your password")
+                            .form-group.mb-4
+                                //.custom-control.custom-checkbox
+                                    input#loginRemember.custom-control-input(type='checkbox')
+                                    label.custom-control-label.text-muted(for='loginRemember')
+                                        span.text-sm Remember me for 30 days
 
-            .form-group
-                label.form-label(for="email") Your email *
-                input(type="email", name="email", id="email", class="form-control", placeholder="Enter your  email", required="required")
-            .form-group
-                label.form-label(for="review") Review text *
-                textarea(rows="4", name="review", id="review", class="form-control", placeholder="Enter your review", required="required")
-            
-            button(type="submit", class="btn btn-primary") Post review
+                            - var valid = valid
+                            if !valid
+                                label.form-label(style="color: red") 가입하지 않은 아이디이거나, 잘못된 비밀번호입니다.
+                            // Submit
+                            button.btn.btn-lg.btn-block.btn-primary(link="user-profile")
+                                | Sign in
+
+                            //hr.my-3.hr-text.letter-spacing-2(data-content="OR")
+
+                            //button.btn.btn.btn-outline-primary.btn-block.btn-social.mb-3
+                                i.fa-2x.fa-facebook-f.fab.btn-social-icon
+                                | Connect <span class="d-none d-sm-inline">with Facebook</span>
+
+                            //button.btn.btn.btn-outline-muted.btn-block.btn-social.mb-3
+                                i.fa-2x.fa-google.fab.btn-social-icon
+                                | Connect <span class="d-none d-sm-inline">with Google</span>
+
+                            //hr.my-4
+                            br
+                            p.text-center
+                                small.text-muted.text-center
+                                    | 아직 회원이 아니십니까?
+                                    a(href='signup')  회원가입
+                            input.d-none(name="loginDestination" value=`/detail?placeId=${placeInfo.number}`)
+                    div(class="modal-footer")
+                        button(type="button" class="btn btn-secondary" data-dismiss="modal") Close

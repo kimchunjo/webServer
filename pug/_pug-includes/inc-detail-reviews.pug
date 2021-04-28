@@ -1,15 +1,14 @@
 p.subtitle.text-sm.text-primary Reviews    
 h5.mb-4 Listing Reviews 
 
-- var reviews = []
-- reviews.push({name: 'Padmé Amidala', role: 'founder', image: 'img/avatar/avatar-8.jpg', date: 'Dec 2018', stars: 5})
-- reviews.push({name: 'Luke Skywalker', role: 'CTO', image: 'img/avatar/avatar-2.jpg', date: 'Dec 2018', stars: 4})
-- reviews.push({name: 'Princess Leia', role: 'Team Leader', image: 'img/avatar/avatar-3.jpg', date: 'Dec 2018', stars: 3})
-- reviews.push({name: 'Jabba Hut', role: 'Lead developer', image: 'img/avatar/avatar-4.jpg', date: 'Dec 2018', stars: 5})
+- var result = []
+- for(let i =0 ; i< reviews.length; i++)
+    - var time = (String(reviews[i].datetime)).slice(4,21)
+    - result.push({name: `${reviews[i].user_id}`, role: 'founder', image: 'img/avatar/avatar-8.jpg', date: `${time}`, stars: `${reviews[i].starpoint}`})
 
 - stars = [1,2,3,4,5]
 
-each val, index in reviews
+each val, index in result
     .media.d-block.d-sm-flex.review
         .text-md-center.mr-4.mr-xl-5
             img.d-block.avatar.avatar-xl.p-2.mb-2(src=val.image, alt=val.name)
@@ -22,4 +21,4 @@ each val, index in reviews
                         i.fa.fa-xs.fa-star.text-primary
                     else
                         i.fa.fa-xs.fa-star.text-gray-200
-            p.text-muted.text-sm #{dummyText[index]}     
+            p.text-muted.text-sm #{reviews[index].contents}
