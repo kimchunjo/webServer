@@ -56,35 +56,44 @@ block content
                             label.form-label(for="form_neighbourhood") Neighbourhood
                             select.selectpicker.form-control(name="neighbourhood", id="form_neighbourhood", multiple, data-style="btn-selectpicker", data-live-search="true", data-selected-text-format="count > 1", title="")
                                 each val, index in neighbourhoods
-                                    option(value=`neighbourhood_${index}`) #{val}    
+                                    option(value=`neighbourhood_${index}`) #{val}
                         .col-xl-4.col-md-6.mb-4
                             - var restaurantTypes = ['Hipster', 'Music club', 'Bar', 'Pub', 'Deli', 'Bistro']
                             label.form-label(for="form_category") Category
                             select.selectpicker.form-control(name="category", id="form_category", multiple, data-style="btn-selectpicker", data-selected-text-format="count > 1", title="")
                                 each val, index in restaurantTypes
-                                    option(value=`category_${index}`) #{val}    
+                                    option(value=`category_${index}`) #{val}
                         .col-12.mb-4
-                            - var restaurantTypes = ['Hipster', 'Music club', 'Bar', 'Pub', 'Deli', 'Bistro']
-                            label.form-label Tag
-                            ul.list-inline.mb-0
-                                each val,index in restaurantTypes
-                                    li.list-inline-item
-                                        .custom-control.custom-checkbox
-                                            input.custom-control-input(type='checkbox', id=`type_${index}`, name="type[]")
-                                            label.custom-control-label(for=`type_${index}`) #{val}
+                            .mb-4
+                                - var cuisineTypes = ['Fusion', 'Indian', 'French', 'American', 'Mexican', 'Other']
+                                label.form-label Cuisine
+                                ul.list-inline.mb-0
+                                    each val,index in cuisineTypes
+                                        li.list-inline-item
+                                            .custom-control.custom-checkbox
+                                                input.custom-control-input(type='checkbox', id=`cuisine_${index}`, name="cuisine[]")
+                                                label.custom-control-label(for=`cuisine_${index}`) #{val}
+                            // - var restaurantTypes = ['Hipster', 'Music club', 'Bar', 'Pub', 'Deli', 'Bistro']
+                            // label.form-label Tag
+                            // ul.list-inline.mb-0
+                            //     each val,index in restaurantTypes
+                            //         li.list-inline-item
+                            //             .custom-control.custom-checkbox
+                            //                 input.custom-control-input(type='checkbox', id=`type_${index}`, name="type[]")
+                            //                 label.custom-control-label(for=`type_${index}`) #{val}
 
 
                         .col-12.pb-4
                             #moreFilters.collapse
-                                .mb-4
-                                    - var cuisineTypes = ['Fusion', 'Indian', 'French', 'American', 'Mexican', 'Other']
-                                    label.form-label Cuisine
-                                    ul.list-inline.mb-0
-                                        each val,index in cuisineTypes
-                                            li.list-inline-item
-                                                .custom-control.custom-checkbox
-                                                    input.custom-control-input(type='checkbox', id=`cuisine_${index}`, name="cuisine[]")
-                                                    label.custom-control-label(for=`cuisine_${index}`) #{val}
+                                //.mb-4
+                                //    - var cuisineTypes = ['Fusion', 'Indian', 'French', 'American', 'Mexican', 'Other']
+                                //    label.form-label Cuisine
+                                //    ul.list-inline.mb-0
+                                //        each val,index in cuisineTypes
+                                //            li.list-inline-item
+                                //                .custom-control.custom-checkbox
+                                //                    input.custom-control-input(type='checkbox', id=`cuisine_${index}`, name="cuisine[]")
+                                //                    label.custom-control-label(for=`cuisine_${index}`) #{val}
                                 .row
                                     .col-xl-6.mb-4
                                         label.form-label Price
