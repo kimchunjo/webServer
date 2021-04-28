@@ -3,16 +3,6 @@ var app = express();
 const fs = require('fs');
 const url = require('url');
 
-/* 파이썬 연동을 위한 모듈  */
-// const spawn = require("child_process").spawn;
-// const pythonProcess = spawn('python', ['./user_history.py', '카페아바나']);
-// pythonProcess.stdout.on('data', (data) => {
-//     console.log(data.toString())
-// })
-// pythonProcess.stderr.on('data', (data) => {
-//     console.log(data.toString());
-// });
-
 /* 현재 시간을 얻기 위한 모듈 */
 var moment = require('moment');
 require('moment-timezone'); // 필요 ?
@@ -27,6 +17,19 @@ app.set('view engine', 'pug'); /* pug template engine 을 사용 */
 app.set('views', './pug'); /* template file 은 pug 라는 폴더 및에 위치 */
 app.use(express.static('public'));
 
+/* 파이썬 연동을 위한 모듈  */
+const {PythonShell} =require('python-shell');
+let options = {
+    mode: 'text',
+    pythonOptions: ['-u'], // get print results in real-time
+    scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
+    args: ['카페데일리'] //An argument which can be accessed in the script using sys.argv[1]
+};
+PythonShell.run('user_history.py', options, function (err, result){
+    if (err) throw err;
+    console.log('result: ', result.toString());
+});
+
 /* connect DB */
 var mysql = require('mysql');
 var connection = mysql.createConnection({
@@ -38,7 +41,7 @@ var connection = mysql.createConnection({
 });
 // 비밀번호는 별도의 파일로 분리해서 버전관리에 포함시키지 않아야 합니다.
 
-/* 무엇을 위한? */
+/* 파일 업로드 모듈 */
 var multer = require('multer');
 const upload = multer({
     storage: multer.diskStorage({
