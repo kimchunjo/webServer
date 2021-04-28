@@ -189,7 +189,7 @@ mixin venue(val, itemClass)
         input.d-none(type='text' class='itemImage' value=`${imgBasePath}${val.image}`)
         input.d-none(type='text' class='itemLocation' value=`${val.location}`)
         .card.h-100.border-0.shadow
-            .card-img-top.overflow-hidden.dark-overlay.bg-cover(style=`background-image: url('${imgBasePath}${val.image}');background-size:100% 100%; min-height: 200px;`)
+            .card-img-top.overflow-hidden.dark-overlay.bg-cover(style=`background-image: url('${imgBasePath}${val.image}');background-size:cover; min-height: 200px;`)
                 //- img.img-fluid(src=`${imgBasePath}${val.image}`, alt=val.name)
                 a.tile-link(href=val.link)
                 //a.tile-link(href="detail.html")
