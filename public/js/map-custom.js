@@ -3,7 +3,8 @@ var lat; // 위도
 var lon; // 경도
 var mapContainer;    // Container
 var zoomControl;     // 줌 컨트롤
-var imageSrc = 'img/marker.svg'; // 마커 이미지의 이미지 주소
+var imageSrc = 'img/Marker.png'; // 마커 이미지의 이미지 주소
+var selectedImagesrc = 'img/selectedMarker.png';
 var positions = [];  // 장소
 var points = [];
 var overlay;
@@ -32,7 +33,7 @@ var contentArray = ['<div class="wrap">' +
 '        </div>' +
 '        <div class="body">' +
 '            <div class="img">' +
-'                <img src="https://cfile181.uf.daum.net/image/250649365602043421936D" width="73" height="70">' +
+'                <img src="uploads/banana.jpg" width="73" height="70">' +
 '           </div>' +
 '            <div class="desc">' +
 '                <div><a href="#" target="_blank" class="link">홈페이지</a></div>' +
@@ -111,13 +112,34 @@ if (navigator.geolocation) {
 
             setBounds(map, longitude, latitude);
 
-            // for(var i = 0; i< positions.length; i++){
-            //     makeMaker(positions[i], imageSrc, true) // 마커 적용
-            // }
-
             positions.forEach(function (element, index) {
                 makeMaker(element, imageSrc, contentArray[index], true) // 마커 적용
+
             });
+            var marker;
+            var noCurrentPositions = positions.slice(1,);
+            noCurrentPositions.forEach(function (element, index){
+                item[index].addEventListener("mouseover", function (){
+                    // 마커 이미지의 이미지 크기 입니다
+                    var imageSize = new kakao.maps.Size(33, 37);
+
+                    // 마커 이미지를 생성합니다
+                    var markerImage = new kakao.maps.MarkerImage(selectedImagesrc, imageSize);
+
+                    // 마커를 생성합니다
+                    marker = new kakao.maps.Marker({
+                        map: map, // 마커를 표시할 지도
+                        position: element.latlng, // 마커를 표시할 위치
+                        name: element.name, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+                        image: markerImage // 마커 이미지
+                    });
+                });
+                item[index].addEventListener("mouseout", function (){
+                    marker.setMap(null);
+
+                });
+            });
+
 
         }, function (error) {
 
@@ -156,7 +178,7 @@ if (navigator.geolocation) {
 function makeMaker(position, imageSrc, content, current) {
 
     // 마커 이미지의 이미지 크기 입니다
-    var imageSize = new kakao.maps.Size(24, 35);
+    var imageSize = new kakao.maps.Size(33, 37);
 
     // 마커 이미지를 생성합니다
     var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
@@ -216,3 +238,5 @@ function closeOverlay(index) {
         position: positions[index].latlng
     });
 }
+
+
