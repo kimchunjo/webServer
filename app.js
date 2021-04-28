@@ -387,8 +387,7 @@ app.get('/detail', function (req, res) {
     var searchReview = `select * from review where review.fk_place_number = ?`
     connection.query(searchPlace, placeId, function (err, result) {
         // 이미지
-        result[0].mainImage = undefined;
-        result[0].mainImage = ((result[0].image).split("@#"))[1]; // main에 보여질 이미지를 선택한다.
+        let mainImage = ((result[0].image).split("@#"))[1]; // main에 보여질 이미지를 선택한다.
         let temp = (result[0].image).split("@#");
         result[0].image = [];
         for (let i = 0; i < temp.length; i++) {
@@ -412,6 +411,7 @@ app.get('/detail', function (req, res) {
 
             if (req.session.id1) {
                 res.render('detail', {
+                    mainImage: mainImage,
                     placeInfo: result[0],
                     userInfo: req.session.id1,
                     reviews: reviews,
@@ -419,6 +419,7 @@ app.get('/detail', function (req, res) {
                 });
             } else {
                 res.render('detail', {
+                    mainImage: mainImage,
                     placeInfo: result[0],
                     reviews: reviews,
                     loggedUser: false
