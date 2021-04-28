@@ -144,12 +144,13 @@ block additionalScripts
         Dropzone.options.fileDropzone = {
             // url:'/upload',
             paramName: 'file',
-            maxFilesize: 8, // MB
-            maxFiles: 5,
+            maxFilesize: 20, // MB
+            maxFiles: 10,
             acceptedFiles: 'image/*',
             autoProcessQueue: false,
             addRemoveLinks: true, // 삭제버튼 표시 여부
             dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
+            parallelUploads:10,
             //clickable: false,
 
             renameFile: function (file){
