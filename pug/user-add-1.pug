@@ -147,7 +147,7 @@ block additionalScripts
             maxFilesize: 20, // MB
             maxFiles: 10,
             acceptedFiles: 'image/*',
-            autoProcessQueue: false,
+            autoProcessQueue: true,
             addRemoveLinks: true, // 삭제버튼 표시 여부
             dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
             parallelUploads:10,
@@ -160,6 +160,7 @@ block additionalScripts
 
             accept: function (file , done){
                 $('#filename').append("@#"+now+file.name+"@#");
+                done();
             },
 
             // removedfile: function removedfile(file) {
