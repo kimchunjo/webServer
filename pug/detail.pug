@@ -8,25 +8,29 @@ block vars
 
 block content
     // Hero Section
-    section.pt-7.pb-5.d-flex.align-items-end.dark-overlay.bg-cover(style="background-image: url('img/photo/restaurant-1515164783716-8e6920f3e77c.jpg');")
+    section.pt-7.pb-5.d-flex.align-items-end.dark-overlay.bg-cover(style=`background-image: url('/uploads/${placeInfo.mainImage}'); background-size:cover;`)
         .container.overlay-content
             .d-flex.justify-content-between.align-items-start.flex-column.flex-lg-row.align-items-lg-end
                 .text-white.mb-4.mb-lg-0
-                    .badge.badge-pill.badge-transparent.px-3.py-2.mb-4 Eat &amp; Drink
+                    .badge.badge-pill.badge-transparent.px-3.py-2.mb-4 #{placeInfo.category}
                     
-                    h1.text-shadow.verified Fifteen Restaurant & Bar
+                    h2.text-shadow.verified #{placeInfo.name}
                     
                     p
                         i.fa-map-marker-alt.fas.mr-2
-                        |  53 Broadway, Brooklyn, NY 1129
+                        |  #{placeInfo.location}
 
                     p.mb-0.d-flex.align-items-center
-                        i.fa.fa-xs.fa-star.text-primary
-                        i.fa.fa-xs.fa-star.text-primary
-                        i.fa.fa-xs.fa-star.text-primary
-                        i.fa.fa-xs.fa-star.text-primary
-                        i.fa.fa-xs.fa-star.text-gray-200.mr-4                    
-                            
+                        -for(let i =0; i<placeInfo.star ; i++)
+                            if (i == 4)
+                                i.fa.fa-xs.fa-star.text-primary.mr-4
+                            else
+                                i.fa.fa-xs.fa-star.text-primary
+                        -for (let i = placeInfo.star; i < 5; i++)
+                            if( i == 4)
+                                i.fa.fa-xs.fa-star.text-gray-200.mr-4
+                            else
+                                i.fa.fa-xs.fa-star.text-gray-200
                         | 8 Reviews
                 
                 .calltoactions
@@ -56,18 +60,14 @@ block content
                         // Gallery
                         h3.mb-4 Gallery
                         - gallery = []
-                        - gallery.push({small: 'restaurant-1515164783716-8e6920f3e77c.jpg', big:  'restaurant-1515164783716-8e6920f3e77c.jpg'})
-                        - gallery.push({small: 'restaurant-1466978913421-dad2ebd01d17.jpg', big:  'restaurant-1466978913421-dad2ebd01d17.jpg'})
-                        - gallery.push({small: 'restaurant-1477763858572-cda7deaa9bc5.jpg', big:  'restaurant-1477763858572-cda7deaa9bc5.jpg'})
-                        - gallery.push({small: 'restaurant-1505275350441-83dcda8eeef5.jpg', big: 'restaurant-1505275350441-83dcda8eeef5.jpg'})
-                        - gallery.push({small: 'restaurant-1508766917616-d22f3f1eea14.jpg', big:  'restaurant-1508766917616-d22f3f1eea14.jpg'})
-                        - gallery.push({small: 'restaurant-1430931071372-38127bd472b8.jpg', big:  'restaurant-1430931071372-38127bd472b8.jpg'})
+                        - for (let i =0; i<placeInfo.image.length; i++)
+                            - gallery.push({small: `${placeInfo.image[i]}`, big:  `${placeInfo.image[i]}`})
 
                         .row.gallery.ml-n1.mr-n1
                             each val in gallery
                                 .col-lg-4.col-6.px-1.mb-2
-                                    a(href='img/photo/' + val.big)
-                                        img.img-fluid(src='img/photo/' + val.small, alt='...')
+                                    a(href='./uploads/' + val.big)
+                                        img.img-fluid(src='./uploads/' + val.small, alt='...')
 
                     // Amenities
                     .text-block
@@ -171,12 +171,13 @@ block additionalScripts
     
     script(src='js/map-detail.js')
 
+
     script.
         createDetailMap({
             mapId: 'detailMap',
-            mapCenter: [40.732346, -74.0014247],
+            mapCenter: [#{placeInfo.latitude}, #{placeInfo.longitude}],
             markerShow: true,
-            markerPosition: [40.732346, -74.0014247],
+            markerPosition: [#{placeInfo.latitude}, #{placeInfo.longitude}],
             markerPath: 'img/marker.svg',
         })
     
