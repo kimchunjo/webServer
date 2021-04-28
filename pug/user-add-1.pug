@@ -162,16 +162,16 @@ block additionalScripts
                 done();
             },
 
-            removedfile: function removedfile(file) {
-                if (file.previewElement != null && file.previewElement.parentNode != null) {
-                    file.previewElement.parentNode.removeChild(file.previewElement);
-                }
-
-                var text = $('#filename').text();
-                text = text.replace(file.name, "");
-                $('#filename').text(text);
-                return this._updateMaxFilesReachedClass();
-            },
+            // removedfile: function removedfile(file) {
+            //     if (file.previewElement != null && file.previewElement.parentNode != null) {
+            //         file.previewElement.parentNode.removeChild(file.previewElement);
+            //     }
+            //
+            //     var text = $('#filename').text();
+            //     text = text.replace(file.name, "");
+            //     $('#filename').text(text);
+            //     return this._updateMaxFilesReachedClass();
+            // },
 
             init: function () {
                 /* 최초 dropzone 설정시 init을 통해 호출 */
@@ -181,9 +181,9 @@ block additionalScripts
                     myDropzone.processQueue();
                 });
 
-                this.on("sending",function (file){ // 파일 네임 수정
-                    file.myCustomName = new Date().getDate() + file.name;
-                })
+                // this.on("sending",function (file){ // 파일 네임 수정
+                //     file.myCustomName = new Date().getDate() + file.name;
+                // })
             },
 
         }
