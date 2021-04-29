@@ -427,20 +427,19 @@ app.get('/detail', function (req, res) {
     })
 })
 
-app.get('/review', function (req, res) {
-    let placeNumber = req.query.placeNumber;
+app.post('/review', function (req, response) {
+    let placeNumber = req.body.placeNumber;
     let userNumber = req.session.number;
-    let rating = req.query.rating;
-    let writer = req.query.writer;
-    let review = req.query.review;
+    let rating = req.body.rating;
+    let writer = req.body.writer;
+    let review = req.body.review;
     let today = new Date();
     let month = today.getMonth() + 1
     let date = today.getFullYear() + "-" + month + "-" + today.getDate()+" "+today.getHours()+":"+today.getMinutes();
     let writeReviewQuery = `INSERT INTO review (user_id,datetime, starpoint , contents, fk_user_number, fk_place_number) VALUES('${writer}', '${date}', '${rating}', '${review}', '${userNumber}', '${placeNumber}');`;
     connection.query(writeReviewQuery, function (err, res) {
-        console.log(err);
+        response.send({result:true});
     })
-    res.redirect('/detail?placeId=' + placeNumber);
 })
 
 app.listen(8080);
