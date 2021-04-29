@@ -8,7 +8,7 @@
                     .col-sm-6
                         .form-group
                             label.form-label(for="writer") Your name *
-                            input(type="text", name="writer", id="name", class="form-control", placeholder="Enter your name", value=`${userInfo}`, readonly)
+                            input(type="text", name="writer", id="writer", class="form-control", placeholder="Enter your name", value=`${userInfo}`, readonly)
                     .col-sm-6
                         .form-group
                             label.form-label(for="rating") Your rating *
@@ -20,9 +20,9 @@
                                 option(value='1') &#9733;&#9734;&#9734;&#9734;&#9734; (1/5)
                 .form-group
                     label.form-label(for="review") Review text *
-                    textarea(rows="4", name="review", id="review", class="form-control", placeholder="Enter your review", required="required")
-                input.d-none(name="placeNumber" value=`${placeInfo.number}`)
-                button(type="submit", class="btn btn-primary") Post review
+                    textarea(rows="4", name="review", id="review", class="form-control", placeholder="Enter your review", required)
+                input.d-none(id="placeNumber" name="placeNumber" value=`${placeInfo.number}`)
+                button(type="button", class="btn btn-muted", onclick="writeReview(this)", id="reviewSubmit" disabled) Post review
     else
         // Button trigger modal
         button(type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal") LEAVE A REVIEW
