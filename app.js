@@ -99,7 +99,8 @@ app.get('/signup', function (req, res) {
 });
 
 app.post('/upload', upload.single('file'), (req, res) => {
-    //res.redirect('/');
+    console.log("업로드성공");
+    res.end();
 });
 
 app.post('/coming-soon', function (req, res) {
