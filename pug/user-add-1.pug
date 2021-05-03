@@ -141,20 +141,21 @@ block additionalScripts
     // Dropzone Init
     script.
         let now = new Date().getTime();
+        let newName;
         Dropzone.options.fileDropzone = {
             // url:'/upload',
             paramName: 'file',
             maxFilesize: 20, // MB
             maxFiles: 10,
             acceptedFiles: 'image/*',
-            autoProcessQueue: true,
+            autoProcessQueue: false,
             addRemoveLinks: true, // 삭제버튼 표시 여부
             dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
             parallelUploads:10,
             //clickable: false,
 
             renameFile: function (file){
-                let newName = now + file.name;
+                newName = now + file.name;
                 return newName;
             },
 
@@ -163,16 +164,19 @@ block additionalScripts
                 done();
             },
 
-            // removedfile: function removedfile(file) {
-            //     if (file.previewElement != null && file.previewElement.parentNode != null) {
-            //         file.previewElement.parentNode.removeChild(file.previewElement);
-            //     }
-            //
-            //     var text = $('#filename').text();
-            //     text = text.replace(file.name, "");
-            //     $('#filename').text(text);
-            //     return this._updateMaxFilesReachedClass();
-            // },
+
+            removedfile: function removedfile(file) {
+                if (file.previewElement != null && file.previewElement.parentNode != null) {
+                    file.previewElement.parentNode.removeChild(file.previewElement);
+                }
+                var str = $('#filename').val();
+                var n = str.replace("@#" + now + file.name + "@#", "");
+
+                $('#filename').val(n);
+
+                return this._updateMaxFilesReachedClass();
+            },
+
 
             init: function () {
                 /* 최초 dropzone 설정시 init을 통해 호출 */
