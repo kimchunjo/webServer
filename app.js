@@ -127,8 +127,11 @@ app.get('/user-add-0', function (req, res) {
 app.get('/user-add-1', function (req, res) {
     res.render('user-add-1')
 });
-app.post('/user-add-5', function (req, res) {
-    res.render('user-add-5')
+app.get('/user-add-5', function(req, res){
+    res.render('user-add-5');
+})
+app.post('/user-add', function (req, res) {
+    //res.render('user-add-5')
     var body = req.body;
     var name = body.form_name;
     var category = body.type;
@@ -171,6 +174,7 @@ app.post('/user-add-5', function (req, res) {
                 });
             });
         });
+        res.redirect('/user-add-5');
     }
 
 
