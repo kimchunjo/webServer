@@ -18,17 +18,17 @@ app.set('views', './pug'); /* template file 은 pug 라는 폴더 및에 위치 
 app.use(express.static('public'));
 
 // /* 파이썬 연동을 위한 모듈  */
-const {PythonShell} = require('python-shell');
-let options = {
-    mode: 'text',
-    pythonOptions: ['-u'], // get print results in real-time
-    scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
-    args: ['카페데일리'] //An argument which can be accessed in the script using sys.argv[1]
-};
-PythonShell.run('user_history.py', options, function (err, result) {
-    if (err) throw err;
-    console.log('result: ', result.toString());
-});
+// const {PythonShell} = require('python-shell');
+// let options = {
+//     mode: 'text',
+//     pythonOptions: ['-u'], // get print results in real-time
+//     scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
+//     args: ['카페데일리'] //An argument which can be accessed in the script using sys.argv[1]
+// };
+// PythonShell.run('user_history.py', options, function (err, result) {
+//     if (err) throw err;
+//     console.log('result: ', result.toString());
+// });
 
 /* connect DB */
 var mysql = require('mysql');
@@ -99,7 +99,7 @@ app.get('/signup', function (req, res) {
 });
 
 app.post('/upload', upload.single('file'), (req, res) => {
-    res.redirect('/');
+    //res.redirect('/');
 });
 
 app.post('/coming-soon', function (req, res) {
@@ -153,7 +153,7 @@ app.post('/user-add', function (req, res) {
             console.log(error);
         }
         console.log(results);
-        res.redirect('/user-add-5');
+
     });
 
     var query = `INSERT INTO hashtag(name) VALUES (?);`;
@@ -176,7 +176,7 @@ app.post('/user-add', function (req, res) {
             });
         });
     }
-    res.redirect('/user-add-5');
+    //res.redirect('/user-add-5');
 });
 
 app.get('/logout', function (req, res) {
@@ -444,5 +444,7 @@ app.post('/review', function (req, response) {
         response.send({result:true});
     })
 })
-
+// local 업로드
+//app.listen(8080);
+// 서버 업로드
 app.listen(80);

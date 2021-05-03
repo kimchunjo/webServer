@@ -171,8 +171,13 @@ block additionalScripts
                 }
                 var str = $('#filename').val();
                 var n = str.replace("@#" + now + file.name + "@#", "");
-
+                alert($('#filename').val());
                 $('#filename').val(n);
+
+                // new file(`/public/uploads/@#${now + file.name}`);
+                // if(deleteFile.exists()){
+                //     alert("111");
+                // }
 
                 return this._updateMaxFilesReachedClass();
             },
@@ -189,6 +194,9 @@ block additionalScripts
                 // this.on("sending",function (file){ // 파일 네임 수정
                 //     file.myCustomName = new Date().getDate() + file.name;
                 // })
+                this.on("queuecomplete", function (file) {
+                    document.location.href = "/user-add-5" //업로드가 완료되었다면 이전 화면으로 이동
+                });
             },
 
         }
