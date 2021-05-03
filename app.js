@@ -17,7 +17,7 @@ app.set('view engine', 'pug'); /* pug template engine 을 사용 */
 app.set('views', './pug'); /* template file 은 pug 라는 폴더 및에 위치 */
 app.use(express.static('public'));
 
-/* 파이썬 연동을 위한 모듈  */
+// /* 파이썬 연동을 위한 모듈  */
 const {PythonShell} = require('python-shell');
 let options = {
     mode: 'text',
@@ -153,6 +153,7 @@ app.post('/user-add', function (req, res) {
             console.log(error);
         }
         console.log(results);
+        res.redirect('/user-add-5');
     });
 
     var query = `INSERT INTO hashtag(name) VALUES (?);`;
@@ -164,7 +165,7 @@ app.post('/user-add', function (req, res) {
         let temp = tag[i];
         connection.query(query, temp, function (err1, result1) {
             connection.query(getPlaceNumberQuery, name, function (err2, result2) {
-                console.log(result2[0].number);
+                //console.log(result2[0].number);
                 connection.query(getHashtagNumberQuery, temp, function (err3, result3) {
                     //console.log(result3);
                     connection.query(insertPlaceHashtagQuery, [result2[0].number, result3[0].number], function (err4, result4) {
@@ -174,10 +175,8 @@ app.post('/user-add', function (req, res) {
                 });
             });
         });
-        res.redirect('/user-add-5');
     }
-
-
+    res.redirect('/user-add-5');
 });
 
 app.get('/logout', function (req, res) {
@@ -446,4 +445,4 @@ app.post('/review', function (req, response) {
     })
 })
 
-app.listen(8080);
+app.listen(80);
