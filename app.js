@@ -158,14 +158,14 @@ app.post('/user-add', function (req, res) {
     });
 
     var query = `INSERT INTO hashtag(name) VALUES (?);`;
-    var getPlaceNumberQuery = `select place.number from place where place.name = ? and place.location = ?`;
+    var getPlaceNumberQuery = `select place.number from place where place.name = ? and place.location = ? and place.category = ?`;
     var getHashtagNumberQuery = `select hashtag.number from hashtag where hashtag.name = ?`;
     var insertPlaceHashtagQuery = `insert into place_hashtag(fk_place_number, fk_hashtag_number) values (?, ?)`;
 
     for (var i = 0; i < tag.length; i++) {
         let temp = tag[i];
         connection.query(query, temp, function (err1, result1) {
-            connection.query(getPlaceNumberQuery, [name, address], function (err2, result2) {
+            connection.query(getPlaceNumberQuery, [name, address, category], function (err2, result2) {
                 //console.log(result2[0].number);
                 connection.query(getHashtagNumberQuery, temp, function (err3, result3) {
                     //console.log(result3);
