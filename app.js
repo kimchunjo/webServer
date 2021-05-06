@@ -412,9 +412,19 @@ app.get('/detail', function (req, res) {
 
         connection.query(searchHashtagNumber, placeId, function (err, hashtagNumberResult) {
             for (var i = 0; i < hashtagNumberResult.length; i++) {
+                console.log(hashtagNumberResult);
                 searchHashtag += `select name from hashtag where number = ${hashtagNumberResult[i].fk_hashtag_number};`;
             }
             connection.query(searchHashtag, function (err, hashtagResult) {
+                var hashtagNames = [];
+                var count = hashtagResult.length
+                if (count == 1){
+                    hashtagNames.push(hashtagResult[0].name);
+                }else{
+                    for(var i = 0; i< count; i++) {
+                        hashtagNames.push(hashtagResult[i][0].name);
+                    }
+                }
                 connection.query(searchReview, placeId, function (err, reviews) {
                     if (req.session.id1) {
                         res.render('detail', {
@@ -423,7 +433,7 @@ app.get('/detail', function (req, res) {
                             userInfo: req.session.id1,
                             reviews: reviews,
                             loggedUser: true,
-                            hashtagNames: hashtagResult
+                            hashtagNames: hashtagNames
                         });
                     } else {
                         res.render('detail', {
@@ -431,7 +441,7 @@ app.get('/detail', function (req, res) {
                             placeInfo: result[0],
                             reviews: reviews,
                             loggedUser: false,
-                            hashtagNames: hashtagResult
+                            hashtagNames: hashtagNames
                         });
                     }
                 })
