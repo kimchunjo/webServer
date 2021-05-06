@@ -27,7 +27,7 @@ function createDetailMap(options) {
 
     var icon = L.icon({
         iconUrl: settings.markerPath,
-        iconSize: [25, 37.5],
+        iconSize: [33, 37],
         popupAnchor: [0, -18],
         tooltipAnchor: [0, 19]
     });

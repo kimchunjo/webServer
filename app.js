@@ -128,7 +128,7 @@ app.get('/user-add-0', function (req, res) {
 app.get('/user-add-1', function (req, res) {
     res.render('user-add-1')
 });
-app.get('/user-add-5', function(req, res){
+app.get('/user-add-5', function (req, res) {
     res.render('user-add-5');
 })
 app.post('/user-add', function (req, res) {
@@ -160,7 +160,7 @@ app.post('/user-add', function (req, res) {
     var query = `INSERT INTO hashtag(name) VALUES (?);`;
     var getPlaceNumberQuery = `select place.number from place where place.name = ? and place.location = ? and place.category = ?`;
     var getHashtagNumberQuery = `select hashtag.number from hashtag where hashtag.name = ?`;
-    var insertPlaceHashtagQuery = `insert into place_hashtag(fk_place_number, fk_hashtag_number) values (?, ?)`;
+    var insertPlaceHashtagQuery = `insert into place_hashtag(fk_place_number, fk_hashtag_number, hashtag_point) values (?, ?, 3)`;
 
     for (var i = 0; i < tag.length; i++) {
         let temp = tag[i];
@@ -334,7 +334,8 @@ app.get('/category-map', function (req, res) {
         // searchWord를 이용해 hashTag Table을 조회하고 해당 해쉬태그의 id(number)를 가져온다.
         connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err3, placeNumber) {
             // hashTag Number을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
-            for (var i = 0; i < placeNumber.length; i++) searchPlaceNameQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
+            for (var i = 0; i < placeNumber.length; i++)
+                searchPlaceNameQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
             connection.query(searchPlaceNameQuery, function (err4, places) {
                 // searchWord에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
                 var allPlace = [];
@@ -389,8 +390,10 @@ app.get('/detail', function (req, res) {
     /* DB 조회를 위한 쿼리 */
     var searchPlace = `select * from place where place.number = ?`;
     var searchReview = `select * from review where review.fk_place_number = ?`
-    connection.query(searchPlace, placeId, function (err, result) {
+    var searchHashtagNumber = `select * from place_hashtag where fk_place_number = ?`
+    var searchHashtag = "";
 
+    connection.query(searchPlace, placeId, function (err, result) {
         // 이미지
         let mainImage = ((result[0].image).split("@#"))[1]; // main에 보여질 이미지를 선택한다.
         let temp = (result[0].image).split("@#");
@@ -406,28 +409,39 @@ app.get('/detail', function (req, res) {
         else if (result[0].star < 0) result[0].stack = 0;
         result[0].star = Math.round(result[0].star);
 
+
+        connection.query(searchHashtagNumber, placeId, function (err, hashtagNumberResult) {
+            for (var i = 0; i < hashtagNumberResult.length; i++) {
+                searchHashtag += `select name from hashtag where number = ${hashtagNumberResult[i].fk_hashtag_number};`;
+            }
+            connection.query(searchHashtag, function (err, hashtagResult) {
+                connection.query(searchReview, placeId, function (err, reviews) {
+                    if (req.session.id1) {
+                        res.render('detail', {
+                            mainImage: mainImage,
+                            placeInfo: result[0],
+                            userInfo: req.session.id1,
+                            reviews: reviews,
+                            loggedUser: true,
+                            hashtagNames: hashtagResult
+                        });
+                    } else {
+                        res.render('detail', {
+                            mainImage: mainImage,
+                            placeInfo: result[0],
+                            reviews: reviews,
+                            loggedUser: false,
+                            hashtagNames: hashtagResult
+                        });
+                    }
+                })
+            })
+        })
         // Opening Hours
         // 수정 필요
-        console.log(result[0]);
+        //console.log(result[0]);
         // 리뷰
-        connection.query(searchReview, placeId, function (err, reviews) {
-            if (req.session.id1) {
-                res.render('detail', {
-                    mainImage: mainImage,
-                    placeInfo: result[0],
-                    userInfo: req.session.id1,
-                    reviews: reviews,
-                    loggedUser: true
-                });
-            } else {
-                res.render('detail', {
-                    mainImage: mainImage,
-                    placeInfo: result[0],
-                    reviews: reviews,
-                    loggedUser: false
-                });
-            }
-        })
+
     })
 })
 
@@ -437,13 +451,30 @@ app.post('/review', function (req, response) {
     let rating = req.body.rating;
     let writer = req.body.writer;
     let review = req.body.review;
+    let tag = req.body.tag;
+    tag = tag.trim();
+    tag = tag.split(" ");
     let today = new Date();
     let month = today.getMonth() + 1
-    let date = today.getFullYear() + "-" + month + "-" + today.getDate()+" "+today.getHours()+":"+today.getMinutes();
+    let date = today.getFullYear() + "-" + month + "-" + today.getDate() + " " + today.getHours() + ":" + today.getMinutes();
+
+    var insertPlaceHashtagQuery = "";
     let writeReviewQuery = `INSERT INTO review (user_id,datetime, starpoint , contents, fk_user_number, fk_place_number) VALUES('${writer}', '${date}', '${rating}', '${review}', '${userNumber}', '${placeNumber}');`;
-    connection.query(writeReviewQuery, function (err, res) {
-        response.send({result:true});
-    })
+    var insertHashtagQuery = "";
+
+    for (var i = 0; i < tag.length; i++) {
+        if (tag[i] != "") {
+            insertHashtagQuery += `insert into hashtag(name) values ("${tag[i]}");`;
+            insertPlaceHashtagQuery += `insert into place_hashtag(fk_place_number, fk_hashtag_number, hashtag_point) values (${placeNumber}, (select number from hashtag where name = "${tag[i]}"), 1) on duplicate key update hashtag_point = hashtag_point + 1;`;
+        }
+    }
+    connection.query(insertHashtagQuery, function (err4, result) {
+        connection.query(insertPlaceHashtagQuery, function (err4, result) {
+            connection.query(writeReviewQuery, function (err, res) {
+                response.send({result: true});
+            });
+        });
+    });
 })
 // local 업로드
 app.listen(8080);

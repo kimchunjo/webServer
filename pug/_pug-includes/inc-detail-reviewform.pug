@@ -3,7 +3,7 @@
         #leaveReview.collapse.show.mt-4
             h5.mb-4 Leave a review
 
-            form(id="contact-form", method="get", action="/review", class="form")
+            form(id="contact-form", method="post", action="/review", class="form")
                 .row
                     .col-sm-6
                         .form-group
@@ -21,6 +21,8 @@
                 .form-group
                     label.form-label(for="review") Review text *
                     textarea(rows="4", name="review", id="review", class="form-control", placeholder="Enter your review", required)
+                    textarea.d-none.form-control(name="tag" id="hide_tag_box")
+                    div(id="description_tag_box")
                 input.d-none(id="placeNumber" name="placeNumber" value=`${placeInfo.number}`)
                 button(type="button", class="btn btn-muted", onclick="writeReview(this)", id="reviewSubmit" disabled) Post review
     else

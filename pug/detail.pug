@@ -41,6 +41,12 @@ block content
         .container
             .row
                 .col-lg-8
+                    .text-block
+
+                        p.text-muted
+                            each val in hashtagNames
+                                if(val[0].name.length != 0)
+                                    span ##{val[0].name}&nbsp
 
                     // About Listing
                     .text-block
@@ -178,6 +184,6 @@ block additionalScripts
             mapCenter: [#{placeInfo.latitude}, #{placeInfo.longitude}],
             markerShow: true,
             markerPosition: [#{placeInfo.latitude}, #{placeInfo.longitude}],
-            markerPath: 'img/marker.svg',
+            markerPath: 'img/Marker.png',
         })
     

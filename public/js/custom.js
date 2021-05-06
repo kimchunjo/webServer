@@ -26,6 +26,8 @@ $(document).ready(function () {
     /* 장소 세부 페이지 */
     $('#review').on('propertychange change keyup paste input', function () {
         let target = $('#reviewSubmit');
+        let target2 = $('#review');
+        checkTag(target2);
         if ($('#review').val().trim() == "") {
             $(target).addClass('btn-muted').removeClass('btn-primary').attr('disabled', 'disabled');
         } else {
@@ -218,6 +220,7 @@ function writeReview(self) {
         rating: $('#rating').val(),
         writer: $('#writer').val(),
         review: $('#review').val(),
+        tag: $('#hide_tag_box').val()
     };
 
     let dataInfo = {
@@ -261,5 +264,7 @@ function writeReview(self) {
             }
         })
     $('#review').val('');
+    //$('#hide_tag_box').val('');
+    $('#description_tag_box').empty();
     $('#reviewSubmit').addClass('btn-muted').removeClass('btn-primary').attr('disabled', 'disabled');
 }
