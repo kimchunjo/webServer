@@ -31,19 +31,18 @@ block content
                                 i.fa.fa-xs.fa-star.text-gray-200.mr-4
                             else
                                 i.fa.fa-xs.fa-star.text-gray-200
-                        | 8 Reviews
+                        | #{placeInfo.review_count}&nbsp;Reviews
                 
                 .calltoactions
                     a.btn.btn-primary(href="#leaveReview", onclick="$('#leaveReview').collapse('show')", data-smooth-scroll) Leave a Review
 
 
-    section.py-6
+    section.py-4
         .container
             .row
                 .col-lg-8
-                    .text-block
-
-                        p.text-muted
+                    p.text-muted
+                        if(hashtagNames != undefined)
                             each val in hashtagNames
                                 if(val.length != 0)
                                     span ##{val}&nbsp
@@ -52,9 +51,8 @@ block content
                     .text-block
                         h3.mb-3 About
                         
-                        p.text-muted  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.
-                        
-                        p.text-muted  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        p.text-muted  #{placeInfo.explanation}
+
                     .text-block
                         // Listing Location
                         h3.mb-4 Location
