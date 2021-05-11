@@ -89,7 +89,16 @@ block content
 
                     .text-block
                         include _pug-includes/inc-detail-reviews.pug
-
+                        - if(reviews.length > 0 )
+                            button(type="button", class="btn btn-outline-primary", data-toggle="modal" data-target="#reviewModal", style="margin-top:24px") 리뷰 #{reviews.length}개 모두 보기
+                        <!-- Modal -->
+                        div(class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true")
+                            div(class="modal-dialog modal-dialog-centered modal-lg" role="document")
+                                div(class="modal-content")
+                                    div(class="modal-body" )
+                                        button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                                            span(aria-hidden="true") &times;
+                                        include _pug-includes/inc-detail-reviews-total.pug
                         include _pug-includes/inc-detail-reviewform.pug   
                                             
                 
