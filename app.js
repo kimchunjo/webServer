@@ -234,6 +234,9 @@ app.get('/user-profile', function (req, res) {
 app.get('/category', function (req, res) {
     let searchWord = req.query.search;
     let searchLocation = req.query.location;
+    let sortCatecory = req.query.sort;
+    let lat = req.query.lat;
+    let lon = req.query.lon;
 
     let pagination = req.query.pagination;
     if (pagination === undefined) pagination = 0;
@@ -243,11 +246,12 @@ app.get('/category', function (req, res) {
         searchWord = '내 취향에 맞는 장소'
     if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
         searchLocation = '근처'
-
+    if (sortCatecory === undefined || sortCatecory === "") // 검색시 카테고리 newest
+        sortCatecory = 'Newest'
 
     /* DB 조회를 위한 쿼리 */
     var searchHashtagQuery = `select number from hashtag where hashtag.name = ?`;
-    var searchPlaceNumberQuery = `select fk_place_number from place_hashtag where fk_hashtag_number = ?`;
+    var searchPlaceNumberQuery = `select fk_place_number from place_hashtag where fk_hashtag_number = ? and hashtag_point >= 3`;
     var searchPlaceNameQuery = "";
 
     /* DB 조회를 통해 장소 배열을 생성하고 렌더링 */
@@ -256,55 +260,95 @@ app.get('/category', function (req, res) {
         if (hashTag.length !== 0) {
             // searchWord 와 일치하는 해시태그 값을 갖는 장소가 있을 때
             connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err1, placeNumber) {
-                // hashTag Number 을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
-                for (var i = 0; i < placeNumber.length; i++) searchPlaceNameQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
-                connection.query(searchPlaceNameQuery, function (err2, places) {
-                    // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
-                    var allPlace = [];
-                    var count = places.length;
-                    if (count === 1) {
-                        for (var i = 0; i < count; i++) {
-                            let temp = places[i].image;
-                            temp = temp.split("@#");
-                            places[i].image = temp[1];
-                            allPlace.push(places[i]);
-                        }
-                    } else {
-                        for (var i = 0; i < count; i++) {
-                            let temp = places[i][0].image;
-                            temp = temp.split("@#");
-                            places[i][0].image = temp[1];
-                            allPlace.push(places[i][0]);
-                        }
-                    }
+                    // hashTag Number 을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
+                    for (var i = 0; i < placeNumber.length; i++)
+                        searchPlaceNameQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
+                    if (placeNumber.length !== 0) {
 
-                    allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
-                    if (req.session.id1) {
-                        res.render('category-custom', {
-                            path: '',
-                            title: '검색결과',
-                            searchWord: searchWord,
-                            searchLocation: searchLocation,
-                            example: allPlace,
-                            placeCount: count,
-                            pagination: pagination,
-                            loggedUser: true
+                        connection.query(searchPlaceNameQuery, function (err2, places) {
+
+                            console.log(places);
+                            // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
+                            var allPlace = [];
+                            var count = places.length;
+                            if (count === 1) {
+                                for (var i = count - 1; i >= 0; i--) {
+                                    let temp = places[i].image;
+                                    temp = temp.split("@#");
+                                    places[i].image = temp[1];
+                                    allPlace.push(places[i]);
+                                }
+                            } else {
+                                if (sortCatecory == "Newest") {
+                                    for (var i = count - 1; i >= 0; i--) {
+                                        let temp = places[i][0].image;
+                                        temp = temp.split("@#");
+                                        places[i][0].image = temp[1];
+                                        allPlace.push(places[i][0]);
+                                    }
+                                } else if (sortCatecory == "Oldest") {
+                                    for (var i = 0; i < count; i++) {
+                                        let temp = places[i][0].image;
+                                        temp = temp.split("@#");
+                                        places[i][0].image = temp[1];
+                                        allPlace.push(places[i][0]);
+                                    }
+                                } else if (sortCatecory == "Closest") {
+                                    for (var i = 0; i < count; i++) {
+                                        for (var j = i + 1; j < count; j++) {
+                                            if ((((places[i][0].latitude) - (lat)) * ((places[i][0].latitude) - (lat))) + (((places[i][0].longitude) - (lon)) * ((places[i][0].longitude) - (lon))) > (((places[j][0].latitude) - (lat)) * ((places[j][0].latitude) - (lat))) + (((places[j][0].longitude) - (lon)) * ((places[j][0].longitude) - (lon)))) {
+                                                let temp = places[i][0];
+                                                places[i][0] = places[j][0];
+                                                places[j][0] = temp;
+                                            }
+                                        }
+                                    }
+                                    for (var i = 0; i < count; i++) {
+                                        let temp = places[i][0].image;
+                                        temp = temp.split("@#");
+                                        places[i][0].image = temp[1];
+                                        allPlace.push(places[i][0]);
+                                    }
+                                }
+                            }
+
+                            allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
+                            if (req.session.id1) {
+                                res.render('category-custom', {
+                                    path: '',
+                                    title: '검색결과',
+                                    searchWord: searchWord,
+                                    searchLocation: searchLocation,
+                                    example: allPlace,
+                                    placeCount: count,
+                                    pagination: pagination,
+                                    loggedUser: true,
+                                    sortCatecory: sortCatecory,
+                                    lat: lat,
+                                    lon: lon
+                                });
+                            } else {
+                                res.render('category-custom', {
+                                    path: '',
+                                    title: '검색결과',
+                                    searchWord: searchWord,
+                                    searchLocation: searchLocation,
+                                    example: allPlace,
+                                    placeCount: count,
+                                    pagination: pagination,
+                                    loggedUser: false,
+                                    sortCatecory: sortCatecory,
+                                    lat: lat,
+                                    lon: lon
+                                });
+                            }
 
                         });
-                    } else {
-                        res.render('category-custom', {
-                            path: '',
-                            title: '검색결과',
-                            searchWord: searchWord,
-                            searchLocation: searchLocation,
-                            example: allPlace,
-                            placeCount: count,
-                            pagination: pagination,
-                            loggedUser: false
-                        });
+                    }else {
+                        res.redirect('/');
                     }
-                });
-            });
+                }
+            );
         } else {
             // 검색 결과가 없을 때
             res.redirect('/');
@@ -315,6 +359,10 @@ app.get('/category', function (req, res) {
 app.get('/category-map', function (req, res) {
     let searchWord = req.query.search;
     let searchLocation = req.query.location;
+    let sortCatecory = req.query.sort;
+    let lat = req.query.lat;
+    let lon = req.query.lon;
+
     if (searchWord === undefined || searchWord === "") // 검색어를 입력하변지 않은 경우 사용자 취향을 고려한 검색
         searchWord = '내 취향에 맞는 장소'
     if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
@@ -323,7 +371,7 @@ app.get('/category-map', function (req, res) {
 
     /* DB 조회를 위한 쿼리 */
     var searchHashtagQuery = `select number from hashtag where hashtag.name = ?`;
-    var searchPlaceNumberQuery = `select fk_place_number from place_hashtag where fk_hashtag_number = ?`;
+    var searchPlaceNumberQuery = `select fk_place_number from place_hashtag where fk_hashtag_number = ? and hashtag_point >= 3`;
     var searchPlaceNameQuery = "";
     var searchLatitude = `select latitude from place where hashtag.name = ?`;
     var searchLongitude;
@@ -339,19 +387,46 @@ app.get('/category-map', function (req, res) {
                 // searchWord에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
                 var allPlace = [];
                 var count = places.length;
+                var allPlace = [];
+                var count = places.length;
                 if (count === 1) {
-                    for (var i = 0; i < count; i++) {
+                    for (var i = count - 1; i >= 0; i--) {
                         let temp = places[i].image;
                         temp = temp.split("@#");
                         places[i].image = temp[1];
                         allPlace.push(places[i]);
                     }
                 } else {
-                    for (var i = 0; i < count; i++) {
-                        let temp = places[i][0].image;
-                        temp = temp.split("@#");
-                        places[i][0].image = temp[1];
-                        allPlace.push(places[i][0]);
+                    if (sortCatecory == "Newest") {
+                        for (var i = count - 1; i >= 0; i--) {
+                            let temp = places[i][0].image;
+                            temp = temp.split("@#");
+                            places[i][0].image = temp[1];
+                            allPlace.push(places[i][0]);
+                        }
+                    } else if (sortCatecory == "Oldest") {
+                        for (var i = 0; i < count; i++) {
+                            let temp = places[i][0].image;
+                            temp = temp.split("@#");
+                            places[i][0].image = temp[1];
+                            allPlace.push(places[i][0]);
+                        }
+                    } else if (sortCatecory == "Closest") {
+                        for (var i = 0; i < count; i++) {
+                            for (var j = i + 1; j < count; j++) {
+                                if ((((places[i][0].latitude) - (lat)) * ((places[i][0].latitude) - (lat))) + (((places[i][0].longitude) - (lon)) * ((places[i][0].longitude) - (lon))) > (((places[j][0].latitude) - (lat)) * ((places[j][0].latitude) - (lat))) + (((places[j][0].longitude) - (lon)) * ((places[j][0].longitude) - (lon)))) {
+                                    let temp = places[i][0];
+                                    places[i][0] = places[j][0];
+                                    places[j][0] = temp;
+                                }
+                            }
+                        }
+                        for (var i = 0; i < count; i++) {
+                            let temp = places[i][0].image;
+                            temp = temp.split("@#");
+                            places[i][0].image = temp[1];
+                            allPlace.push(places[i][0]);
+                        }
                     }
                 }
 
@@ -363,7 +438,10 @@ app.get('/category-map', function (req, res) {
                         searchLocation: searchLocation,
                         example: allPlace,
                         placeCount: count,
-                        loggedUser: true
+                        loggedUser: true,
+                        sortCatecory: sortCatecory,
+                        lat: lat,
+                        lon: lon
                     });
                 } else {
                     res.render('category-map-custom', {
@@ -373,7 +451,10 @@ app.get('/category-map', function (req, res) {
                         searchLocation: searchLocation,
                         example: allPlace,
                         placeCount: count,
-                        loggedUser: false
+                        loggedUser: false,
+                        sortCatecory: sortCatecory,
+                        lat: lat,
+                        lon: lon
                     });
                 }
             });
@@ -428,7 +509,7 @@ app.get('/detail', function (req, res) {
                             let dateObj = new Date(timeSource);
                             let timeString_KR = dateObj.toLocaleString("ko-KR", {timeZone: "Asia/Seoul"});
                             timeString_KR = timeString_KR.substr(0, timeString_KR.length - 3);
-                            timeString_KR = timeString_KR.substr(2,timeString_KR.length)
+                            timeString_KR = timeString_KR.substr(2, timeString_KR.length)
                             reviews[i].datetime = timeString_KR;
                         }
                         sum /= reviews.length;

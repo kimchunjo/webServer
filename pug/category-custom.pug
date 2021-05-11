@@ -5,6 +5,7 @@ block vars
     - var mapUsed = true
     - var hideTopbar = true
 
+
 block content
 
     .container-fluid.py-5.px-lg-5
@@ -13,7 +14,7 @@ block content
                     h1.display-5.font-weight-bold.text-serif.mb-4 #{searchLocation} "#{searchWord}"에 대한 결과
                 // 지도로 표시하기 버튼 추가
                 .col-12
-                     a.btn.btn-outline-primary.mb-4.float-right(href=`/category-map?search=${searchWord}&location=${searchLocation}`)
+                     a.btn.btn-outline-primary.mb-4.float-right(href=`/category-map?search=${searchWord}&location=${searchLocation}&sort=${sortCatecory}&lat=${lat}&lon=${lon}`)
                         | MAP ON
             .row
 

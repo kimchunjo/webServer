@@ -34,7 +34,49 @@ $(document).ready(function () {
             $(target).removeClass('btn-muted').addClass('btn-primary').removeAttr('disabled');
         }
     })
+
+    $('#form_sort').on('change', function () {
+        let selected = $(this).val();
+        var searchWord = getParameterByName('search');
+        var searchLocation = getParameterByName('location');
+        if (selected == "Closest") {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${position.coords.latitude}&lon=${position.coords.longitude}`;
+                    }
+                )
+            }
+        } else {
+            window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}`;
+        }
+    });
+
+    $('#form_sort_map').on('change', function () {
+        let selected = $(this).val();
+        var searchWord = getParameterByName('search');
+        var searchLocation = getParameterByName('location');
+        if (selected == "Closest") {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        window.location.href = `/category-map?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${position.coords.latitude}&lon=${position.coords.longitude}`;
+                    }
+                )
+            }
+        } else {
+            window.location.href = `/category-map?search=${searchWord}&location=${searchLocation}&sort=${selected}`;
+        }
+    });
+
 })
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
 
 
 /* signup page */

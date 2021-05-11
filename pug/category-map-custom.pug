@@ -13,7 +13,7 @@ block content
                 .row.ml-0.p-0
                     h1.display-4.font-weight-bold.text-serif.mb-4 #{searchWord}
                     .col-12
-                        a.btn.btn-outline-primary.mb-4.float-right(href=`/category?search=${searchWord}`)
+                        a.btn.btn-outline-primary.mb-4.float-right(href=`/category?search=${searchWord}&location=${searchLocation}&sort=${sortCatecory}&lat=${lat}&lon=${lon}`)
                             | MAP OFF
 
                 include _pug-includes/inc-var-neighbourhoods.pug
@@ -126,7 +126,7 @@ block content
                         
                 hr.my-4
 
-                include _pug-includes/inc-category-sortby.pug
+                include _pug-includes/inc-category-map-sortby.pug
 
                 - var itemClass = 'col-sm-6 mb-5 hover-animate'
                 
