@@ -404,7 +404,6 @@ app.get('/detail', function (req, res) {
         }
 
         connection.query(searchHashtagNumber, placeId, function (err, hashtagNumberResult) {
-            console.log(hashtagNumberResult)
             for (var i = 0; i < hashtagNumberResult.length; i++)
                 searchHashtag += `select name from hashtag where number = ${hashtagNumberResult[i].fk_hashtag_number};`;
             connection.query(searchHashtag, function (err, hashtagResult) {
@@ -417,14 +416,21 @@ app.get('/detail', function (req, res) {
                         hashtagNames.push(hashtagResult[i][0].name);
                 }
                 connection.query(searchReview, placeId, function (err, reviews) {
-                    // 평점
+                    // 평점 및 날짜
                     if (!reviews) {
                         result[0].star = 0; // 리뷰가 없을 때
                         result[0].review_count = 0;
-                    }
-                    else {
+                    } else {
                         let sum = 0;
-                        for (let i = 0; i < reviews.length; i++) sum += reviews[i].starpoint;
+                        for (let i = 0; i < reviews.length; i++) {
+                            sum += reviews[i].starpoint;
+                            let timeSource = reviews[i].datetime;
+                            let dateObj = new Date(timeSource);
+                            let timeString_KR = dateObj.toLocaleString("ko-KR", {timeZone: "Asia/Seoul"});
+                            timeString_KR = timeString_KR.substr(0, timeString_KR.length - 3);
+                            timeString_KR = timeString_KR.substr(2,timeString_KR.length)
+                            reviews[i].datetime = timeString_KR;
+                        }
                         sum /= reviews.length;
                         result[0].star = sum;
                         result[0].review_count = reviews.length;
