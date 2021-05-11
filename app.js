@@ -279,7 +279,6 @@ app.get('/category', function (req, res) {
                     }
 
                     allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
-                    console.log(pagination);
                     if (req.session.id1) {
                         res.render('category-custom', {
                             path: '',
@@ -390,12 +389,12 @@ app.get('/detail', function (req, res) {
     /* DB 조회를 위한 쿼리 */
     var searchPlace = `select * from place where place.number = ?`;
     var searchReview = `select * from review where review.fk_place_number = ?`
-    var searchHashtagNumber = `select * from place_hashtag where fk_place_number = ?`
+    var searchHashtagNumber = `select * from place_hashtag where fk_place_number = ? and hashtag_point >= 3`
     var searchHashtag = "";
 
     connection.query(searchPlace, placeId, function (err, result) {
         // 이미지
-        let mainImage = ((result[0].image).split("@#"))[1]; // main에 보여질 이미지를 선택한다.
+        let mainImage = ((result[0].image).split("@#"))[1]; // main 에 보여질 이미지를 선택한다.
         let temp = (result[0].image).split("@#");
         result[0].image = [];
         for (let i = 0; i < temp.length; i++) {
@@ -404,28 +403,36 @@ app.get('/detail', function (req, res) {
             }
         }
 
-        // 평점
-        if (result[0].star > 5) result[0].star = 5;
-        else if (result[0].star < 0) result[0].stack = 0;
-        result[0].star = Math.round(result[0].star);
-
-
         connection.query(searchHashtagNumber, placeId, function (err, hashtagNumberResult) {
-            for (var i = 0; i < hashtagNumberResult.length; i++) {
-                console.log(hashtagNumberResult);
+            console.log(hashtagNumberResult)
+            for (var i = 0; i < hashtagNumberResult.length; i++)
                 searchHashtag += `select name from hashtag where number = ${hashtagNumberResult[i].fk_hashtag_number};`;
-            }
             connection.query(searchHashtag, function (err, hashtagResult) {
                 var hashtagNames = [];
                 var count = hashtagResult.length
-                if (count == 1){
+                if (count == 1)
                     hashtagNames.push(hashtagResult[0].name);
-                }else{
-                    for(var i = 0; i< count; i++) {
+                else {
+                    for (var i = 0; i < count; i++)
                         hashtagNames.push(hashtagResult[i][0].name);
-                    }
                 }
                 connection.query(searchReview, placeId, function (err, reviews) {
+                    // 평점
+                    if (!reviews) {
+                        result[0].star = 0; // 리뷰가 없을 때
+                        result[0].review_count = 0;
+                    }
+                    else {
+                        let sum = 0;
+                        for (let i = 0; i < reviews.length; i++) sum += reviews[i].starpoint;
+                        sum /= reviews.length;
+                        result[0].star = sum;
+                        result[0].review_count = reviews.length;
+                    }
+                    if (result[0].star > 5) result[0].star = 5;
+                    else if (result[0].star < 0) result[0].star = 0;
+                    result[0].star = Math.round(result[0].star);
+
                     if (req.session.id1) {
                         res.render('detail', {
                             mainImage: mainImage,
@@ -447,11 +454,6 @@ app.get('/detail', function (req, res) {
                 })
             })
         })
-        // Opening Hours
-        // 수정 필요
-        //console.log(result[0]);
-        // 리뷰
-
     })
 })
 
@@ -468,16 +470,16 @@ app.post('/review', function (req, response) {
     let month = today.getMonth() + 1
     let date = today.getFullYear() + "-" + month + "-" + today.getDate() + " " + today.getHours() + ":" + today.getMinutes();
 
-    var insertPlaceHashtagQuery = "";
+    var insertHashtagQuery = ""; // hash tag 테이블에 리뷰에서 얻은 새로운 해쉬 태그를 넣는 쿼리.
+    var insertPlaceHashtagQuery = ""; // place hash tag 테이블에 새로운 리뷰와 장소를 연결시키는 쿼리.
     let writeReviewQuery = `INSERT INTO review (user_id,datetime, starpoint , contents, fk_user_number, fk_place_number) VALUES('${writer}', '${date}', '${rating}', '${review}', '${userNumber}', '${placeNumber}');`;
-    var insertHashtagQuery = "";
-
     for (var i = 0; i < tag.length; i++) {
         if (tag[i] != "") {
             insertHashtagQuery += `insert into hashtag(name) values ("${tag[i]}");`;
             insertPlaceHashtagQuery += `insert into place_hashtag(fk_place_number, fk_hashtag_number, hashtag_point) values (${placeNumber}, (select number from hashtag where name = "${tag[i]}"), 1) on duplicate key update hashtag_point = hashtag_point + 1;`;
         }
     }
+
     connection.query(insertHashtagQuery, function (err4, result) {
         connection.query(insertPlaceHashtagQuery, function (err4, result) {
             connection.query(writeReviewQuery, function (err, res) {
@@ -486,7 +488,6 @@ app.post('/review', function (req, response) {
         });
     });
 })
-// local 업로드
+
+
 app.listen(8080);
-// 서버 업로드
-//app.listen(80);
