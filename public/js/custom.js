@@ -35,7 +35,7 @@ $(document).ready(function () {
         }
     })
 
-    $('#review_search').on('change input paste',function (){
+    $('#review_search').on('change paste',function (){
         let target = $('#reviewModal').find('.review');
         let keyword =$('#review_search').val();
         for(let i=0; i<target.length; i++){
@@ -235,6 +235,8 @@ function writeReview(self) {
     year = (String(year)).substr(2,String(year).length)
     if(hours >= 12)
         hours = "오후 "+ (parseInt(hours)-12);
+    else
+        hours = "오전 "+ parseInt(hours);
     let date = year + ". " + month + ". " + today.getDate() + ". " + hours + ":" + today.getMinutes();
 
     let data = {
