@@ -35,6 +35,22 @@ $(document).ready(function () {
         }
     })
 
+    $('#review_search').on('change input paste',function (){
+        let target = $('#reviewModal').find('.review');
+        let keyword =$('#review_search').val();
+        for(let i=0; i<target.length; i++){
+            let value = $(target[i]).find('p').text();
+            if(value.indexOf(keyword) !== -1){
+                $(target[i]).addClass('d-block').addClass('d-sm-flex').fadeIn();
+            }else if(keyword == ""){
+                $(target[i]).addClass('d-block').addClass('d-sm-flex').fadeIn();
+            }else{
+                $(target[i]).removeClass('d-block').removeClass('d-sm-flex').fadeOut();
+            }
+        }
+    })
+
+    /* 장소 검색 결과 페이지 */
     $('#form_sort').on('change', function () {
         let selected = $(this).val();
         var searchWord = getParameterByName('search');
@@ -215,48 +231,12 @@ function writeReview(self) {
     let today = new Date();
     let month = today.getMonth() + 1
     let hours = today.getHours();
-    let minutes = today.getMinutes();
-    if (minutes < 10) minutes = '0' + minutes;
-    if (hours < 10) hours = '0' + hours;
-    switch (month) {
-        case 1:
-            month = 'JAN';
-            break;
-        case 2:
-            month = 'FEB';
-            break;
-        case 3:
-            month = 'MAR';
-            break;
-        case 4:
-            month = 'APR';
-            break;
-        case 5:
-            month = 'MAY';
-            break;
-        case 6:
-            month = 'JUN';
-            break;
-        case 7:
-            month = 'JUL';
-            break;
-        case 8:
-            month = 'AUG';
-            break;
-        case 9:
-            month = 'SEP';
-            break;
-        case 10:
-            month = 'OCT';
-            break;
-        case 11:
-            month = 'NOV';
-            break;
-        case 12:
-            month = 'DEC';
-            break;
-    }
-    let date = month + " " + today.getDate() + " " + today.getFullYear() + " " + hours + ":" + minutes
+    let year = today.getFullYear();
+    year = (String(year)).substr(2,String(year).length)
+    if(hours >= 12)
+        hours = "오후 "+ (parseInt(hours)-12);
+    let date = year + ". " + month + ". " + today.getDate() + ". " + hours + ":" + today.getMinutes();
+
     let data = {
         placeNumber: $('#placeNumber').val(),
         rating: $('#rating').val(),
@@ -284,9 +264,9 @@ function writeReview(self) {
                 rating += `<i class="fa fa-xs fa-star text-gray-200"></i>`
             }
             let new_review = `
-                <div class="media d-block d-sm-flex review">
-                    <div class="text-md-center mr-4 mr-xl-5">
-                        <img class="d-block avatar avatar-xl p-2 mb-2" src="img/avatar/avatar-8.jpg" alt="aa@11">
+                <div class="media d-block d-sm-flex review review-in-detail">
+                    <div class="text-md-center mr-2 mr-xl-4">
+                        <img class="d-block avatar avatar-lg p-1 mb-2" src="img/avatar/avatar-8.jpg" alt="aa@11">
                         <span class="text-uppercase text-muted text-sm">${date}</span>
                     </div>
                     <div class="media-body">
@@ -298,7 +278,7 @@ function writeReview(self) {
                     </div>
                 </div>
             `;
-            let review = $('.review').last();
+            let review = $('.review-in-detail').last();
             if (review.length !== 0) {
                 $(review).after(new_review)
             } else {
