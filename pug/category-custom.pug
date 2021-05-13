@@ -11,7 +11,7 @@ block content
     .container-fluid.py-5.px-lg-5
             .row.border-bottom.mb-4
                 .col-12
-                    h1.display-5.font-weight-bold.text-serif.mb-4 #{searchLocation} "#{searchWord}"에 대한 결과
+                    h1.display-4.mb-4.text-xl.font-weight-bold #{searchLocation} #{searchWord}에 대한 결과
                 // 지도로 표시하기 버튼 추가
                 .col-12
                      a.btn.btn-outline-primary.mb-4.float-right(href=`/category-map?search=${searchWord}&location=${searchLocation}&sort=${sortCatecory}&lat=${lat}&lon=${lon}`)
@@ -25,19 +25,21 @@ block content
                     form(action="#").pr-xl-3
                         // 방문 시간 추가
                         .mb-4
-                            label.form-label 방문시간
-                            - var time = ['오전', '오후','저녁']
-                            ul.list-unstyled.mb-0
+                            label.form-label 시간
+                            - var time = ['지금','오전', '오후','저녁']
+                            ul.list-inline.mb-0
                                 each val,index in time
-                                    li
+                                    li.list-inline-item
                                         .custom-control.custom-radio
-                                            input.custom-control-input(type='checkbox', id=`time_${index}`, name="time")
+                                            if(index == 0)
+                                                input.custom-control-input(type='checkbox', id=`time_${index}`, name="time", checked)
+                                            else
+                                                input.custom-control-input(type='checkbox', id=`time_${index}`, name="time")
                                             label.custom-control-label(for=`time_${index}`) #{val}
 
                         //거리 표시 추가
                         .mb-4
-                            label.form-label Distacne
-
+                            label.form-label 거리
                             #slider-snap-distance.text-primary
                             .nouislider-values
                                 .min From
