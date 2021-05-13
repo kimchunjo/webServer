@@ -8,21 +8,21 @@ block vars
 
 block content
 
-    .container-fluid.py-5.px-lg-5
-            .row.border-bottom.mb-4
+    .container-fluid.py-4.py-sm-5.px-lg-5
+            .row.border-bottom.mb-1.mb-sm-4
                 .col-12
-                    h1.display-4.mb-4.text-xl.font-weight-bold #{searchLocation} #{searchWord}에 대한 결과
+                    h1.mb-4.text-xl.font-weight-bold.d-none.d-sm-block #{searchLocation} #{searchWord}에 대한 결과
+                    h5.mb-2.text-lg.font-weight-bold.d-block.d-sm-none #{searchLocation} #{searchWord}에 대한 결과
                 // 지도로 표시하기 버튼 추가
-                .col-12
+                .col-12.d-sm-block.d-none
                      a.btn.btn-outline-primary.mb-4.float-right(href=`/category-map?search=${searchWord}&location=${searchLocation}&sort=${sortCatecory}&lat=${lat}&lon=${lon}`)
                         | MAP ON
             .row
-
                 .col-lg-3.pt-3
 
                     include _pug-includes/inc-var-neighbourhoods.pug
 
-                    form(action="#").pr-xl-3
+                    form(action="#").pr-xl-3.d-none.d-sm-block
                         // 방문 시간 추가
                         .mb-4
                             label.form-label 시간
