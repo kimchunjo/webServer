@@ -4,55 +4,44 @@ block vars
     - var loggedUser = true
 
 block content
-       
+
     - var breadcrumbs = []
     - breadcrumbs.push({name: 'Home', link: 'index.html'})
     - breadcrumbs.push({name: 'Add new listing'})
     - var heroHeading = 'Add new listing'
     - var heroHeadingClass = 'hero-heading mb-5'
-    
+
     //- include _pug-includes/inc-hero
-    
-    +progress(80)
+
+    +progress(69)
 
     section.py-5
         .container
-            
-            +stepsHeading('Photos', 4)
 
-            form(action=`${path}user-add-option` method="post")
+            +stepsHeading('Disposition and Amenities', 4)
+
+            form(action=`${path}user-add-5` method="post")
                 .row.form-block
                     .col-lg-4
-                        h4 사진
-                        //p.text-muted.text-sm #{dummyText[2]}
+                        h4 Contact
+                        // p.text-muted.text-sm #{dummyText[2]}
                     .col-lg-7.ml-auto
-
                         .form-group
-                            #fileDropzone.dropzone(action='/upload' method="post" enctype= "multipart/form-data")
-                                .dz-message.text-muted
-                                    p 드래그하거나 클릭해서 사진을 업로드하세요
+                            label.form-label(for="phone_number") 연락처
+                            input.form-control(name="phone_number", placeholder='010-1234-5678 or 02-345-6789', type='tel',pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}", id="phone_number")
+                            label.form-label.mt-3(for="email") email
+                            input.form-control(name="email", type='email', id="email", placeholder='abc@gmail.com')
+                            label.form-label.mt-3(for="page") page
+                            input.form-control(name="page", type='url', id="page", placeholder="https://allplace.kr")
+                            .small.form-text.text-muted 장소와 관련된 페이지가 있다면 여기에 주소를 적어주세요!
+                            label.form-label.mt-3(for="facebook_page") facebook
+                            input.form-control(name="facebook_page", type='url', id="facebook_page", placeholder="https://www.facebook.com")
+                            .small.form-text.text-muted 장소와 관련된 페이스북 페이지가 있다면 여기에 주소를 적어주세요!
+                            label.form-label.mt-3(for="instagram_page") instagram
+                            input.form-control(name="instagram_page", type='url', id="instagram_page", placeholder="https://www.instagram.com")
+                            .small.form-text.text-muted 장소와 관련된 인스타그램 페이지가 있다면 여기에 주소를 적어주세요!
 
-                        .d-none
-                            .dz-preview.dz-file-preview
-                                .dz-image
-                                    img(data-dz-thumbnail='', alt='', src=`${path}img/logo-square.svg`)
-                                .dz-details
-                                    .dz-filename
-                                        span(data-dz-name='')
-                                    .dz-size(data-dz-size='')
-                                .dz-progress
-                                    span.dz-upload(data-dz-uploadprogress='')
-                                .dz-success-mark
-                                    span.dz-icon
-                                        i.fa-check.fa
-                                .dz-error-mark
-                                    span.dz-icon
-                                        i.fa-times.fa
-                                .dz-error-message
-                                    span(data-dz-errormessage='')
-                .row.form-block.d-none
-                    .form-group.d-none
-                        textarea.d-none.form-control(name="filename" id="filename")
+
                 .row.form-block.d-none
                     .form-group.d-none
                         input(name="name" value=`${placeInfo.name}`)
@@ -65,77 +54,5 @@ block content
                         input(name="cTime" value=`${placeInfo.cTime}`)
                         input(name="explanation" value=`${placeInfo.explanation}`)
                         input(name="tag" value=`${placeInfo.tag}`)
+                        input(name="filename" value=`${placeInfo.filename}`)
                 +stepsAdd(4)
-
-
-block additionalScripts
-    // Dropzone.js
-    script(src='vendor/dropzone/dropzone.js')
-
-    // Dropzone Init
-    script.
-        let now = new Date().getTime();
-        let newName;
-        Dropzone.options.fileDropzone = {
-            // url:'/upload',
-            paramName: 'file',
-            maxFilesize: 20, // MB
-            maxFiles: 10,
-            acceptedFiles: 'image/*',
-            autoProcessQueue: false,
-            addRemoveLinks: true, // 삭제버튼 표시 여부
-            dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
-            parallelUploads:10,
-            //clickable: false,
-
-            renameFile: function (file){
-                newName = now + file.name;
-                return newName;
-            },
-
-            accept: function (file , done){
-                $('#filename').append("@#"+now+file.name+"@#");
-                done();
-            },
-
-
-            removedfile: function removedfile(file) {
-                if (file.previewElement != null && file.previewElement.parentNode != null) {
-                    file.previewElement.parentNode.removeChild(file.previewElement);
-                }
-                var str = $('#filename').val();
-                var n = str.replace("@#" + now + file.name + "@#", "");
-                alert($('#filename').val());
-                $('#filename').val(n);
-
-                // new file(`/public/uploads/@#${now + file.name}`);
-                // if(deleteFile.exists()){
-                //     alert("111");
-                // }
-
-                return this._updateMaxFilesReachedClass();
-            },
-
-
-            init: function () {
-                /* 최초 dropzone 설정시 init을 통해 호출 */
-                var submitButton = document.querySelector("#btn-upload-file");
-                var myDropzone = this; //closure
-                submitButton.addEventListener("click", function () {
-                    myDropzone.processQueue();
-                });
-
-                // this.on("sending",function (file){ // 파일 네임 수정
-                //     file.myCustomName = new Date().getDate() + file.name;
-                // })
-                this.on("queuecomplete", function (file) {
-                    document.location.href = "/user-add-5" //업로드가 완료되었다면 이전 화면으로 이동
-                });
-            },
-
-        }
-
-
-
-
-

@@ -13,20 +13,128 @@ block content
     
     //- include _pug-includes/inc-hero
     
-    +progress(100)
+    +progress(85)
 
-    section.py-5.py-lg-6
-        .container.text-center
+    section.py-5
+        .container
             
-            //p.subtitle.text-primary Add new listing
-            h1.h2.mb-5  장소가 추가되었습니다.
+            +stepsHeading('Photos', 5)
 
-            p.mb-5
-                img.img-fluid(src="img/illustration/undraw_celebration_0jvk.svg", alt="", style="width: 400px;")
+            form(action=`${path}user-add` method="post")
+                .row.form-block
+                    .col-lg-4
+                        h4 사진
+                        //p.text-muted.text-sm #{dummyText[2]}
+                    .col-lg-7.ml-auto
 
-            p.text-muted.mb-5 당신의 장소를 공유해주어서 고맙습니다.
+                        .form-group
+                            #fileDropzone.dropzone(action='/upload' method="post" enctype= "multipart/form-data")
+                                .dz-message.text-muted
+                                    p 드래그하거나 클릭해서 사진을 업로드하세요
 
-            p.mb-5
-                a.btn.btn-primary.mr-2.mb-2(href="/") 홈으로 가기
-                a.btn.btn-outline-muted.mb-2(href="user-add-0") 장소 더 추가하기
+                        .d-none
+                            .dz-preview.dz-file-preview
+                                .dz-image
+                                    img(data-dz-thumbnail='', alt='', src=`${path}img/logo-square.svg`)
+                                .dz-details
+                                    .dz-filename
+                                        span(data-dz-name='')
+                                    .dz-size(data-dz-size='')
+                                .dz-progress
+                                    span.dz-upload(data-dz-uploadprogress='')
+                                .dz-success-mark
+                                    span.dz-icon
+                                        i.fa-check.fa
+                                .dz-error-mark
+                                    span.dz-icon
+                                        i.fa-times.fa
+                                .dz-error-message
+                                    span(data-dz-errormessage='')
+                .row.form-block.d-none
+                    .form-group.d-none
+                        textarea.d-none.form-control(name="filename" id="filename")
+                .row.form-block.d-none
+                    .form-group.d-none
+                        input(name="name" value=`${placeInfo.name}`)
+                        input(name="category" value=`${placeInfo.category}`)
+                        input(name="door" value=`${placeInfo.door}`)
+                        input(name="latitude" value=`${placeInfo.latitude}`)
+                        input(name="longitude" value=`${placeInfo.longitude}`)
+                        input(name="address" value=`${placeInfo.address}`)
+                        input(name="oTime" value=`${placeInfo.oTime}`)
+                        input(name="cTime" value=`${placeInfo.cTime}`)
+                        input(name="explanation" value=`${placeInfo.explanation}`)
+                        input(name="tag" value=`${placeInfo.tag}`)
+                +stepsAdd(5)
+
+
+block additionalScripts
+    // Dropzone.js
+    script(src='vendor/dropzone/dropzone.js')
+
+    // Dropzone Init
+    script.
+        let now = new Date().getTime();
+        let newName;
+        Dropzone.options.fileDropzone = {
+            // url:'/upload',
+            paramName: 'file',
+            maxFilesize: 20, // MB
+            maxFiles: 10,
+            acceptedFiles: 'image/*',
+            autoProcessQueue: false,
+            addRemoveLinks: true, // 삭제버튼 표시 여부
+            dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
+            parallelUploads:10,
+            //clickable: false,
+
+            renameFile: function (file){
+                newName = now + file.name;
+                return newName;
+            },
+
+            accept: function (file , done){
+                $('#filename').append("@#"+now+file.name+"@#");
+                done();
+            },
+
+
+            removedfile: function removedfile(file) {
+                if (file.previewElement != null && file.previewElement.parentNode != null) {
+                    file.previewElement.parentNode.removeChild(file.previewElement);
+                }
+                var str = $('#filename').val();
+                var n = str.replace("@#" + now + file.name + "@#", "");
+                alert($('#filename').val());
+                $('#filename').val(n);
+
+                // new file(`/public/uploads/@#${now + file.name}`);
+                // if(deleteFile.exists()){
+                //     alert("111");
+                // }
+
+                return this._updateMaxFilesReachedClass();
+            },
+
+
+            init: function () {
+                /* 최초 dropzone 설정시 init을 통해 호출 */
+                var submitButton = document.querySelector("#btn-upload-file");
+                var myDropzone = this; //closure
+                submitButton.addEventListener("click", function () {
+                    myDropzone.processQueue();
+                });
+
+                // this.on("sending",function (file){ // 파일 네임 수정
+                //     file.myCustomName = new Date().getDate() + file.name;
+                // })
+                this.on("queuecomplete", function (file) {
+                    document.location.href = "/user-add-6" //업로드가 완료되었다면 이전 화면으로 이동
+                });
+            },
+        }
+
+
+
+
 

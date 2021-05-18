@@ -14,7 +14,7 @@ block content
     
     //- include _pug-includes/inc-hero
     
-    +progress(20)
+    +progress(16)
 
     section.py-5
         .container
@@ -36,7 +36,7 @@ block content
                         .form-group
                             - var types = ['카페', '음식점', '공연', '명소', '제과점', '체험']
                             label.form-label(for="form_type") 장소
-                            select.selectpicker.form-control(name="type", id="form_type", data-style="btn-selectpicker", title="", aria-describedby="propertyTypeHelp", required)
+                            select.selectpicker.form-control(name="category", id="form_type", data-style="btn-selectpicker", title="", aria-describedby="propertyTypeHelp", required)
                                 option(selected) 장소
                                 each val, index in types
                                     option(value=`${val}`) #{val}
@@ -78,9 +78,10 @@ block content
                                     input.d-none(id='latitude', type="text", name='latitude')
                                     input.d-none(id='longitude', type="text", name='longitude')
                 .row.form-block
+                    - var add = 0;
                     .col-lg-4
                         h4 시간
-                    .col-lg-7.ml-auto
+                    .col-lg-7.ml-auto#Date
                         .row
                             .col-md-6
                                 .form-group
@@ -89,5 +90,19 @@ block content
                             .col-md-6
                                 .form-group
                                     label.form-label(for="close_time") 닫는 시간
-                                    input.form-control(type="time", name="cTime", id="close_time", required )
+                                    input.form-control(type="time", name="cTime", id="close_time", required)
+                            .col-md-12
+                                .form-group
+                                    - var date = ['월', '화', '수', '목', '금', '토', '일']
+                                    ul.list-inline.mb-0#DateList_0
+                                        each val,index in date
+                                            li.list-inline-item
+                                                .custom-control.custom-checkbox
+                                                    input.custom-control-input.date-check(type='checkbox', id=`date_${index}`, name=`date_${index}`, value=`${val}`, checked)
+                                                    label.custom-control-label.text-muted(for=`date_${index}`) #{val}
+                    .col-lg-7.ml-auto
+                        .col-md-6(style="padding:0")
+                            input.btn.btn-primary.px-3#buttonDate(type="button", value = "시간 추가")
                 +stepsAdd(1)
+
+

@@ -137,13 +137,18 @@ app.post('/user-add-2', function (req, res) {
     let body = req.body;
     let placeInfo = {
         name : body.form_name,
-        category : body.type,
+        category : body.category,
         door: body.door,
         latitude : body.latitude,
         longitude : body.longitude,
         address : body.address + " " + body.detailAddress,
         oTime: body.oTime,
         cTime: body.cTime,
+    }
+    if (req.body.date_1) {
+        console.log("true");
+    } else {
+        console.log("false");
     }
     res.render('user-add-2',{
         placeInfo: placeInfo
@@ -156,7 +161,7 @@ app.post('/user-add-3', function (req, res) {
     let placeInfo = {
         // 이전 페이지에서 얻은 정보
         name : body.name,
-        category : body.type,
+        category : body.category,
         door: body.door,
         latitude : body.latitude,
         longitude : body.longitude,
@@ -172,36 +177,14 @@ app.post('/user-add-3', function (req, res) {
     })
 });
 
-app.post('/user-add-4', function (req, res) {
-    // 장소 사진
-    let body = req.body;
-    let placeInfo = {
-        // 이전 페이지에서 얻은 정보
-        name : body.name,
-        category : body.type,
-        door: body.door,
-        latitude : body.latitude,
-        longitude : body.longitude,
-        address : body.address,
-        oTime: body.oTime,
-        cTime: body.cTime,
-        explanation: body.explanation,
-        tag : body.tag,
-        // 새롭게 추가된 정보
-        filename: body.filename,
-    }
-    res.render('user-add-4',{
-        placeInfo: placeInfo
-    })
-});
 
-app.post('/user-add-option', function (req, res) {
+app.post('/user-add-4', function (req, res) {
     // 장소 오픈 시간 및 연락처
     let body = req.body;
     let placeInfo = {
         // 이전 페이지에서 얻은 정보
         name : body.name,
-        category : body.type,
+        category : body.category,
         door: body.door,
         latitude : body.latitude,
         longitude : body.longitude,
@@ -213,10 +196,34 @@ app.post('/user-add-option', function (req, res) {
         filename: body.filename,
         // 새롭게 추가된 정보
     }
-    res.render('user-add-option',{
+    res.render('user-add-4',{
         placeInfo:placeInfo
     });
 })
+
+app.post('/user-add-5', function (req, res) {
+    // 장소 사진
+    let body = req.body;
+    let placeInfo = {
+        // 이전 페이지에서 얻은 정보
+        name : body.name,
+        category : body.category,
+        door: body.door,
+        latitude : body.latitude,
+        longitude : body.longitude,
+        address : body.address,
+        oTime: body.oTime,
+        cTime: body.cTime,
+        explanation: body.explanation,
+        tag : body.tag,
+        // 새롭게 추가된 정보
+        filename: body.filename,
+    }
+    res.render('user-add-5',{
+        placeInfo: placeInfo
+    })
+});
+
 
 app.post('/user-add', function (req, res) {
     var body = req.body;
@@ -263,9 +270,11 @@ app.post('/user-add', function (req, res) {
             });
         });
     }
-    res.render('user-add-5');
 });
 
+app.get('/user-add-6', function (req, res) {
+    res.render('user-add-6');
+});
 
 /* 로그인 로그아웃 */
 app.get('/logout', function (req, res) {

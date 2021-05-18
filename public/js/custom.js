@@ -35,16 +35,16 @@ $(document).ready(function () {
         }
     })
 
-    $('#review_search').on('change paste',function (){
+    $('#review_search').on('change paste', function () {
         let target = $('#reviewModal').find('.review');
-        let keyword =$('#review_search').val();
-        for(let i=0; i<target.length; i++){
+        let keyword = $('#review_search').val();
+        for (let i = 0; i < target.length; i++) {
             let value = $(target[i]).find('p').text();
-            if(value.indexOf(keyword) !== -1){
+            if (value.indexOf(keyword) !== -1) {
                 $(target[i]).addClass('d-block').addClass('d-sm-flex').fadeIn();
-            }else if(keyword == ""){
+            } else if (keyword == "") {
                 $(target[i]).addClass('d-block').addClass('d-sm-flex').fadeIn();
-            }else{
+            } else {
                 $(target[i]).removeClass('d-block').removeClass('d-sm-flex').fadeOut();
             }
         }
@@ -86,8 +86,87 @@ $(document).ready(function () {
     });
 
 
+    $('#buttonDate').on('click', function () {
+        var date = ['월', '화', '수', '목', '금', '토', '일'];
+        let newDate = "";
+        var checkboxCount = $(".date-check").length;
+        if (checkboxCount < 28) {
+            for (var i = 0; i < 7; i++) {
+                newDate += `
+            <li class="list-inline-item">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input date-check" type="checkbox" id="date_${checkboxCount + i}" name="date_${checkboxCount + i}" value="${date[i]}" checked="checked"/>
+                        <label class="custom-control-label text-muted" for="date_${checkboxCount + i}">${date[i]}</label>
+                </div>
+            </li>   
+        `;}
 
+            $('#Date').append(`
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                    <label class="form-label" for="open_time">여는 시간</label>
+                    <input class="form-control" type="time" name="oTime" id="open_time" required="required"/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                    <label class="form-label" for="close_time">닫는 시간</label>
+                    <input class="form-control" type="time" name="cTime" id="close_time" required="required"/>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <ul class="list-inline mb-0" id="DateList_${checkboxCount}"></ul>
+                    </div>
+                </div>
+            </div>
+        `);
+
+            $(`#DateList_${checkboxCount}`).append(newDate);
+
+            // 체크여부 확인
+            alert(checkboxCount);
+            for (var i = 0; i < checkboxCount; i++) {
+                if ($(`input:checkbox[id=date_${i}]`).is(":checked") == true) {
+                    var checkedIndex = $(`input:checkbox[id=date_${i}]`).index("input:checkbox[name=date]");
+                    $(`input:checkbox[id=date_${checkboxCount + (i % 7)}]`).prop('checked', false);
+                    //$(`input:checkbox[id=date_${checkboxCount+(i%7)}]`).prop('disabled', true);
+                } else {
+                    //$(`input:checkbox[id=date_${i}]`).prop('disabled', true);
+                }
+            }
+
+            $(".date-check").change(function () {
+                if ($(this).is(":checked")) {
+                    if ($(this).val() == '월') {
+                        changeCheckbox(0, $(this));
+                    } else if ($(this).val() == '화') {
+                        changeCheckbox(1, $(this));
+                    } else if ($(this).val() == '수') {
+                        changeCheckbox(2, $(this));
+                    } else if ($(this).val() == '목') {
+                        changeCheckbox(3, $(this));
+                    } else if ($(this).val() == '금') {
+                        changeCheckbox(4, $(this));
+                    } else if ($(this).val() == '토') {
+                        changeCheckbox(5, $(this));
+                    } else if ($(this).val() == '일') {
+                        changeCheckbox(6, $(this));
+                    }
+                }
+            });
+        }
+    });
 })
+
+function changeCheckbox(dateIndex, box) {
+    for (var i = dateIndex; i < $(".date-check").length;) {
+        $(`input:checkbox[id=date_${i}]`).prop('checked', false);
+        i += 7;
+    }
+    box.prop('checked', true);
+}
 
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -234,11 +313,11 @@ function writeReview(self) {
     let month = today.getMonth() + 1
     let hours = today.getHours();
     let year = today.getFullYear();
-    year = (String(year)).substr(2,String(year).length)
-    if(hours >= 12)
-        hours = "오후 "+ (parseInt(hours)-12);
+    year = (String(year)).substr(2, String(year).length)
+    if (hours >= 12)
+        hours = "오후 " + (parseInt(hours) - 12);
     else
-        hours = "오전 "+ parseInt(hours);
+        hours = "오전 " + parseInt(hours);
     let date = year + ". " + month + ". " + today.getDate() + ". " + hours + ":" + today.getMinutes();
 
     let data = {
