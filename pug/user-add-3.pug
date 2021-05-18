@@ -23,33 +23,6 @@ block content
             form(action=`${path}user-add-4` method="post")
                 .row.form-block
                     .col-lg-4
-                        h4 Rooms and beds
-                        p.text-muted.text-sm  The number and types of beds you have determines how many guests can stay comfortably
-                    .col-lg-7.ml-auto
-                        .row
-                            .col-lg-4
-                                label.form-label Beds
-                                .d-flex.align-items-center
-                                    .btn.btn-items.btn-items-decrease -
-                                    input.form-control.input-items(type='text', value='1', disabled)
-                                    .btn.btn-items.btn-items-increase +
-                            
-                            .col-lg-4
-                                label.form-label Bedrooms
-                                .d-flex.align-items-center
-                                    .btn.btn-items.btn-items-decrease -
-                                    input.form-control.input-items(type='text', value='1', disabled)
-                                    .btn.btn-items.btn-items-increase +
-                            
-                            .col-lg-4
-                                label.form-label Bathrooms
-                                .d-flex.align-items-center
-                                    .btn.btn-items.btn-items-decrease -
-                                    input.form-control.input-items(type='text', value='1', disabled)
-                                    .btn.btn-items.btn-items-increase +
-
-                .row.form-block
-                    .col-lg-4
                         h4 Amenities
                         p.text-muted.text-sm #{dummyText[2]}
                     .col-lg-7.ml-auto
@@ -62,6 +35,17 @@ block content
                                     li.list-inline-item
                                         .custom-control.custom-checkbox
                                             input.custom-control-input(type='checkbox', id=`amenities_${index}`, name="amenities[]")
-                                            label.custom-control-label.text-muted(for=`amenities_${index}`) #{val}    
-
+                                            label.custom-control-label.text-muted(for=`amenities_${index}`) #{val}
+                .row.form-block.d-none
+                    .form-group.d-none
+                        input(name="name" value=`${placeInfo.name}`)
+                        input(name="category" value=`${placeInfo.category}`)
+                        input(name="door" value=`${placeInfo.door}`)
+                        input(name="latitude" value=`${placeInfo.latitude}`)
+                        input(name="longitude" value=`${placeInfo.longitude}`)
+                        input(name="address" value=`${placeInfo.address}`)
+                        input(name="oTime" value=`${placeInfo.oTime}`)
+                        input(name="cTime" value=`${placeInfo.cTime}`)
+                        input(name="explanation" value=`${placeInfo.explanation}`)
+                        input(name="tag" value=`${placeInfo.tag}`)
                 +stepsAdd(3)

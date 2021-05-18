@@ -20,19 +20,17 @@ block content
             
             +stepsHeading('Photos', 4)
 
-            form(action=`${path}user-add-5` method="post")
+            form(action=`${path}user-add-option` method="post")
                 .row.form-block
                     .col-lg-4
-                        h4 Photos
-                        p.text-muted.text-sm #{dummyText[2]}
+                        h4 사진
+                        //p.text-muted.text-sm #{dummyText[2]}
                     .col-lg-7.ml-auto
 
                         .form-group
                             #fileDropzone.dropzone(action='/upload' method="post" enctype= "multipart/form-data")
                                 .dz-message.text-muted
-                                    p Drop files here or click to upload.
-                                    p
-                                        span.note (This is just a demo dropzone. Selected files are <STRONG>not</STRONG> actually uploaded.)
+                                    p 드래그하거나 클릭해서 사진을 업로드하세요
 
                         .d-none
                             .dz-preview.dz-file-preview
@@ -52,22 +50,72 @@ block content
                                         i.fa-times.fa
                                 .dz-error-message
                                     span(data-dz-errormessage='')
+                .row.form-block.d-none
+                    .form-group.d-none
+                        textarea.d-none.form-control(name="filename" id="filename")
+                .row.form-block.d-none
+                    .form-group.d-none
+                        input(name="name" value=`${placeInfo.name}`)
+                        input(name="category" value=`${placeInfo.category}`)
+                        input(name="door" value=`${placeInfo.door}`)
+                        input(name="latitude" value=`${placeInfo.latitude}`)
+                        input(name="longitude" value=`${placeInfo.longitude}`)
+                        input(name="address" value=`${placeInfo.address}`)
+                        input(name="oTime" value=`${placeInfo.oTime}`)
+                        input(name="cTime" value=`${placeInfo.cTime}`)
+                        input(name="explanation" value=`${placeInfo.explanation}`)
+                        input(name="tag" value=`${placeInfo.tag}`)
                 +stepsAdd(4)
 
 
 block additionalScripts
     // Dropzone.js
     script(src='vendor/dropzone/dropzone.js')
+
     // Dropzone Init
     script.
+        let now = new Date().getTime();
+        let newName;
         Dropzone.options.fileDropzone = {
+            // url:'/upload',
             paramName: 'file',
-            maxFilesize: 2, // MB
-            maxFiles: 5,
+            maxFilesize: 20, // MB
+            maxFiles: 10,
             acceptedFiles: 'image/*',
             autoProcessQueue: false,
             addRemoveLinks: true, // 삭제버튼 표시 여부
             dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
+            parallelUploads:10,
+            //clickable: false,
+
+            renameFile: function (file){
+                newName = now + file.name;
+                return newName;
+            },
+
+            accept: function (file , done){
+                $('#filename').append("@#"+now+file.name+"@#");
+                done();
+            },
+
+
+            removedfile: function removedfile(file) {
+                if (file.previewElement != null && file.previewElement.parentNode != null) {
+                    file.previewElement.parentNode.removeChild(file.previewElement);
+                }
+                var str = $('#filename').val();
+                var n = str.replace("@#" + now + file.name + "@#", "");
+                alert($('#filename').val());
+                $('#filename').val(n);
+
+                // new file(`/public/uploads/@#${now + file.name}`);
+                // if(deleteFile.exists()){
+                //     alert("111");
+                // }
+
+                return this._updateMaxFilesReachedClass();
+            },
+
 
             init: function () {
                 /* 최초 dropzone 설정시 init을 통해 호출 */
@@ -77,8 +125,16 @@ block additionalScripts
                     myDropzone.processQueue();
                 });
 
-            }
+                // this.on("sending",function (file){ // 파일 네임 수정
+                //     file.myCustomName = new Date().getDate() + file.name;
+                // })
+                this.on("queuecomplete", function (file) {
+                    document.location.href = "/user-add-5" //업로드가 완료되었다면 이전 화면으로 이동
+                });
+            },
+
         }
+
 
 
 

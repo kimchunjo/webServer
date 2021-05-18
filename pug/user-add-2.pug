@@ -24,23 +24,23 @@ block content
             form(action=`${path}user-add-3` method="post")
                 .row.form-block
                     .col-lg-4
-                        h4 Description
-                        p.text-muted.text-sm  #{dummyText[3]}
+                        h4 장소 설명
+                        //p.text-muted.text-sm  #{dummyText[3]}
                     .col-lg-7.ml-auto
                         .form-group.mb-5
-                            label.form-label(for="form_description") Describe your place to guests
-                            textarea.form-control(name="name", id="form_description", rows="5", aria-describedby="descriptionHelp")
-                            small#descriptionHelp.form-text.text-muted.mt-2 #{dummyText[1]}    
-
-                        .form-group.mb-5
-                            label.form-label(for="form_availability") Your availability
-                            textarea.form-control(name="name", id="form_availability", rows="3", aria-describedby="availabilityHelp")
-                            small#availabilityHelp.form-text.text-muted.mt-2 #{dummyText[2]}    
-
-                        .form-group.mb-5
-                            label.form-label(for="form_neighbourhood") Your neighbourhood
-                            textarea.form-control(name="name", id="form_neighbourhood", rows="3", aria-describedby="hoodHelp")
-                            small#hoodHelp.form-text.text-muted.mt-2 #{dummyText[3]}    
-
-
+                            label.form-label(for="form_description") 장소의 특징을 알려주세요
+                            textarea.form-control(name="explanation", id="form_description", rows="5", aria-describedby="descriptionHelp", required)
+                            .small.form-text.text-muted #을 이용해 태그를 만들 수 있습니다! 태그는 장소 노출에 도움이 됩니다.
+                            textarea.d-none.form-control(name="tag" id="hide_tag_box")
+                            div(id="description_tag_box")
+                .row.form-block.d-none
+                    .form-group.d-none
+                        input(name="name" value=`${placeInfo.name}`)
+                        input(name="category" value=`${placeInfo.category}`)
+                        input(name="door" value=`${placeInfo.door}`)
+                        input(name="latitude" value=`${placeInfo.latitude}`)
+                        input(name="longitude" value=`${placeInfo.longitude}`)
+                        input(name="address" value=`${placeInfo.address}`)
+                        input(name="oTime" value=`${placeInfo.oTime}`)
+                        input(name="cTime" value=`${placeInfo.cTime}`)
                 +stepsAdd(2)

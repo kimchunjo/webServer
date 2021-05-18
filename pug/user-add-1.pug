@@ -14,14 +14,14 @@ block content
     
     //- include _pug-includes/inc-hero
     
-    +progress(50)
+    +progress(20)
 
     section.py-5
         .container
 
-            +stepsHeading('장소 추가')
+            +stepsHeading('장소 추가', 1)
 
-            form(action=`${path}user-add` method="post")
+            form(action=`${path}user-add-2` method="post")
                 .row.form-block
                     .col-lg-4
                         h4 기본정보
@@ -49,28 +49,6 @@ block content
                                 option(value="0") 실내
                                 option(value="1") 야외
                                 option(value="2") 실내 및 야외
-                .row.form-block
-                    .col-lg-4
-                        h4 장소 설명
-                        //p.text-muted.text-sm  #{dummyText[3]}
-                    .col-lg-7.ml-auto
-                        .form-group.mb-5
-                            label.form-label(for="form_description") 장소의 특징을 알려주세요
-                            textarea.form-control(name="explanation", id="form_description", rows="5", aria-describedby="descriptionHelp", required)
-                            textarea.d-none.form-control(name="tag" id="hide_tag_box")
-                            div(id="description_tag_box")
-                        .row
-                            .col-md-6
-                                .form-group
-                                    label.form-label(for="open_time") 여는 시간
-                                    input.form-control(type="time", name="oTime", id="open_time", required)
-                            .col-md-6
-                                .form-group
-                                    label.form-label(for="close_time") 닫는 시간
-                                    input.form-control(type="time", name="cTime", id="close_time", required )
-
-
-
 
                 .row.form-block
                     .col-lg-4
@@ -87,7 +65,7 @@ block content
                                     input.form-control(type='button', onclick='sample6_execDaumPostcode()', value='우편번호 찾기', style="vertical-align: buttom")
                         .form-group
                             label.form-label(for="sample6_address") 주소
-                            input.form-control#sample6_address(name = 'address', type='text', required)
+                            input.form-control#sample6_address(name='address', type='text', required)
                         .row
                             .col-md-8
                                 .form-group
@@ -99,105 +77,17 @@ block content
                                     input.form-control#sample6_extraAddress(type='text')
                                     input.d-none(id='latitude', type="text", name='latitude')
                                     input.d-none(id='longitude', type="text", name='longitude')
-                .row.form-block.d-none
-                    .form-group.d-none
-                        textarea.d-none.form-control(name="filename" id="filename")
                 .row.form-block
                     .col-lg-4
-                        h4 사진
-                        //p.text-muted.text-sm #{dummyText[2]}
+                        h4 시간
                     .col-lg-7.ml-auto
-
-                        .form-group
-                            #fileDropzone.dropzone(action='/upload' method="post" enctype= "multipart/form-data")
-                                .dz-message.text-muted
-                                    p 드래그하거나 클릭해서 사진을 업로드하세요
-
-                        .d-none
-                            .dz-preview.dz-file-preview
-                                .dz-image
-                                    img(data-dz-thumbnail='', alt='', src=`${path}img/logo-square.svg`)
-                                .dz-details
-                                    .dz-filename
-                                        span(data-dz-name='')
-                                    .dz-size(data-dz-size='')
-                                .dz-progress
-                                    span.dz-upload(data-dz-uploadprogress='')
-                                .dz-success-mark
-                                    span.dz-icon
-                                        i.fa-check.fa
-                                .dz-error-mark
-                                    span.dz-icon
-                                        i.fa-times.fa
-                                .dz-error-message
-                                    span(data-dz-errormessage='')
+                        .row
+                            .col-md-6
+                                .form-group
+                                    label.form-label(for="open_time") 여는 시간
+                                    input.form-control(type="time", name="oTime", id="open_time", required)
+                            .col-md-6
+                                .form-group
+                                    label.form-label(for="close_time") 닫는 시간
+                                    input.form-control(type="time", name="cTime", id="close_time", required )
                 +stepsAdd(1)
-
-
-block additionalScripts
-    // Dropzone.js
-    script(src='vendor/dropzone/dropzone.js')
-
-    // Dropzone Init
-    script.
-        let now = new Date().getTime();
-        let newName;
-        Dropzone.options.fileDropzone = {
-            // url:'/upload',
-            paramName: 'file',
-            maxFilesize: 20, // MB
-            maxFiles: 10,
-            acceptedFiles: 'image/*',
-            autoProcessQueue: false,
-            addRemoveLinks: true, // 삭제버튼 표시 여부
-            dictRemoveFile: 'delete', // 삭제버튼 표시 텍스트
-            parallelUploads:10,
-            //clickable: false,
-
-            renameFile: function (file){
-                newName = now + file.name;
-                return newName;
-            },
-
-            accept: function (file , done){
-                $('#filename').append("@#"+now+file.name+"@#");
-                done();
-            },
-
-
-            removedfile: function removedfile(file) {
-                if (file.previewElement != null && file.previewElement.parentNode != null) {
-                    file.previewElement.parentNode.removeChild(file.previewElement);
-                }
-                var str = $('#filename').val();
-                var n = str.replace("@#" + now + file.name + "@#", "");
-                alert($('#filename').val());
-                $('#filename').val(n);
-
-                // new file(`/public/uploads/@#${now + file.name}`);
-                // if(deleteFile.exists()){
-                //     alert("111");
-                // }
-
-                return this._updateMaxFilesReachedClass();
-            },
-
-
-            init: function () {
-                /* 최초 dropzone 설정시 init을 통해 호출 */
-                var submitButton = document.querySelector("#btn-upload-file");
-                var myDropzone = this; //closure
-                submitButton.addEventListener("click", function () {
-                    myDropzone.processQueue();
-                });
-
-                // this.on("sending",function (file){ // 파일 네임 수정
-                //     file.myCustomName = new Date().getDate() + file.name;
-                // })
-                this.on("queuecomplete", function (file) {
-                    document.location.href = "/user-add-5" //업로드가 완료되었다면 이전 화면으로 이동
-                });
-            },
-
-        }
-
