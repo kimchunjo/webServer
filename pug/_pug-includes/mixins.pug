@@ -347,13 +347,13 @@ mixin stepsAdd(step, finalStep, urlPrefix)
     - var next = step + 1;
     - var text = 'Next step'
 
-    - finalStep = finalStep || 4
+    - finalStep = finalStep || 5
     - urlPrefix = urlPrefix || 'user-add-'
 
     - previousUrl = urlPrefix + previous + ''
     - nextUrl = urlPrefix + next + ''
 
-    if (step == 4) 
+    if (step == 5)
         - var text = 'Finish'
 
     .row.form-block.flex-column.flex-sm-row
@@ -375,7 +375,7 @@ mixin stepsHeading(name, step, heading)
     //h1.h2.mb-5  #{name} <span class="text-muted float-right">Step #{step}</span>
 
     p.subtitle.text-primary #{heading}
-    h1.h2.mb-5  #{name}
+    h1.h2.mb-5  #{name} <span class="text-muted float-right">Step #{step}</span>
 
 mixin stars(stars, divClass)
 
