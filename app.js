@@ -121,21 +121,107 @@ app.post('/coming-soon', function (req, res) {
 });
 
 
-// 장소 추가
+/* 장소 추가 라우팅 */
 app.get('/user-add-0', function (req, res) {
+    // 장소 추가 시작
     res.render('user-add-0')
 });
+
 app.get('/user-add-1', function (req, res) {
+    // 장소 이름, 위치,
     res.render('user-add-1')
 });
-app.get('/user-add-5', function (req, res) {
-    res.render('user-add-5');
+
+app.post('/user-add-2', function (req, res) {
+    // 장소 설명
+    let body = req.body;
+    let placeInfo = {
+        name : body.form_name,
+        category : body.type,
+        door: body.door,
+        latitude : body.latitude,
+        longitude : body.longitude,
+        address : body.address + " " + body.detailAddress,
+        oTime: body.oTime,
+        cTime: body.cTime,
+    }
+    res.render('user-add-2',{
+        placeInfo: placeInfo
+    })
+});
+
+app.post('/user-add-3', function (req, res) {
+    // 장소 장비(?)
+    let body = req.body;
+    let placeInfo = {
+        // 이전 페이지에서 얻은 정보
+        name : body.name,
+        category : body.type,
+        door: body.door,
+        latitude : body.latitude,
+        longitude : body.longitude,
+        address : body.address,
+        oTime: body.oTime,
+        cTime: body.cTime,
+        // 새롭게 추가된 정보
+        explanation: body.explanation,
+        tag : body.tag,
+    }
+    res.render('user-add-3',{
+        placeInfo: placeInfo
+    })
+});
+
+app.post('/user-add-4', function (req, res) {
+    // 장소 사진
+    let body = req.body;
+    let placeInfo = {
+        // 이전 페이지에서 얻은 정보
+        name : body.name,
+        category : body.type,
+        door: body.door,
+        latitude : body.latitude,
+        longitude : body.longitude,
+        address : body.address,
+        oTime: body.oTime,
+        cTime: body.cTime,
+        explanation: body.explanation,
+        tag : body.tag,
+        // 새롭게 추가된 정보
+        filename: body.filename,
+    }
+    res.render('user-add-4',{
+        placeInfo: placeInfo
+    })
+});
+
+app.post('/user-add-option', function (req, res) {
+    // 장소 오픈 시간 및 연락처
+    let body = req.body;
+    let placeInfo = {
+        // 이전 페이지에서 얻은 정보
+        name : body.name,
+        category : body.type,
+        door: body.door,
+        latitude : body.latitude,
+        longitude : body.longitude,
+        address : body.address,
+        oTime: body.oTime,
+        cTime: body.cTime,
+        explanation: body.explanation,
+        tag : body.tag,
+        filename: body.filename,
+        // 새롭게 추가된 정보
+    }
+    res.render('user-add-option',{
+        placeInfo:placeInfo
+    });
 })
+
 app.post('/user-add', function (req, res) {
-    //res.render('user-add-5')
     var body = req.body;
-    var name = body.form_name;
-    var category = body.type;
+    var name = body.name;
+    var category = body.category;
     var door = body.door;
     var explanation = body.explanation;
     var oTime = body.oTime;
@@ -143,10 +229,15 @@ app.post('/user-add', function (req, res) {
     var tag = body.tag;
     tag = tag.trim();
     tag = tag.split(" ");
-    var address = body.address + " " + body.detailAddress;
+    var address = body.address;
     var filename = body.filename;
     var latitude = body.latitude;
     var longitude = body.longitude;
+    var phoneNumber = body.phone_number;
+    var email = body.email;
+    var page = body.page;
+    var facebook = body.facebook_page;
+    var instagram = body.instagram_page;
 
     var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image, location) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","' + filename + '","' + address + '")'
     connection.query(query, function (error, results, fields) {
@@ -154,7 +245,6 @@ app.post('/user-add', function (req, res) {
             console.log(error);
         }
         console.log(results);
-
     });
 
     var query = `INSERT INTO hashtag(name) VALUES (?);`;
@@ -166,20 +256,18 @@ app.post('/user-add', function (req, res) {
         let temp = tag[i];
         connection.query(query, temp, function (err1, result1) {
             connection.query(getPlaceNumberQuery, [name, address, category], function (err2, result2) {
-                //console.log(result2[0].number);
                 connection.query(getHashtagNumberQuery, temp, function (err3, result3) {
-                    //console.log(result3);
                     connection.query(insertPlaceHashtagQuery, [result2[0].number, result3[0].number], function (err4, result4) {
-                        //console.log(result4);
-
                     });
                 });
             });
         });
     }
-    //res.redirect('/user-add-5');
+    res.render('user-add-5');
 });
 
+
+/* 로그인 로그아웃 */
 app.get('/logout', function (req, res) {
     delete req.session.id1;
     delete req.session.pw1;
