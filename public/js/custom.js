@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    /* 초기 페이지 */
+    getLocation();
+
     /* 장소 추가 페이지*/
     $('#sample6_address').on('propertychange change keyup paste input', function () {// 위도 경도 계산
         let address = $('#sample6_address').val();
@@ -24,7 +27,7 @@ $(document).ready(function () {
 
     changeTime();
 
-    $(".open-time").on("propertychange change keyup paste input", function() {
+    $(".open-time").on("propertychange change keyup paste input", function () {
         changeTime();
     });
 
@@ -37,14 +40,13 @@ $(document).ready(function () {
             else
                 $('#amenities').val(checkedValue + ", " + $(this).val());
         } else {
-            if($('#amenities').val() == $(this).val()){
+            if ($('#amenities').val() == $(this).val()) {
                 $('#amenities').val("");
             }
-            if($('#amenities').val().indexOf($(this).val()) == 0){
+            if ($('#amenities').val().indexOf($(this).val()) == 0) {
                 var deletedValue = $('#amenities').val().replace($(this).val() + ", ", "");
                 $('#amenities').val(deletedValue);
-            }
-            else {
+            } else {
                 var deletedValue = $('#amenities').val().replace(", " + $(this).val(), "");
                 $('#amenities').val(deletedValue);
             }
@@ -73,31 +75,32 @@ $(document).ready(function () {
                         <label class="custom-control-label text-muted" for="date_${checkboxCount + i}">${date[i]}</label>
                 </div>
             </li>   
-        `;}
+        `;
+            }
 
             $('#Date').append(`
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                    <label class="form-label" for="open_time_${checkboxCount/7}">여는 시간</label>
-                    <input class="form-control open-time" type="time" name="oTime_${checkboxCount/7}" id="open_time_${checkboxCount/7}" value="00:00" required="required"/>
+                    <label class="form-label" for="open_time_${checkboxCount / 7}">여는 시간</label>
+                    <input class="form-control open-time" type="time" name="oTime_${checkboxCount / 7}" id="open_time_${checkboxCount / 7}" value="00:00" required="required"/>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                    <label class="form-label " for="open_time_${checkboxCount/7}">닫는 시간</label>
-                    <input class="form-control open-time" type="time" name="cTime_${checkboxCount/7}" id="close_time_${checkboxCount/7}" value="23:59" required="required"/>
+                    <label class="form-label " for="open_time_${checkboxCount / 7}">닫는 시간</label>
+                    <input class="form-control open-time" type="time" name="cTime_${checkboxCount / 7}" id="close_time_${checkboxCount / 7}" value="23:59" required="required"/>
                     </div>
                 </div>
                 <div class="col-md-12">
                     <div class="form-group">
-                        <ul class="list-inline mb-0" id="DateList_${checkboxCount/7}"></ul>
+                        <ul class="list-inline mb-0" id="DateList_${checkboxCount / 7}"></ul>
                     </div>
                 </div>
             </div>
         `);
 
-            $(`#DateList_${checkboxCount/7}`).append(newDate);
+            $(`#DateList_${checkboxCount / 7}`).append(newDate);
 
             // 체크여부 확인
             for (var i = 0; i < checkboxCount; i++) {
@@ -105,7 +108,7 @@ $(document).ready(function () {
                     $(`input:checkbox[id=date_${checkboxCount + (i % 7)}]`).prop('checked', false);
                 }
             }
-            $(".open-time").on("propertychange change keyup paste input", function() {
+            $(".open-time").on("propertychange change keyup paste input", function () {
                 changeTime();
             });
             $(".date-check").change(function () {
@@ -132,7 +135,6 @@ $(document).ready(function () {
 
         }
     });
-
 
 
     /* 장소 세부 페이지 */
@@ -167,16 +169,14 @@ $(document).ready(function () {
         let selected = $(this).val();
         var searchWord = getParameterByName('search');
         var searchLocation = getParameterByName('location');
-        if (selected == "Closest") {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function (position) {
-                        window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${position.coords.latitude}&lon=${position.coords.longitude}`;
-                    }
-                )
-            }
-        } else {
-            window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}`;
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${position.coords.latitude}&lon=${position.coords.longitude}`;
+                }
+            )
+        }else{
+            window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}`
         }
     });
 
@@ -198,33 +198,45 @@ $(document).ready(function () {
     });
 })
 
-function checkRelease(checkbox){
-    if(!checkbox.is(":checked")){
-        if(checkbox.val() == "월"){
+function getLocation() {
+    if (navigator.geolocation) { // GPS를 지원하면
+        navigator.geolocation.getCurrentPosition(function (position) {
+            $('.index_latitude').val(`${position.coords.latitude}`);
+            $('.index_longitude').val(`${position.coords.longitude}`);
+        }, function (error) {
+            console.error(error);
+        }, {
+            enableHighAccuracy: false,
+            maximumAge: 0,
+            timeout: Infinity
+        });
+    } else {
+        // 위치 지원 x
+    }
+}
+
+
+function checkRelease(checkbox) {
+    if (!checkbox.is(":checked")) {
+        if (checkbox.val() == "월") {
             $('#openMon').val("0");
             $('#closeMon').val("0");
-        }
-        else if(checkbox.val() == "화"){
+        } else if (checkbox.val() == "화") {
             $('#openTue').val("0");
             $('#closeTue').val("0");
-        }
-        else if(checkbox.val() == "수"){
+        } else if (checkbox.val() == "수") {
             $('#openWed').val("0");
             $('#closeWed').val("0");
-        }
-        else if(checkbox.val() == "목"){
+        } else if (checkbox.val() == "목") {
             $('#openThu').val("0");
             $('#closeThu').val("0");
-        }
-        else if(checkbox.val() == "금"){
+        } else if (checkbox.val() == "금") {
             $('#openFri').val("0");
             $('#closeFri').val("0");
-        }
-        else if(checkbox.val() == "토"){
+        } else if (checkbox.val() == "토") {
             $('#openSat').val("0");
             $('#closeSat').val("0");
-        }
-        else if(checkbox.val() == "일"){
+        } else if (checkbox.val() == "일") {
             $('#openSun').val("0");
             $('#closeSun').val("0");
         }
@@ -235,33 +247,27 @@ function changeTime() {
     var checkboxLength = $(".date-check").length;
     for (var i = 0; i < checkboxLength; i++) {
         if ($(`input:checkbox[id=date_${i}]`).is(":checked") == true) {
-            if(i % 7 == 0){
-                $('#openMon').val($(`#open_time_${parseInt(i/7)}`).val());
-                $('#closeMon').val($(`#close_time_${parseInt(i/7)}`).val());
-            }
-            else if(i % 7 == 1){
-                $('#openTue').val($(`#open_time_${parseInt(i/7)}`).val());
-                $('#closeTue').val($(`#close_time_${parseInt(i/7)}`).val());
-            }
-            else if(i % 7 == 2){
-                $('#openWed').val($(`#open_time_${parseInt(i/7)}`).val());
-                $('#closeWed').val($(`#close_time_${parseInt(i/7)}`).val());
-            }
-            else if(i % 7 == 3){
-                $('#openThu').val($(`#open_time_${parseInt(i/7)}`).val());
-                $('#closeThu').val($(`#close_time_${parseInt(i/7)}`).val());
-            }
-            else if(i % 7 == 4){
-                $('#openFri').val($(`#open_time_${parseInt(i/7)}`).val());
-                $('#closeFri').val($(`#close_time_${parseInt(i/7)}`).val());
-            }
-            else if(i % 7 == 5){
-                $('#openSat').val($(`#open_time_${parseInt(i/7)}`).val());
-                $('#closeSat').val($(`#close_time_${parseInt(i/7)}`).val());
-            }
-            else if(i % 7 == 6){
-                $('#openSun').val($(`#open_time_${parseInt(i/7)}`).val());
-                $('#closeSun').val($(`#close_time_${parseInt(i/7)}`).val());
+            if (i % 7 == 0) {
+                $('#openMon').val($(`#open_time_${parseInt(i / 7)}`).val());
+                $('#closeMon').val($(`#close_time_${parseInt(i / 7)}`).val());
+            } else if (i % 7 == 1) {
+                $('#openTue').val($(`#open_time_${parseInt(i / 7)}`).val());
+                $('#closeTue').val($(`#close_time_${parseInt(i / 7)}`).val());
+            } else if (i % 7 == 2) {
+                $('#openWed').val($(`#open_time_${parseInt(i / 7)}`).val());
+                $('#closeWed').val($(`#close_time_${parseInt(i / 7)}`).val());
+            } else if (i % 7 == 3) {
+                $('#openThu').val($(`#open_time_${parseInt(i / 7)}`).val());
+                $('#closeThu').val($(`#close_time_${parseInt(i / 7)}`).val());
+            } else if (i % 7 == 4) {
+                $('#openFri').val($(`#open_time_${parseInt(i / 7)}`).val());
+                $('#closeFri').val($(`#close_time_${parseInt(i / 7)}`).val());
+            } else if (i % 7 == 5) {
+                $('#openSat').val($(`#open_time_${parseInt(i / 7)}`).val());
+                $('#closeSat').val($(`#close_time_${parseInt(i / 7)}`).val());
+            } else if (i % 7 == 6) {
+                $('#openSun').val($(`#open_time_${parseInt(i / 7)}`).val());
+                $('#closeSun').val($(`#close_time_${parseInt(i / 7)}`).val());
             }
         }
     }
