@@ -18,16 +18,16 @@ block content
     section.py-5
         .container
             
-            +stepsHeading('Disposition and Amenities', 3)
+            +stepsHeading('Amenities', 3)
 
             form(action=`${path}user-add-4` method="post")
                 .row.form-block
                     .col-lg-4
-                        h4 Amenities
-                        p.text-muted.text-sm #{dummyText[2]}
+                        h4 시설
+                        //p.text-muted.text-sm #{dummyText[2]}
                     .col-lg-7.ml-auto
                         .form-group
-                            - var amenities = ['Kitchen', 'Shampoo', 'Heating', 'Air conditioning', 'Washer', 'Dryer', 'Wifi', 'Breakfast', 'Indoor fireplace', 'Buzzer/wireless intercom', 'Doorman', 'Hangers', 'Iron', 'Hair dryer', 'Laptop friendly workspace']
+                            - var amenities = ['Wifi', 'Breakfast', 'Indoor fireplace', 'Buzzer/wireless intercom', 'Doorman', 'Hangers', 'Iron', 'Hair dryer', 'Laptop friendly workspace']
 
                             label.form-label Available Amenities
                             ul.list-inline.mb-0

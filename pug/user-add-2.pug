@@ -25,12 +25,12 @@ block content
                 .row.form-block
                     .col-lg-4
                         h4 장소 설명
-                        //p.text-muted.text-sm  #{dummyText[3]}
+                        p.text-muted.text-sm  #을 이용해 태그를 만들 수 있습니다! <br/> 태그는 장소 노출에 도움이 됩니다.
                     .col-lg-7.ml-auto
                         .form-group.mb-5
-                            label.form-label(for="form_description") 장소의 특징을 알려주세요
+                            label.form-label(for="form_description") 설명
                             textarea.form-control(name="explanation", id="form_description", rows="5", aria-describedby="descriptionHelp", required)
-                            .small.form-text.text-muted #을 이용해 태그를 만들 수 있습니다! 태그는 장소 노출에 도움이 됩니다.
+                            //.small.form-text.text-muted #을 이용해 태그를 만들 수 있습니다! 태그는 장소 노출에 도움이 됩니다.
                             textarea.d-none.form-control(name="tag" id="hide_tag_box")
                             div(id="description_tag_box")
                 .row.form-block.d-none

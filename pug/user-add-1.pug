@@ -19,40 +19,37 @@ block content
     section.py-5
         .container
 
-            +stepsHeading('장소 추가', 1)
+            +stepsHeading('Basic information', 1)
 
             form(action=`${path}user-add-2` method="post")
                 .row.form-block
                     .col-lg-4
                         h4 기본정보
-
+                        p.text-muted.text-sm 장소를 대표하는 카테고리를 선택하고, 공간을 선택해주세요.
                     .col-lg-7.ml-auto
-                        .form-group
-
                         .form-group
                             label.form-label(for="form_name") 이름
                             input.form-control(name="form_name", id="form_name", required)
 
                         .form-group
-                            - var types = ['카페', '음식점', '공연', '명소', '제과점', '체험']
-                            label.form-label(for="form_type") 장소
+                            - var types = ['가볼만한곳','카페/디저트' ,'맛집', '쇼핑', '공연', '명소', '문화', '테마', '체험']
+                            label.form-label(for="form_type") 카테고리
                             select.selectpicker.form-control(name="category", id="form_type", data-style="btn-selectpicker", title="", aria-describedby="propertyTypeHelp", required)
-                                option(selected) 장소
                                 each val, index in types
                                     option(value=`${val}`) #{val}
                             //small#propertyTypeHelp.form-text.text-muted #{dummyText[5]}
 
                         .form-group
-                            label.form-label 실내외
+                            label.form-label 공간
                             select.selectpicker.form-control(name="door", id="door", data-style="btn-selectpicker", title="", aria-describedby="propertyTypeHelp", required)
-                                option(selected) 실내외
-                                option(value="0") 실내
+                                option(value="0" selected) 실내
                                 option(value="1") 야외
                                 option(value="2") 실내 및 야외
 
                 .row.form-block
                     .col-lg-4
                         h4 위치
+                        p.text-muted.text-sm 당신이 공유하고자 하는 장소의 위치를 알려주세요.
                     .col-lg-7.ml-auto
                         .row
                             .col-md-4
@@ -81,16 +78,17 @@ block content
                     - var add = 0;
                     .col-lg-4
                         h4 시간
+                        p.text-muted.text-sm 장소에 방문할 수 있는 요일과 시간을 설정해 주세요. <br/> 방문할 수 없는 요일은 체크를 해제하면 됩니다.
                     .col-lg-7.ml-auto#Date
                         .row
                             .col-md-6
                                 .form-group
                                     label.form-label(for="open_time") 여는 시간
-                                    input.form-control(type="time", name="oTime", id="open_time", required)
+                                    input.form-control(type="time", name="oTime", id="open_time", value="00:00" required)
                             .col-md-6
                                 .form-group
                                     label.form-label(for="close_time") 닫는 시간
-                                    input.form-control(type="time", name="cTime", id="close_time", required)
+                                    input.form-control(type="time", name="cTime", id="close_time", value="23:59" required)
                             .col-md-12
                                 .form-group
                                     - var date = ['월', '화', '수', '목', '금', '토', '일']
@@ -102,7 +100,7 @@ block content
                                                     label.custom-control-label.text-muted(for=`date_${index}`) #{val}
                     .col-lg-7.ml-auto
                         .col-md-6(style="padding:0")
-                            input.btn.btn-primary.px-3#buttonDate(type="button", value = "시간 추가")
+                            input.btn.btn-outline-primary.px-3#buttonDate(type="button", value = "시간 추가")
                 +stepsAdd(1)
 
 
