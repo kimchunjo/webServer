@@ -197,8 +197,8 @@ mixin venue(val, itemClass)
                     h4.text-white.text-shadow #{val.name}
                     p.mb-2.text-xs
                         for star, starIndex in stars
-                            if (starIndex + 1 <= val.stars)
-                                i.fa.fa-star.text-warning
+                            if (starIndex + 1 <= val.star)
+                                i.fa.fa-star.text-primary
                             else
                                 i.fa.fa-star.text-gray-300                     
                 .card-img-overlay-top.d-flex.justify-content-between.align-items-center

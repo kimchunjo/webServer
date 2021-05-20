@@ -5,7 +5,7 @@ mixin ie(condition)
 
 meta(charset='utf-8')
 meta(http-equiv='X-UA-Compatible', content='IE=edge')
-title Directory Theme by Bootstrapious
+title AllPlace
 meta(name='description', content='')
 meta(name='viewport', content='width=device-width, initial-scale=1')
 meta(name='robots', content='all,follow')
@@ -26,9 +26,9 @@ link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1
 link(rel='stylesheet', href=`${path}vendor/magnific-popup/magnific-popup.css`)
 // 카카오맵 추가
 // local용 appkey
-//script(type="text/javascript" src="http://dapi.kakao.com/v2/maps/sdk.js?appkey=0863de169832d295ba5dbfec0268b92d&libraries=services")
- //서버용 appkey
-script(type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=9dd1305f9d5de0d7efefac82c2a28223&libraries=services")
+script(type="text/javascript" src="http://dapi.kakao.com/v2/maps/sdk.js?appkey=0863de169832d295ba5dbfec0268b92d&libraries=services")
+// 서버용 appkey
+//script(type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=9dd1305f9d5de0d7efefac82c2a28223&libraries=services")
 if (mapUsed)
     // Leaflet Maps
     link(rel='stylesheet', href='https://unpkg.com/leaflet@1.5.1/dist/leaflet.css',
