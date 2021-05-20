@@ -79,11 +79,13 @@ app.get('/', function (req, res) {
     req.session.valid = true;
     if (req.session.id1) {
         res.render('index', {
-            loggedUser: true
+            loggedUser: true,
+            //hideFooter: true,
         })
     } else {
         res.render('index', {
-            loggedUser: false
+            loggedUser: false,
+            //hideFooter: true,
         })
     }
 });
@@ -128,7 +130,7 @@ app.get('/user-add-0', function (req, res) {
 });
 
 app.get('/user-add-1', function (req, res) {
-    // 장소 이름, 위치,
+    // 장소 이름, 위치, 시간
     res.render('user-add-1')
 });
 
