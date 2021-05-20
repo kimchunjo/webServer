@@ -23,6 +23,77 @@ $(document).ready(function () {
         checkTag(target);
     })
 
+    $('#buttonDate').on('click', function () {
+        var date = ['월', '화', '수', '목', '금', '토', '일'];
+        let newDate = "";
+        var checkboxCount = $(".date-check").length;
+        if (checkboxCount < 28) {
+            for (var i = 0; i < 7; i++) {
+                newDate += `
+            <li class="list-inline-item">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input date-check" type="checkbox" id="date_${checkboxCount + i}" name="date_${checkboxCount + i}" value="${date[i]}" checked="checked"/>
+                        <label class="custom-control-label text-muted" for="date_${checkboxCount + i}">${date[i]}</label>
+                </div>
+            </li>   
+        `;}
+
+            $('#Date').append(`
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                    <input class="form-control" type="time" name="oTime" id="open_time" value="00:00" required="required"/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                    <input class="form-control" type="time" name="cTime" id="close_time" value="23:59" required="required"/>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <ul class="list-inline mb-0" id="DateList_${checkboxCount}"></ul>
+                    </div>
+                </div>
+            </div>
+        `);
+
+            $(`#DateList_${checkboxCount}`).append(newDate);
+
+            // 체크여부 확인
+            for (var i = 0; i < checkboxCount; i++) {
+                if ($(`input:checkbox[id=date_${i}]`).is(":checked") == true) {
+                    var checkedIndex = $(`input:checkbox[id=date_${i}]`).index("input:checkbox[name=date]");
+                    $(`input:checkbox[id=date_${checkboxCount + (i % 7)}]`).prop('checked', false);
+                    //$(`input:checkbox[id=date_${checkboxCount+(i%7)}]`).prop('disabled', true);
+                } else {
+                    //$(`input:checkbox[id=date_${i}]`).prop('disabled', true);
+                }
+            }
+
+            $(".date-check").change(function () {
+                if ($(this).is(":checked")) {
+                    if ($(this).val() == '월') {
+                        changeCheckbox(0, $(this));
+                    } else if ($(this).val() == '화') {
+                        changeCheckbox(1, $(this));
+                    } else if ($(this).val() == '수') {
+                        changeCheckbox(2, $(this));
+                    } else if ($(this).val() == '목') {
+                        changeCheckbox(3, $(this));
+                    } else if ($(this).val() == '금') {
+                        changeCheckbox(4, $(this));
+                    } else if ($(this).val() == '토') {
+                        changeCheckbox(5, $(this));
+                    } else if ($(this).val() == '일') {
+                        changeCheckbox(6, $(this));
+                    }
+                }
+            });
+        }
+    });
+
+
     /* 장소 세부 페이지 */
     $('#review').on('propertychange change keyup paste input', function () {
         let target = $('#reviewSubmit');
@@ -82,80 +153,6 @@ $(document).ready(function () {
             }
         } else {
             window.location.href = `/category-map?search=${searchWord}&location=${searchLocation}&sort=${selected}`;
-        }
-    });
-
-
-    $('#buttonDate').on('click', function () {
-        var date = ['월', '화', '수', '목', '금', '토', '일'];
-        let newDate = "";
-        var checkboxCount = $(".date-check").length;
-        if (checkboxCount < 28) {
-            for (var i = 0; i < 7; i++) {
-                newDate += `
-            <li class="list-inline-item">
-                <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input date-check" type="checkbox" id="date_${checkboxCount + i}" name="date_${checkboxCount + i}" value="${date[i]}" checked="checked"/>
-                        <label class="custom-control-label text-muted" for="date_${checkboxCount + i}">${date[i]}</label>
-                </div>
-            </li>   
-        `;}
-
-            $('#Date').append(`
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                    <label class="form-label" for="open_time">여는 시간</label>
-                    <input class="form-control" type="time" name="oTime" id="open_time" required="required"/>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                    <label class="form-label" for="close_time">닫는 시간</label>
-                    <input class="form-control" type="time" name="cTime" id="close_time" required="required"/>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <ul class="list-inline mb-0" id="DateList_${checkboxCount}"></ul>
-                    </div>
-                </div>
-            </div>
-        `);
-
-            $(`#DateList_${checkboxCount}`).append(newDate);
-
-            // 체크여부 확인
-            alert(checkboxCount);
-            for (var i = 0; i < checkboxCount; i++) {
-                if ($(`input:checkbox[id=date_${i}]`).is(":checked") == true) {
-                    var checkedIndex = $(`input:checkbox[id=date_${i}]`).index("input:checkbox[name=date]");
-                    $(`input:checkbox[id=date_${checkboxCount + (i % 7)}]`).prop('checked', false);
-                    //$(`input:checkbox[id=date_${checkboxCount+(i%7)}]`).prop('disabled', true);
-                } else {
-                    //$(`input:checkbox[id=date_${i}]`).prop('disabled', true);
-                }
-            }
-
-            $(".date-check").change(function () {
-                if ($(this).is(":checked")) {
-                    if ($(this).val() == '월') {
-                        changeCheckbox(0, $(this));
-                    } else if ($(this).val() == '화') {
-                        changeCheckbox(1, $(this));
-                    } else if ($(this).val() == '수') {
-                        changeCheckbox(2, $(this));
-                    } else if ($(this).val() == '목') {
-                        changeCheckbox(3, $(this));
-                    } else if ($(this).val() == '금') {
-                        changeCheckbox(4, $(this));
-                    } else if ($(this).val() == '토') {
-                        changeCheckbox(5, $(this));
-                    } else if ($(this).val() == '일') {
-                        changeCheckbox(6, $(this));
-                    }
-                }
-            });
         }
     });
 })
