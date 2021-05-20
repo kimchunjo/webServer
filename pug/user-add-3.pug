@@ -34,8 +34,9 @@ block content
                                 each val,index in amenities
                                     li.list-inline-item
                                         .custom-control.custom-checkbox
-                                            input.custom-control-input(type='checkbox', id=`amenities_${index}`, name="amenities[]")
+                                            input.custom-control-input.amenities-check(type='checkbox', id=`amenities_${index}`,value=`${val}` , name="amenities[]")
                                             label.custom-control-label.text-muted(for=`amenities_${index}`) #{val}
+
                 .row.form-block.d-none
                     .form-group.d-none
                         input(name="name" value=`${placeInfo.name}`)
@@ -48,4 +49,7 @@ block content
                         input(name="cTime" value=`${placeInfo.cTime}`)
                         input(name="explanation" value=`${placeInfo.explanation}`)
                         input(name="tag" value=`${placeInfo.tag}`)
+                        input(name="openTime" value=`${placeInfo.openTime}`)
+                        input(name="closeTime" value=`${placeInfo.closeTime}`)
+                        input(id='amenities', type="text", name='amenities')
                 +stepsAdd(3)

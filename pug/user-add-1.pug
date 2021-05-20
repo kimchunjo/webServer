@@ -83,12 +83,12 @@ block content
                         .row
                             .col-md-6
                                 .form-group
-                                    label.form-label(for="open_time") 여는 시간
-                                    input.form-control(type="time", name="oTime", id="open_time", value="00:00" required)
+                                    label.form-label(for="open_time_0") 여는 시간
+                                    input.form-control.open-time(type="time", name="oTime_0", id="open_time_0", value="00:00" required)
                             .col-md-6
                                 .form-group
-                                    label.form-label(for="close_time") 닫는 시간
-                                    input.form-control(type="time", name="cTime", id="close_time", value="23:59" required)
+                                    label.form-label(for="close_time_0") 닫는 시간
+                                    input.form-control.open-time(type="time", name="cTime_0", id="close_time_0", value="23:59" required)
                             .col-md-12
                                 .form-group
                                     - var date = ['월', '화', '수', '목', '금', '토', '일']
@@ -98,6 +98,29 @@ block content
                                                 .custom-control.custom-checkbox
                                                     input.custom-control-input.date-check(type='checkbox', id=`date_${index}`, name=`date_${index}`, value=`${val}`, checked)
                                                     label.custom-control-label.text-muted(for=`date_${index}`) #{val}
+                        .row.form-block.d-none
+                            .form-group.d-none
+                                input(id='openMon', type="text", name='openMon')
+                                input(id='closeMon', type="text", name='closeMon')
+                                br
+                                input(id='openTue', type="text", name='openTue')
+                                input(id='closeTue', type="text", name='closeTue')
+                                br
+                                input(id='openWed', type="text", name='openWed')
+                                input(id='closeWed', type="text", name='closeWed')
+                                br
+                                input(id='openThu', type="text", name='openThu')
+                                input(id='closeThu', type="text", name='closeThu')
+                                br
+                                input(id='openFri', type="text", name='openFri')
+                                input(id='closeFri', type="text", name='closeFri')
+                                br
+                                input(id='openSat', type="text", name='openSat')
+                                input(id='closeSat', type="text", name='closeSat')
+                                br
+                                input(id='openSun', type="text", name='openSun')
+                                input(id='closeSun', type="text", name='closeSun')
+
                     .col-lg-7.ml-auto
                         .col-md-6(style="padding:0")
                             input.btn.btn-outline-primary.px-3#buttonDate(type="button", value = "시간 추가")

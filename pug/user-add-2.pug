@@ -33,6 +33,7 @@ block content
                             //.small.form-text.text-muted #을 이용해 태그를 만들 수 있습니다! 태그는 장소 노출에 도움이 됩니다.
                             textarea.d-none.form-control(name="tag" id="hide_tag_box")
                             div(id="description_tag_box")
+
                 .row.form-block.d-none
                     .form-group.d-none
                         input(name="name" value=`${placeInfo.name}`)
@@ -43,4 +44,7 @@ block content
                         input(name="address" value=`${placeInfo.address}`)
                         input(name="oTime" value=`${placeInfo.oTime}`)
                         input(name="cTime" value=`${placeInfo.cTime}`)
+                        input(name="openTime" value=`${placeInfo.openTime}`)
+                        input(name="closeTime" value=`${placeInfo.closeTime}`)
+
                 +stepsAdd(2)
