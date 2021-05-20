@@ -74,21 +74,21 @@ block content
 
     include _pug-includes/inc-guides.pug
 
-    section.py-6.bg-gray-100 
-        .container
-            .row.mb-5
-                .col-md-8
-                    p.subtitle.text-secondary Hurry up, these are expiring soon.        
-                    h2 Last minute deals
-                .col-md-4.d-lg-flex.align-items-center.justify-content-end
-                    a.text-muted.text-sm(href="category.html") 
-                        | See all deals
-                        i.fas.fa-angle-double-right.ml-2
-
-            include _pug-includes/inc-slider-rooms.pug
+    //section.py-6.bg-gray-100
+    //    .container
+    //        .row.mb-5
+    //            .col-md-8
+    //                p.subtitle.text-secondary Hurry up, these are expiring soon.
+    //                h2 Last minute deals
+    //            .col-md-4.d-lg-flex.align-items-center.justify-content-end
+    //                a.text-muted.text-sm(href="category.html")
+    //                    | See all deals
+    //                    i.fas.fa-angle-double-right.ml-2
+    //
+    //        include _pug-includes/inc-slider-rooms.pug
 
     
-    include _pug-includes/inc-divider.pug
+    //include _pug-includes/inc-divider.pug
 
 
     //section.py-7
@@ -115,24 +115,24 @@ block content
     //
     //            .swiper-pagination
 
-    section.py-6.bg-gray-100
-        .container
-            .row.mb-5
-                .col-md-8
-                    p.subtitle.text-secondary Stories from around the globe
-                    h2 From our travel blog
-                .col-md-4.d-md-flex.align-items-center.justify-content-end
-                    a.text-muted.text-sm(href="blog.html")
-                        | See all articles
-                        i.fas.fa-angle-double-right.ml-2
-
-            .row
-                - var posts = []
-                - posts.push({name: 'Autumn fashion tips and tricks', image: 'img/photo/photo-1512917774080-9991f1c4c750.jpg', intro: 'Pellentesque habitant morbi tristique senectus. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante.  Mauris placerat eleifend leo.', author: 'John Slim', category: 'Travel'})
-                - posts.push({name: 'Newest photo apps', image: 'img/photo/photo-1522771739844-6a9f6d5f14af.jpg', intro: 'ellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Aenean ultricies mi vitae est. ', author: 'John Slim', category: 'Living'})
-                - posts.push({name: 'Best books about Photography', image: 'img/photo/photo-1482463084673-98272196658a.jpg', intro: 'Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante.  Mauris placerat eleifend leo.', author: 'John Slim', category: 'Travel'})
-
-                each val in posts
-                    +blog(val, 'hover-animate')
+    //section.py-6.bg-gray-100
+    //    .container
+    //        .row.mb-5
+    //            .col-md-8
+    //                p.subtitle.text-secondary Stories from around the globe
+    //                h2 From our travel blog
+    //            .col-md-4.d-md-flex.align-items-center.justify-content-end
+    //                a.text-muted.text-sm(href="blog.html")
+    //                    | See all articles
+    //                    i.fas.fa-angle-double-right.ml-2
+    //
+    //        .row
+    //            - var posts = []
+    //            - posts.push({name: 'Autumn fashion tips and tricks', image: 'img/photo/photo-1512917774080-9991f1c4c750.jpg', intro: 'Pellentesque habitant morbi tristique senectus. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante.  Mauris placerat eleifend leo.', author: 'John Slim', category: 'Travel'})
+    //            - posts.push({name: 'Newest photo apps', image: 'img/photo/photo-1522771739844-6a9f6d5f14af.jpg', intro: 'ellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Aenean ultricies mi vitae est. ', author: 'John Slim', category: 'Living'})
+    //            - posts.push({name: 'Best books about Photography', image: 'img/photo/photo-1482463084673-98272196658a.jpg', intro: 'Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante.  Mauris placerat eleifend leo.', author: 'John Slim', category: 'Travel'})
+    //
+    //            each val in posts
+    //                +blog(val, 'hover-animate')
 
     include _pug-includes/inc-instagram.pug
