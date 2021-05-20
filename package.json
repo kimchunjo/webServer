@@ -2,6 +2,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-session": "^1.17.1",
+    "gps": "^0.6.0",
     "gps-tracking": "^1.1.1",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",

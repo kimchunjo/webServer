@@ -75,7 +75,6 @@ bookingsJson = JSON.parse(fs.readFileSync('pug/js/bookings.json', {
 
 /* ******** routing ******** */
 app.get('/', function (req, res) {
-    console.log(req.session)
     req.session.valid = true;
     if (req.session.id1) {
         res.render('index', {
@@ -386,6 +385,7 @@ app.get('/category', function (req, res) {
                             for (var i = 0; i < placeNumber.length; i++)
                                 searchPlaceQuery += `select * from place where name NOT LIKE '%${searchWord}%' and number = ${placeNumber[i].fk_place_number};`;
                             if (placeNumber.length !== 0) {
+                                /* ******** 3. placeName 과 hashTag 모두에 대한 결과가 있는 경우 ******* */
                                 connection.query(searchPlaceQuery, function (err, places) {
                                     let allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣는다.
                                     if (places.length === 1) { // 해당 hashTag 를 갖는 장소가 1개인 경우
@@ -407,8 +407,7 @@ app.get('/category', function (req, res) {
                                         allPlace.push(placeList[i]);
                                     }
 
-
-                                    if (sortCatecory === "STAR") {
+                                    if (sortCatecory === "STAR") { // 정렬 기준에 맞게 검색 결과를 정렬한다.
                                         for (let i = 0; i < allPlace.length; i++) { // 평점 순서로 정렬
                                             for (let j = i + 1; j < allPlace.length; j++) {
                                                 if (allPlace[i].star < allPlace[j].star) {
@@ -418,10 +417,9 @@ app.get('/category', function (req, res) {
                                                 }
                                             }
                                         }
-                                    } else if (sortCatecory === 'CLOSEST') {
+                                    } else if (sortCatecory === 'CLOSESET') {
                                         for (var i = 0; i < allPlace.length; i++) {
                                             for (var j = i + 1; j < allPlace.length; j++) {
-                                                console.log(allPlace[i])
                                                 if ((((allPlace[i].latitude) - (lat)) * ((allPlace[i].latitude) - (lat))) + (((allPlace[i].longitude) - (lon)) * ((allPlace[i].longitude) - (lon))) > (((allPlace[j].latitude) - (lat)) * ((allPlace[j].latitude) - (lat))) + (((allPlace[j].longitude) - (lon)) * ((allPlace[j].longitude) - (lon)))) {
                                                     let temp = allPlace[i];
                                                     allPlace[i] = allPlace[j];
@@ -488,10 +486,9 @@ app.get('/category', function (req, res) {
                                 }
                             }
                         }
-                    } else if (sortCatecory === 'CLOSEST') {
+                    } else if (sortCatecory === 'CLOSESET') {
                         for (var i = 0; i < allPlace.length; i++) {
                             for (var j = i + 1; j < allPlace.length; j++) {
-                                console.log(allPlace[i])
                                 if ((((allPlace[i].latitude) - (lat)) * ((allPlace[i].latitude) - (lat))) + (((allPlace[i].longitude) - (lon)) * ((allPlace[i].longitude) - (lon))) > (((allPlace[j].latitude) - (lat)) * ((allPlace[j].latitude) - (lat))) + (((allPlace[j].longitude) - (lon)) * ((allPlace[j].longitude) - (lon)))) {
                                     let temp = allPlace[i];
                                     allPlace[i] = allPlace[j];
@@ -534,14 +531,11 @@ app.get('/category', function (req, res) {
                     }
                 }
             })
-        } else {
-            // searchWord 가 placeName 에 포함된 장소가 없을 때
-            // 2. searchWord 를 이용해 hashTag Table 을 조회하고 해당 해쉬태그의 id(number)를 가져온다.
+        } else { // searchWord 가 placeName 에 포함된 장소가 없을 때
+            /* ******** 2. hashTag 를 이용한 검색 ******* */
             connection.query(searchHashtagQuery, searchWord, function (err, hashTag) {
-                if (hashTag.length !== 0) {
-                    // searchWord 와 일치하는 해시태그 값을 갖는 장소가 있을 때
-                    connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err1, placeNumber) {
-                            // hashTag Number 을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
+                if (hashTag.length !== 0) { // searchWord 와 일치하는 해시태그 값을 갖는 장소가 있을 때
+                    connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err1, placeNumber) { // hashTag Number 을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
                             for (var i = 0; i < placeNumber.length; i++)
                                 searchPlaceQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
                             if (placeNumber.length !== 0) {
@@ -569,10 +563,9 @@ app.get('/category', function (req, res) {
                                                 }
                                             }
                                         }
-                                    } else if (sortCatecory === 'CLOSEST') {
+                                    } else if (sortCatecory === 'CLOSESET') {
                                         for (var i = 0; i < allPlace.length; i++) {
                                             for (var j = i + 1; j < allPlace.length; j++) {
-                                                console.log(allPlace[i])
                                                 if ((((allPlace[i].latitude) - (lat)) * ((allPlace[i].latitude) - (lat))) + (((allPlace[i].longitude) - (lon)) * ((allPlace[i].longitude) - (lon))) > (((allPlace[j].latitude) - (lat)) * ((allPlace[j].latitude) - (lat))) + (((allPlace[j].longitude) - (lon)) * ((allPlace[j].longitude) - (lon)))) {
                                                     let temp = allPlace[i];
                                                     allPlace[i] = allPlace[j];
@@ -620,13 +613,11 @@ app.get('/category', function (req, res) {
                             }
                         }
                     );
-                } else {
-                    // placeName, hashTag 모두 검색 결과가 없는 경우이다.
+                } else { // placeName, hashTag 모두 검색 결과가 없는 경우이다.
                     res.redirect('/');
                 }
             });
         }
-
     });
 });
 app.get('/category-map', function (req, res) {
