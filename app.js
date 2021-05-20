@@ -456,6 +456,30 @@ app.get('/category', function (req, res) {
                         placeList[i].image = ((placeList[i].image).split("@#"))[1]; // 대표 이미지 설정
                         allPlace.push(placeList[i]);
                     }
+
+                    if (sortCatecory === "STAR") {
+                        for (let i = 0; i < allPlace.length; i++) { // 평점 순서로 정렬
+                            for (let j = i + 1; j < allPlace.length; j++) {
+                                if (allPlace[i].star < allPlace[j].star) {
+                                    let temp = allPlace[i];
+                                    allPlace[i] = allPlace[j];
+                                    allPlace[j] = temp;
+                                }
+                            }
+                        }
+                    } else if (sortCatecory === 'CLOSEST') {
+                        for (var i = 0; i < allPlace.length; i++) {
+                            for (var j = i + 1; j < allPlace.length; j++) {
+                                console.log(allPlace[i])
+                                if ((((allPlace[i].latitude) - (lat)) * ((allPlace[i].latitude) - (lat))) + (((allPlace[i].longitude) - (lon)) * ((allPlace[i].longitude) - (lon))) > (((allPlace[j].latitude) - (lat)) * ((allPlace[j].latitude) - (lat))) + (((allPlace[j].longitude) - (lon)) * ((allPlace[j].longitude) - (lon)))) {
+                                    let temp = allPlace[i];
+                                    allPlace[i] = allPlace[j];
+                                    allPlace[j] = temp;
+                                }
+                            }
+                        }
+                    }
+
                     if (req.session.id1) {
                         res.render('category-custom', {
                             path: '',
