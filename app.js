@@ -145,9 +145,6 @@ app.post('/user-add-2', function (req, res) {
         address: body.address + " " + body.detailAddress,
         openTime: [body.openMon, body.openTue, body.openWed, body.openThu, body.openFri, body.openSat, body.openSun],
         closeTime: [body.closeMon, body.closeTue, body.closeWed, body.closeThu, body.closeFri, body.closeSat, body.closeSun],
-        // 나중에 아래 두 줄 삭제
-        oTime: body.oTime_0,
-        cTime: body.cTime_0
     }
     res.render('user-add-2', {
         placeInfo: placeInfo
@@ -167,9 +164,6 @@ app.post('/user-add-3', function (req, res) {
         address: body.address,
         openTime: body.openTime,
         closeTime: body.closeTime,
-        //oTime, cTime 삭제 필요
-        oTime: body.oTime,
-        cTime: body.cTime,
         // 새롭게 추가된 정보
         explanation: body.explanation,
         tag: body.tag,
@@ -194,14 +188,12 @@ app.post('/user-add-4', function (req, res) {
         address: body.address,
         openTime: body.openTime,
         closeTime: body.closeTime,
-        //oTime, cTime 삭제 필요
-        oTime: body.oTime,
-        cTime: body.cTime,
         explanation: body.explanation,
         tag: body.tag,
         filename: body.filename,
         amenities: body.amenities
         // 새롭게 추가된 정보
+
     }
 
     res.render('user-add-4', {
@@ -222,14 +214,16 @@ app.post('/user-add-5', function (req, res) {
         address: body.address,
         openTime: body.openTime,
         closeTime: body.closeTime,
-        //oTime, cTime 삭제 필요
-        oTime: body.oTime,
-        cTime: body.cTime,
         explanation: body.explanation,
         tag: body.tag,
         // 새롭게 추가된 정보
         filename: body.filename,
-        amenities: body.amenities
+        amenities: body.amenities,
+        phoneNumber: body.phone_number,
+        email: body.email,
+        page: body.page,
+        facebook: body.facebook_page,
+        instagram: body.instagram_page
     }
 
     res.render('user-add-5', {
@@ -248,9 +242,8 @@ app.post('/user-add', function (req, res) {
     // closeTime 출력 형식 -> 13:59,13:59,23:05,23:05,23:05,13:59,13:59
     var openTime = body.openTime;
     var closeTime = body.closeTime;
-    //oTime, cTime 삭제 필요
-    var oTime = body.oTime;
-    var cTime = body.cTime;
+    openTime = openTime.split(',');
+    closeTime = closeTime.split(',');
     var tag = body.tag;
     tag = tag.trim();
     tag = tag.split(" ");
@@ -260,20 +253,24 @@ app.post('/user-add', function (req, res) {
     var longitude = body.longitude;
     // amenities(시설) 출력 형식 -> Indoor fireplace, Breakfast, Buzzer/wireless intercom, Laptop friendly workspace, Hair dryer
     var amenities = body.amenities;
-    var phoneNumber = body.phone_number;
+    var phoneNumber = body.phoneNumber;
     var email = body.email;
     var page = body.page;
-    var facebook = body.facebook_page;
-    var instagram = body.instagram_page;
+    var facebook = body.facebook;
+    var instagram = body.instagram;
 
-
-    var query = 'INSERT INTO place(name, explanation, category, usetime_start, usetime_end, door, latitude, longitude, image, location) VALUES("' + name + '","' + explanation + '","' + category + '","' + door + '","' + oTime + '","' + cTime + '","' + latitude + '","' + longitude + '","' + filename + '","' + address + '")'
+    var query = 'INSERT INTO place(name, explanation, category, amenities, phoneNumber, door, latitude, longitude, image, location, email, page, facebookID, instagramID) VALUES("' + name + '","' + explanation + '","' + category + '","' + amenities + '","' + phoneNumber + '","' + door + '","'  + latitude + '","' + longitude + '","' + filename + '","' + address + '","' + email + '","' + page + '","' + facebook + '","' + instagram +'")';
+    var insertTimeQuery = `INSERT INTO place_opentime(fk_place_number, mon_open, tue_open, wed_open, thu_open, fri_open, sat_open, sun_open, mon_close, tue_close, wed_close, thu_close, fri_close, sat_close, sun_close) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
     connection.query(query, function (error, results, fields) {
+         connection.query(insertTimeQuery, [results.insertId, openTime[0], openTime[1], openTime[2], openTime[3], openTime[4], openTime[5], openTime[6], closeTime[0], closeTime[1], closeTime[2], closeTime[3], closeTime[4], closeTime[5], closeTime[6]], function (error, results, fields){
+         });
         if (error) {
             console.log(error);
         }
         console.log(results);
     });
+
+
 
     var query = `INSERT INTO hashtag(name) VALUES (?);`;
     var getPlaceNumberQuery = `select place.number from place where place.name = ? and place.location = ? and place.category = ?`;
