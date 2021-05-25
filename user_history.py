@@ -13,7 +13,10 @@ from gensim.models import Word2Vec
 
 def predict(key):
     model = Word2Vec.load("user_history_model")
-    return model.most_similar(key)
+    try:
+            return model.most_similar(positive=[key])
+    except KeyError:
+            return "not in vocabulary"
     
 if __name__ == '__main__': 
     print(predict(sys.argv[1]))
