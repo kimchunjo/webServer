@@ -127,7 +127,7 @@ block content
                             .card-body
 
                                 - var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-
+                                - var dayindex = 0
                                 table.table.text-sm.mb-0
 
                                     each val, index in days
@@ -137,7 +137,16 @@ block content
                                                 - additionalClass = 'border-0'
 
                                             th.pl-0(class=additionalClass) #{val}
-                                            td.pr-0.text-right(class=additionalClass) #{(index+1 == days.length) ? 'Closed' : '8:00 am - 6:00 pm'}
+                                            if placeInfo.oc[dayindex] == '00:00' && placeInfo.oc[dayindex+1] == '00:00'
+                                                td.pr-0.text-right.d-none(class=additionalClass) #{placeInfo.oc[dayindex++]} - #{placeInfo.oc[dayindex++]}
+                                                td.pr-0.text-right(class=additionalClass) Closed
+                                            else if placeInfo.oc[dayindex] == '00:00' && placeInfo.oc[dayindex+1] == '23:59'
+                                                td.pr-0.text-right.d-none(class=additionalClass) #{placeInfo.oc[dayindex++]} - #{placeInfo.oc[dayindex++]}
+                                                td.pr-0.text-right(class=additionalClass) Day and Night
+                                            else
+                                                td.pr-0.text-right(class=additionalClass) #{placeInfo.oc[dayindex++]} - #{placeInfo.oc[dayindex++]}
+                                            // #{(index+1 == days.length) ? 'Closed' : '8:00 am - 6:00 pm'}
+
 
 
                         // Contact
