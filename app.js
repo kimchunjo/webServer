@@ -747,6 +747,24 @@ app.get('/detail', function (req, res) {
             }
         }
 
+        // 오픈, 마감 시간
+        result[0].oc = [];
+        result[0].oc.push((result[0].sun_open).slice(0,5)); // 일
+        result[0].oc.push(result[0].sun_close.slice(0,5));
+        result[0].oc.push(result[0].mon_open.slice(0,5)); // 월
+        result[0].oc.push(result[0].mon_close.slice(0,5));
+        result[0].oc.push(result[0].tue_open.slice(0,5)); // 화
+        result[0].oc.push(result[0].tue_close.slice(0,5));
+        result[0].oc.push(result[0].wed_open.slice(0,5)); // 수
+        result[0].oc.push(result[0].wed_close.slice(0,5));
+        result[0].oc.push(result[0].thu_open.slice(0,5)); // 목
+        result[0].oc.push(result[0].thu_close.slice(0,5));
+        result[0].oc.push(result[0].fri_open.slice(0,5)); // 금
+        result[0].oc.push(result[0].fri_close.slice(0,5));
+        result[0].oc.push(result[0].sat_open.slice(0,5)); // 토
+        result[0].oc.push(result[0].sat_close.slice(0,5));
+
+        console.log(result[0])
         connection.query(searchHashtagNumber, placeId, function (err, hashtagNumberResult) {
             for (var i = 0; i < hashtagNumberResult.length; i++)
                 searchHashtag += `select name from hashtag where number = ${hashtagNumberResult[i].fk_hashtag_number};`;
