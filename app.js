@@ -728,14 +728,13 @@ app.get('/category-map', function (req, res) {
 /* detail */
 app.get('/detail', function (req, res) {
     let placeId = req.query.placeId;
-
     /* DB 조회를 위한 쿼리 */
     var searchPlace = `select * from place where place.number = ?`;
     var searchReview = `select * from review where review.fk_place_number = ?`
     var searchHashtagNumber = `select * from place_hashtag where fk_place_number = ? and hashtag_point >= 3`
     var searchHashtag = "";
-    var historyAddQuery = `UPDATE user SET history = CONCAT ( CONCAT (history, "//"), ?) WHERE id = ?;`;
-
+    var historyAddQuery = `UPDATE user SET history = CONCAT ( CONCAT (history, "//"), ?) WHERE user.id = ? and history is not null;`;
+    var historyAddNullQuery = `UPDATE user SET history = ? WHERE user.id = ? and history is null;`;
     connection.query(searchPlace, placeId, function (err, result) {
         // 이미지
         let mainImage = ((result[0].image).split("@#"))[1]; // main 에 보여질 이미지를 선택한다.
@@ -794,7 +793,9 @@ app.get('/detail', function (req, res) {
                             hashtagNames: hashtagNames
                         });
                         console.log(req.session.id1);
-                        connection.query(historyAddQuery, [result[0].name ,req.session.id1], function (err, hashTag) {
+                        connection.query(historyAddQuery, [result[0].name, req.session.id1], function (err, hashTag) {
+                        });
+                        connection.query(historyAddNullQuery, [result[0].name, req.session.id1], function (err, hashTag) {
                         });
                     } else {
                         res.render('detail', {
