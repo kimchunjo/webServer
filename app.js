@@ -18,7 +18,7 @@ app.set('views', './pug'); /* template file 은 pug 라는 폴더 및에 위치 
 app.use(express.static('public'));
 
 // /* 파이썬 연동을 위한 모듈  */
-// const {PythonShell} = require('python-shell');
+const {PythonShell} = require('python-shell');
 // let options = {
 //     mode: 'text',
 //     pythonOptions: ['-u'], // get print results in real-time
@@ -260,13 +260,12 @@ app.post('/user-add', function (req, res) {
     var instagram = body.instagram;
 
     var query = `INSERT INTO place(name, explanation, category, amenities, phoneNumber, door, latitude, longitude, image, location, email, page, facebookID, instagramID, mon_open, tue_open, wed_open, thu_open, fri_open, sat_open, sun_open, mon_close, tue_close, wed_close, thu_close, fri_close, sat_close, sun_close) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    connection.query(query, [name, explanation, category, amenities, phoneNumber, door, latitude, longitude, filename, address, email, page, facebook, instagram, openTime[0], openTime[1], openTime[2], openTime[3], openTime[4], openTime[5], openTime[6], closeTime[0], closeTime[1], closeTime[2], closeTime[3], closeTime[4], closeTime[5], closeTime[6]] ,function (error, results, fields) {
+    connection.query(query, [name, explanation, category, amenities, phoneNumber, door, latitude, longitude, filename, address, email, page, facebook, instagram, openTime[0], openTime[1], openTime[2], openTime[3], openTime[4], openTime[5], openTime[6], closeTime[0], closeTime[1], closeTime[2], closeTime[3], closeTime[4], closeTime[5], closeTime[6]], function (error, results, fields) {
         if (error) {
             console.log(error);
         }
         console.log(results);
     });
-
 
 
     var query = `INSERT INTO hashtag(name) VALUES (?);`;
@@ -342,18 +341,6 @@ app.get('/user-profile', function (req, res) {
     })
 });
 
-function getDistance(lat1, lon1, lat2, lon2){
-    function deg2rad(deg){
-        return deg * (Math.PI/180);
-    }
-    var R = 6371;
-    var dLat = deg2rad(lat2 - lat1);
-    var dLon = deg2rad(lon2 - lon1);
-    var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    var d = R * c; // Distance in km
-    return d;
-}
 
 app.get('/category', function (req, res) {
     let searchWord = req.query.search;
@@ -361,7 +348,6 @@ app.get('/category', function (req, res) {
     let sortCatecory = req.query.sort;
     let lat = req.query.lat;
     let lon = req.query.lon;
-    let distance;
 
     let pagination = req.query.pagination;
     if (pagination === undefined) pagination = 0;
@@ -369,14 +355,8 @@ app.get('/category', function (req, res) {
 
     if (searchWord === undefined || searchWord === "") // 검색어를 입력하변지 않은 경우 사용자 취향을 고려한 검색
         searchWord = '내 취향에 맞는 장소'
-    if (searchLocation === undefined || searchLocation === ""){
-        // 장소를 입력하변지 않은 경우 내 주변으로 검색
+    if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
         searchLocation = '근처'
-        distance = 3;
-    }else{
-        searchLocation = '모든';
-        distance = 500;
-    }
     if (sortCatecory === undefined || sortCatecory === "") // 기본 검색은 평점 순서
         sortCatecory = 'STAR'
 
@@ -403,14 +383,12 @@ app.get('/category', function (req, res) {
                                     let allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣는다.
                                     if (places.length === 1) { // 해당 hashTag 를 갖는 장소가 1개인 경우
                                         for (let i = places.length - 1; i >= 0; i--) {
-                                            if(getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance){
-                                                places[i].image = ((places[i].image).split("@#"))[1];
-                                                allPlace.push(places[i]);
-                                            }
+                                            places[i].image = ((places[i].image).split("@#"))[1];
+                                            allPlace.push(places[i]);
                                         }
                                     } else { // 해당 hashTag 를 갖는 장소가 여러개인 경우
                                         for (let i = 0; i < places.length; i++) {
-                                            if (places[i][0] !== undefined && getDistance(lat, lon, places[i][0].latitude, places[i][0].longitude) < distance) {
+                                            if (places[i][0] !== undefined) {
                                                 places[i][0].image = ((places[i][0].image).split("@#"))[1];
                                                 allPlace.push(places[i][0]);
                                             }
@@ -418,10 +396,8 @@ app.get('/category', function (req, res) {
                                     }
 
                                     for (let i = 0; i < placeList.length; i++) { // allPlace 에 1 번 단계에서 얻은 결과를 넣는다.
-                                        if(getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < distance){
-                                            placeList[i].image = ((placeList[i].image).split("@#"))[1];
-                                            allPlace.push(placeList[i]);
-                                        }
+                                        placeList[i].image = ((placeList[i].image).split("@#"))[1];
+                                        allPlace.push(placeList[i]);
                                     }
 
                                     if (sortCatecory === "STAR") { // 정렬 기준에 맞게 검색 결과를 정렬한다.
@@ -464,7 +440,6 @@ app.get('/category', function (req, res) {
                                         });
 
 
-
                                     } else {
                                         res.render('category-custom', {
                                             path: '',
@@ -493,10 +468,8 @@ app.get('/category', function (req, res) {
                 } else {
                     let allPlace = []
                     for (let i = 0; i < placeList.length; i++) {
-                        if(getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < distance){
-                            placeList[i].image = ((placeList[i].image).split("@#"))[1]; // 대표 이미지 설정
-                            allPlace.push(placeList[i]);
-                        }
+                        placeList[i].image = ((placeList[i].image).split("@#"))[1]; // 대표 이미지 설정
+                        allPlace.push(placeList[i]);
                     }
                     if (sortCatecory === "STAR") {
                         for (let i = 0; i < allPlace.length; i++) { // 평점 순서로 정렬
@@ -566,17 +539,13 @@ app.get('/category', function (req, res) {
                                     var allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
                                     if (places.length === 1) {
                                         for (var i = places.length - 1; i >= 0; i--) {
-                                            if(getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
-                                                places[i].image = ((places[i].image).split("@#"))[1];
-                                                allPlace.push(places[i]);
-                                            }
+                                            places[i].image = ((places[i].image).split("@#"))[1];
+                                            allPlace.push(places[i]);
                                         }
                                     } else {
                                         for (var i = 0; i < places.length; i++) {
-                                            if(getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
-                                                places[i][0].image = ((places[i][0].image).split("@#"))[1];
-                                                allPlace.push(places[i][0]);
-                                            }
+                                            places[i][0].image = ((places[i][0].image).split("@#"))[1];
+                                            allPlace.push(places[i][0]);
                                         }
                                     }
 
@@ -647,6 +616,7 @@ app.get('/category', function (req, res) {
         }
     });
 });
+
 app.get('/category-map', function (req, res) {
     let searchWord = req.query.search;
     let searchLocation = req.query.location;
@@ -764,6 +734,8 @@ app.get('/detail', function (req, res) {
     var searchHashtag = "";
     var historyAddQuery = `UPDATE user SET history = CONCAT ( CONCAT (history, "//"), ?) WHERE user.id = ? and history is not null;`;
     var historyAddNullQuery = `UPDATE user SET history = ? WHERE user.id = ? and history is null;`;
+    var searchAssPlaceQuery = '';
+
     connection.query(searchPlace, placeId, function (err, result) {
         // 이미지
         let mainImage = ((result[0].image).split("@#"))[1]; // main 에 보여질 이미지를 선택한다.
@@ -811,29 +783,94 @@ app.get('/detail', function (req, res) {
                     else if (result[0].star < 0) result[0].star = 0;
                     result[0].star = Math.round(result[0].star);
 
-
-                    if (req.session.id1) {
-                        res.render('detail', {
-                            mainImage: mainImage,
-                            placeInfo: result[0],
-                            userInfo: req.session.id1,
-                            reviews: reviews,
-                            loggedUser: true,
-                            hashtagNames: hashtagNames
-                        });
-                        connection.query(historyAddQuery, [result[0].name, req.session.id1], function (err, hashTag) {
-                        });
-                        connection.query(historyAddNullQuery, [result[0].name, req.session.id1], function (err, hashTag) {
-                        });
-                    } else {
-                        res.render('detail', {
-                            mainImage: mainImage,
-                            placeInfo: result[0],
-                            reviews: reviews,
-                            loggedUser: false,
-                            hashtagNames: hashtagNames
-                        });
+                    // 연관 장소
+                    let data = {
+                        name: result[0].name
                     }
+
+                    let options = {
+                        mode: 'json', // json or text
+                        pythonOptions: ['-u'], // get print results in real-time
+                        scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
+                        encoding: 'utf8',
+                        args: [JSON.stringify(data)], //[`${result[0].name}`], //An argument which can be accessed in the script using sys.argv[1]
+                    };
+
+                    PythonShell.run('user_history.py', options, function (err, ap) {
+                        let associatedPlace = ap[0];
+                        let assPlaceList = [];
+
+                        if (associatedPlace == "not in vocabulary") { // 연관 장소가 없는 경우
+                            if (req.session.id1) {
+                                res.render('detail', {
+                                    mainImage: mainImage,
+                                    placeInfo: result[0],
+                                    userInfo: req.session.id1,
+                                    reviews: reviews,
+                                    loggedUser: true,
+                                    hashtagNames: hashtagNames,
+                                });
+                                connection.query(historyAddQuery, [result[0].name, req.session.id1], function (err, hashTag) {
+                                });
+                                connection.query(historyAddNullQuery, [result[0].name, req.session.id1], function (err, hashTag) {
+                                });
+                            } else {
+                                res.render('detail', {
+                                    mainImage: mainImage,
+                                    placeInfo: result[0],
+                                    reviews: reviews,
+                                    loggedUser: false,
+                                    hashtagNames: hashtagNames,
+                                });
+                            }
+                        } else { // 연관 장소가 있는 경우
+                            for (let i = 0; i < associatedPlace.length; i++)
+                                if (associatedPlace[i][1] > -2)
+                                    associatedPlace[i] = associatedPlace[i][0]
+                                else
+                                    associatedPlace.splice(i, i + 1);
+
+                            for (let i = 0; i < associatedPlace.length; i++)
+                                searchAssPlaceQuery += `select * from place where name = '${associatedPlace[i]}';`
+
+                            connection.query(searchAssPlaceQuery, function (err, assPlace) {
+                                assPlaceList = [];
+
+                                for (let i = 0; i < assPlace.length; i++)
+                                    if (assPlace[i].length !== 0) assPlaceList.push(assPlace[i][0])
+
+                                if(assPlaceList.length !== 0){
+                                    for(let i=0; i<assPlaceList.length; i++)
+                                        assPlaceList[i].image = ((assPlaceList[i].image).split("@#"))[1];
+                                }
+
+                                if (req.session.id1) {
+                                    res.render('detail', {
+                                        mainImage: mainImage,
+                                        placeInfo: result[0],
+                                        userInfo: req.session.id1,
+                                        reviews: reviews,
+                                        loggedUser: true,
+                                        hashtagNames: hashtagNames,
+                                        assPlace: assPlaceList,
+                                    });
+                                    connection.query(historyAddQuery, [result[0].name, req.session.id1], function (err, hashTag) {
+                                    });
+                                    connection.query(historyAddNullQuery, [result[0].name, req.session.id1], function (err, hashTag) {
+                                    });
+                                } else {
+                                    res.render('detail', {
+                                        mainImage: mainImage,
+                                        placeInfo: result[0],
+                                        reviews: reviews,
+                                        loggedUser: false,
+                                        hashtagNames: hashtagNames,
+                                        assPlace: assPlaceList,
+                                    });
+                                }
+                            })
+                        }
+                    });
                 })
             })
         })
