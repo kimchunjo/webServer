@@ -421,7 +421,7 @@ app.get('/category', function (req, res) {
                                             }
                                         }
                                     }
-
+                                    let count = allPlace.length
                                     allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1)); // 각 페이지에 12개의 장소를 노출한다.
 
                                     if (req.session.id1) {
@@ -431,7 +431,7 @@ app.get('/category', function (req, res) {
                                             searchWord: searchWord,
                                             searchLocation: searchLocation,
                                             allPlace: allPlace,
-                                            placeCount: allPlace.length,
+                                            placeCount: count,
                                             pagination: pagination,
                                             loggedUser: true,
                                             sortCatecory: sortCatecory,
@@ -447,17 +447,14 @@ app.get('/category', function (req, res) {
                                             searchWord: searchWord,
                                             searchLocation: searchLocation,
                                             allPlace: allPlace,
-                                            placeCount: allPlace.length,
+                                            placeCount: count,
                                             pagination: pagination,
                                             loggedUser: false,
                                             sortCatecory: sortCatecory,
                                             lat: lat,
                                             lon: lon
                                         });
-
                                     }
-
-
                                 });
                             } else {
                                 // 해쉬 태그는 존재하지만 해당 해쉬 태그를 갖는 장소가 존재하지 않는 경우
@@ -493,6 +490,7 @@ app.get('/category', function (req, res) {
                         }
                     }
 
+                    let count = allPlace.length
                     if (req.session.id1) {
 
                         res.render('category-custom', {
@@ -501,7 +499,7 @@ app.get('/category', function (req, res) {
                             searchWord: searchWord,
                             searchLocation: searchLocation,
                             allPlace: allPlace, // 검색 된 모든 장소
-                            placeCount: allPlace.length, // 검색 된 장소의 개수
+                            placeCount: count, // 검색 된 장소의 개수
                             pagination: pagination,
                             loggedUser: true,
                             sortCatecory: sortCatecory,
@@ -515,7 +513,7 @@ app.get('/category', function (req, res) {
                                 searchWord: searchWord,
                                 searchLocation: searchLocation,
                                 allPlace: allPlace,
-                                placeCount: allPlace.length,
+                                placeCount: count,
                                 pagination: pagination,
                                 loggedUser: false,
                                 sortCatecory: sortCatecory,
@@ -570,7 +568,7 @@ app.get('/category', function (req, res) {
                                             }
                                         }
                                     }
-
+                                    let count = allPlace.length
                                     allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
 
                                     if (req.session.id1) {
@@ -580,7 +578,7 @@ app.get('/category', function (req, res) {
                                             searchWord: searchWord,
                                             searchLocation: searchLocation,
                                             allPlace: allPlace,
-                                            placeCount: allPlace.length,
+                                            placeCount: count,
                                             pagination: pagination,
                                             loggedUser: true,
                                             sortCatecory: sortCatecory,
@@ -764,7 +762,6 @@ app.get('/detail', function (req, res) {
         result[0].oc.push(result[0].sat_open.slice(0,5)); // 토
         result[0].oc.push(result[0].sat_close.slice(0,5));
 
-        console.log(result[0])
         connection.query(searchHashtagNumber, placeId, function (err, hashtagNumberResult) {
             for (var i = 0; i < hashtagNumberResult.length; i++)
                 searchHashtag += `select name from hashtag where number = ${hashtagNumberResult[i].fk_hashtag_number};`;
