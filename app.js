@@ -437,8 +437,11 @@ app.get('/category', function (req, res) {
                                             loggedUser: true,
                                             sortCatecory: sortCatecory,
                                             lat: lat,
-                                            lon: lon
+                                            lon: lon,
                                         });
+
+
+
                                     } else {
                                         res.render('category-custom', {
                                             path: '',
@@ -493,6 +496,7 @@ app.get('/category', function (req, res) {
                     }
 
                     if (req.session.id1) {
+
                         res.render('category-custom', {
                             path: '',
                             title: '검색결과',
@@ -730,6 +734,7 @@ app.get('/detail', function (req, res) {
     var searchReview = `select * from review where review.fk_place_number = ?`
     var searchHashtagNumber = `select * from place_hashtag where fk_place_number = ? and hashtag_point >= 3`
     var searchHashtag = "";
+    var historyAddQuery = `UPDATE user SET history = CONCAT ( CONCAT (history, "//"), ?) WHERE id = ?;`;
 
     connection.query(searchPlace, placeId, function (err, result) {
         // 이미지
@@ -778,6 +783,7 @@ app.get('/detail', function (req, res) {
                     else if (result[0].star < 0) result[0].star = 0;
                     result[0].star = Math.round(result[0].star);
 
+
                     if (req.session.id1) {
                         res.render('detail', {
                             mainImage: mainImage,
@@ -786,6 +792,9 @@ app.get('/detail', function (req, res) {
                             reviews: reviews,
                             loggedUser: true,
                             hashtagNames: hashtagNames
+                        });
+                        console.log(req.session.id1);
+                        connection.query(historyAddQuery, [result[0].name ,req.session.id1], function (err, hashTag) {
                         });
                     } else {
                         res.render('detail', {
