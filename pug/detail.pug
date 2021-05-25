@@ -186,7 +186,18 @@ block content
             h5.mb-0 Similar places
             p.subtitle.text-sm.text-primary.mb-4 You may also like         
 
-            include _pug-includes/inc-slider-places.pug
+            // Slider main container
+            - var itemClass = 'w-100 h-100'
+            .swiper-container.swiper-container-mx-negative.items-slider
+                // Additional required wrapper
+                .swiper-wrapper.pb-5
+                    // Slides
+                    each val, index in assPlace
+                        .swiper-slide.h-auto.px-2
+                            +venue(val, itemClass)
+
+                // If we need pagination
+                .swiper-pagination
 
 
 block additionalScripts
