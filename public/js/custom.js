@@ -1,6 +1,12 @@
 $(document).ready(function () {
     /* 초기 페이지 */
     getLocation();
+    // autocomplete
+    $.ajax({
+        url: 'js/address.csv',
+        dataType: 'text',
+    }).done(successFunction);
+
 
     /* 장소 추가 페이지*/
     $('#sample6_address').on('propertychange change keyup paste input', function () {// 위도 경도 계산
@@ -197,6 +203,42 @@ $(document).ready(function () {
         }
     });
 })
+
+// autocomplete
+function successFunction(data) {
+    var availableTags = [];
+
+    var allRows = data.split(/\r?\n|\r/);
+    for (var singleRow = 0; singleRow < allRows.length; singleRow++) {
+        availableTags.push(allRows[singleRow]);
+    }
+
+    $("#location").change(function(){
+        if(availableTags.indexOf($(this).val()) == -1){
+            $(this).val('내 주변');
+            getLocation();
+        }
+    });
+
+    $("#location").autocomplete({
+        source: availableTags,
+        max: 5,
+
+        select: function(event, ui){
+            var geocoder = new kakao.maps.services.Geocoder();
+                geocoder.addressSearch("광주광역시" + ui.item.value, function (result, status) {
+                    // 정상적으로 검색이 완료됐으면
+                    if (status === kakao.maps.services.Status.OK) {
+                        console.log(result[0].y);
+                        console.log(result[0].x);
+                        $('#lat').val(result[0].y);
+                        $('#lon').val(result[0].x);
+                    }
+                });
+        },
+    });
+}
+
 
 function getLocation() {
     if (navigator.geolocation) { // GPS를 지원하면
