@@ -341,6 +341,18 @@ app.get('/user-profile', function (req, res) {
     })
 });
 
+function getDistance(lat1, lon1, lat2, lon2){
+    function deg2rad(deg){
+        return deg * (Math.PI/180);
+    }
+    var R = 6371;
+    var dLat = deg2rad(lat2 - lat1);
+    var dLon = deg2rad(lon2 - lon1);
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var d = R * c; // Distance in km
+    return d;
+}
 
 app.get('/category', function (req, res) {
     let searchWord = req.query.search;
@@ -348,6 +360,7 @@ app.get('/category', function (req, res) {
     let sortCatecory = req.query.sort;
     let lat = req.query.lat;
     let lon = req.query.lon;
+    let distance = 3;
 
     let pagination = req.query.pagination;
     if (pagination === undefined) pagination = 0;
@@ -355,8 +368,11 @@ app.get('/category', function (req, res) {
 
     if (searchWord === undefined || searchWord === "") // 검색어를 입력하변지 않은 경우 사용자 취향을 고려한 검색
         searchWord = '내 취향에 맞는 장소'
-    if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
+    if (searchLocation === undefined || searchLocation === ""){
+        // 장소를 입력하변지 않은 경우 내 주변으로 검색
         searchLocation = '근처'
+    }
+
     if (sortCatecory === undefined || sortCatecory === "") // 기본 검색은 평점 순서
         sortCatecory = 'STAR'
 
@@ -383,12 +399,14 @@ app.get('/category', function (req, res) {
                                     let allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣는다.
                                     if (places.length === 1) { // 해당 hashTag 를 갖는 장소가 1개인 경우
                                         for (let i = places.length - 1; i >= 0; i--) {
-                                            places[i].image = ((places[i].image).split("@#"))[1];
-                                            allPlace.push(places[i]);
+                                            if(getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance){
+                                                places[i].image = ((places[i].image).split("@#"))[1];
+                                                allPlace.push(places[i]);
+                                            }
                                         }
                                     } else { // 해당 hashTag 를 갖는 장소가 여러개인 경우
                                         for (let i = 0; i < places.length; i++) {
-                                            if (places[i][0] !== undefined) {
+                                            if (places[i][0] !== undefined && getDistance(lat, lon, places[i][0].latitude, places[i][0].longitude) < distance) {
                                                 places[i][0].image = ((places[i][0].image).split("@#"))[1];
                                                 allPlace.push(places[i][0]);
                                             }
@@ -396,8 +414,10 @@ app.get('/category', function (req, res) {
                                     }
 
                                     for (let i = 0; i < placeList.length; i++) { // allPlace 에 1 번 단계에서 얻은 결과를 넣는다.
-                                        placeList[i].image = ((placeList[i].image).split("@#"))[1];
-                                        allPlace.push(placeList[i]);
+                                        if(getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < distance){
+                                            placeList[i].image = ((placeList[i].image).split("@#"))[1];
+                                            allPlace.push(placeList[i]);
+                                        }
                                     }
 
                                     if (sortCatecory === "STAR") { // 정렬 기준에 맞게 검색 결과를 정렬한다.
@@ -465,8 +485,10 @@ app.get('/category', function (req, res) {
                 } else {
                     let allPlace = []
                     for (let i = 0; i < placeList.length; i++) {
-                        placeList[i].image = ((placeList[i].image).split("@#"))[1]; // 대표 이미지 설정
-                        allPlace.push(placeList[i]);
+                        if(getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < distance){
+                            placeList[i].image = ((placeList[i].image).split("@#"))[1]; // 대표 이미지 설정
+                            allPlace.push(placeList[i]);
+                        }
                     }
                     if (sortCatecory === "STAR") {
                         for (let i = 0; i < allPlace.length; i++) { // 평점 순서로 정렬
@@ -537,13 +559,17 @@ app.get('/category', function (req, res) {
                                     var allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
                                     if (places.length === 1) {
                                         for (var i = places.length - 1; i >= 0; i--) {
-                                            places[i].image = ((places[i].image).split("@#"))[1];
-                                            allPlace.push(places[i]);
+                                            if(getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
+                                                places[i].image = ((places[i].image).split("@#"))[1];
+                                                allPlace.push(places[i]);
+                                            }
                                         }
                                     } else {
                                         for (var i = 0; i < places.length; i++) {
-                                            places[i][0].image = ((places[i][0].image).split("@#"))[1];
-                                            allPlace.push(places[i][0]);
+                                            if(getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
+                                                places[i][0].image = ((places[i][0].image).split("@#"))[1];
+                                                allPlace.push(places[i][0]);
+                                            }
                                         }
                                     }
 
