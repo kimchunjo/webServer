@@ -179,8 +179,6 @@ mixin venue(val, itemClass)
 
     - stars = [1,2,3,4,5]
 
-
-
     // venue item
     div(id=`${val.number || ''}`, name=`item`,class=itemClass, data-marker-id=`${val.number || ''}`)
         input.d-none(type='text' class='latitude' value=`${val.latitude}`)
@@ -203,20 +201,13 @@ mixin venue(val, itemClass)
                                 i.fa.fa-star.text-gray-300                     
                 .card-img-overlay-top.d-flex.justify-content-between.align-items-center
                     .badge.badge-transparent.badge-pill.px-3.py-2 #{val.category}
-                    a.card-fav-icon.position-relative.z-index-40(href="javascript: void();") 
-                        +svgIcon('heart-1', 'text-white')
+                    //a.card-fav-icon.position-relative.z-index-40(href="javascript: void();")
+                    //    +svgIcon('heart-1', 'text-white')
 
             .card-body
                 p.text-sm.text-muted.mb-3  #{String(val.explanation).substr(0, 120) + '...'}
-                p.text-sm.text-muted.text-uppercase.mb-1 By <a href="#" class="text-dark">Matt Damon</a>
-                //p.text-sm.mb-0
-                //    each tag, index in val.tags
-                //        a.mr-1(href="#") #{tag}
-                //            if (index != (val.tags.length - 1))
-                //                | ,
+                p.text-sm.text-muted.text-uppercase.mb-1 운영시간: #{val.time}
 
-
-            
 
 mixin pricingCard(name, price, pricing, highlight, chosen)
     - chosen = chosen || false

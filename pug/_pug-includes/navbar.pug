@@ -17,7 +17,7 @@ header(class=headerClass)
                         img(src=`${path}img/logo.svg`, alt="Directory logo")
 
                 form.form-inline.d-none.d-sm-flex(action="/category", id="search")
-                    .input-label-absolute.input-label-absolute-left.input-reset.input-expand.ml-lg-2.ml-xl-3 
+                    .input-label-absolute.input-label-absolute-left.input-reset.input-expand.ml-lg-2.ml-xl-3
                         label.label-absolute(for="search_search")
                             i.fa.fa-search
                             span.sr-only What are you looking for?
@@ -79,6 +79,8 @@ header(class=headerClass)
                     //        +dropdownList('Components', componentLinks)
 
                     if (!loggedUser)
+                        li.nav-item.mt-3.mt-lg-0.mr-lg-3.d-xl-inline-block
+                            a.btn.btn-primary(href=`${path}login`) Add a listing
                         li.nav-item.dropdown
                             a#homeDropdownMenuLink(href="index", class=`nav-link dropdown-toggle ${activeClass}`, data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
                                 | Sign
@@ -93,7 +95,7 @@ header(class=headerClass)
                         //
 
                     else
-                        li.nav-item.mt-3.mt-lg-0.ml-lg-3.d-xl-inline-block
+                        li.nav-item.mt-3.mt-lg-0.mr-lg-3.d-xl-inline-block
                             a.btn.btn-primary(href=`${path}user-add-0`) Add a listing
                         li.nav-item.dropdown.ml-lg-3
                             a#userDropdownMenuLink(href="#",data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
