@@ -26,14 +26,35 @@ block content
                         // 방문 시간 추가
                         .mb-4
                             label.form-label 시간
-                            - var time = ['지금','오전', '오후', '저녁']
                             ul.list-inline.mb-0
-                                each val,index in time
-                                    li.list-inline-item
-                                        .custom-control.custom-radio
-                                            input.custom-control-input.checkTime(type='checkbox', id=`time_${index}`, name="time", value=`${val}`)
-                                            label.custom-control-label(for=`time_${index}`) #{val}
-                                input.d-none(type="text" name="checkedTime" id="checkedTime")
+                                li.list-inline-item
+                                    .custom-control.custom-radio
+                                        if (filterTimeCurrent ==='true')
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_0`, name="time", value=`지금` checked)
+                                        else
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_0`, name="time", value=`지금`)
+                                        label.custom-control-label(for=`time_0`) 지금
+                                li.list-inline-item
+                                    .custom-control.custom-radio
+                                        if (filterTimeMorning === 'true')
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_1`, name="time", value=`오전` checked)
+                                        else
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_1`, name="time", value=`오전`)
+                                        label.custom-control-label(for=`time_1`) 오전
+                                li.list-inline-item
+                                    .custom-control.custom-radio
+                                        if (filterTimeAfternoon === 'true')
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_2`, name="time", value=`오후` checked)
+                                        else
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_2`, name="time", value=`오후`)
+                                        label.custom-control-label(for=`time_2`) 오후
+                                li.list-inline-item
+                                    .custom-control.custom-radio
+                                        if (filterTimeNight === 'true')
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_3`, name="time", value=`저녁` checked)
+                                        else
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_3`, name="time", value=`저녁`)
+                                        label.custom-control-label(for=`time_3`) 저녁
 
                         //거리 표시 추가
                         .mb-4
@@ -57,21 +78,6 @@ block content
                                     select.selectpicker.form-control(name="category", id="form_category", multiple, data-style="btn-selectpicker", data-selected-text-format="count > 1", title="")
                                         each val, index in types
                                             option(value=`${val}`) #{val}
-                                //.mb-4
-                                //    label.form-label Price
-                                //
-                                //    #slider-snap.text-primary
-                                //    .nouislider-values
-                                //        .min From $
-                                //            span#slider-snap-value-from
-                                //        .max To $
-                                //            span#slider-snap-value-to
-                                //    input(type="hidden", name="pricefrom", id="slider-snap-input-from", value="40")
-                                //    input(type="hidden", name="priceto",  id="slider-snap-input-to", value="110")
-                                //
-                                //
-                                //
-
                             .mb-4
 
                                 +collapseButton('moreFilters', 'More filters', 'Less filters')   
@@ -85,10 +91,7 @@ block content
 
                     include _pug-includes/inc-category-sortby.pug
                     - var itemClass = 'col-sm-6 col-xl-4 mb-5 hover-animate'
-                    
-                    //.row
-                    //    each val, index in restaurantsJson.features
-                    //        +venue(val.properties, itemClass)
+
                     .row
                         if allPlace != undefined
                             each val, index in allPlace
