@@ -259,8 +259,8 @@ app.post('/user-add', function (req, res) {
     var facebook = body.facebook;
     var instagram = body.instagram;
 
-    var query = `INSERT INTO place(name, explanation, category, amenities, phoneNumber, door, latitude, longitude, image, location, email, page, facebookID, instagramID, mon_open, tue_open, wed_open, thu_open, fri_open, sat_open, sun_open, mon_close, tue_close, wed_close, thu_close, fri_close, sat_close, sun_close) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    connection.query(query, [name, explanation, category, amenities, phoneNumber, door, latitude, longitude, filename, address, email, page, facebook, instagram, openTime[0], openTime[1], openTime[2], openTime[3], openTime[4], openTime[5], openTime[6], closeTime[0], closeTime[1], closeTime[2], closeTime[3], closeTime[4], closeTime[5], closeTime[6]], function (error, results, fields) {
+    var query = `INSERT INTO place(name, explanation, category, phoneNumber, door, latitude, longitude, image, location, email, page, facebookID, instagramID, mon_open, tue_open, wed_open, thu_open, fri_open, sat_open, sun_open, mon_close, tue_close, wed_close, thu_close, fri_close, sat_close, sun_close) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    connection.query(query, [name, explanation, category, phoneNumber, door, latitude, longitude, filename, address, email, page, facebook, instagram, openTime[0], openTime[1], openTime[2], openTime[3], openTime[4], openTime[5], openTime[6], closeTime[0], closeTime[1], closeTime[2], closeTime[3], closeTime[4], closeTime[5], closeTime[6]], function (error, results, fields) {
         if (error) {
             console.log(error);
         }
