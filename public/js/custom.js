@@ -73,27 +73,6 @@ $(document).ready(function () {
         }
     });
 
-    $(".amenities-check").change(function () {
-        if ($(this).is(":checked")) {
-            var checkedValue = $('#amenities').val();
-            if (checkedValue == "")
-                $('#amenities').val($(this).val());
-            else
-                $('#amenities').val(checkedValue + ", " + $(this).val());
-        } else {
-            if ($('#amenities').val() == $(this).val()) {
-                $('#amenities').val("");
-            }
-            if ($('#amenities').val().indexOf($(this).val()) == 0) {
-                var deletedValue = $('#amenities').val().replace($(this).val() + ", ", "");
-                $('#amenities').val(deletedValue);
-            } else {
-                var deletedValue = $('#amenities').val().replace(", " + $(this).val(), "");
-                $('#amenities').val(deletedValue);
-            }
-        }
-    });
-
 
     $(".date-check").change(function () {
         checkRelease($(this));
@@ -213,12 +192,12 @@ $(document).ready(function () {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function (position) {
-                    window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${urlParams.get('lat')}&lon=${urlParams.get('lon')}&time=${urlParams.get('time')}&distance=${urlParams.get('distance')}&keyword=${urlParams.get('keyword')}&category=${urlParams.get('category')}`;
+                    window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${urlParams.get('lat')}&lon=${urlParams.get('lon')}&time=${urlParams.get('time')}&distance=${urlParams.get('distance')}&keyword=${urlParams.get('keyword')}&category=${urlParams.get('category')}&filterTimeCurrent=${urlParams.get('filterTimeCurrent')}&filterTimeMorning=${urlParams.get('filterTimeMorning')}&filterTimeAfternoon=${urlParams.get('filterTimeAfternoon')}&filterTimeNight=${urlParams.get('filterTimeNight')}`;
                     checkTimeUrl(urlParams.get('time'));
                 }
             )
         }else{
-            window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&time=${urlParams.get('time')}&distance=${urlParams.get('distance')}&keyword=${urlParams.get('keyword')}&category=${urlParams.get('category')}`
+            window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&time=${urlParams.get('time')}&distance=${urlParams.get('distance')}&keyword=${urlParams.get('keyword')}&category=${urlParams.get('category')}&filterTimeCurrent=${urlParams.get('filterTimeCurrent')}&filterTimeMorning=${urlParams.get('filterTimeMorning')}&filterTimeAfternoon=${urlParams.get('filterTimeAfternoon')}&filterTimeNight=${urlParams.get('filterTimeNight')}`
         }
     });
 
@@ -306,9 +285,12 @@ function filterUse(){
     var category = $('#form_category').val();
     var distance = $('#distance').val();
     var keyword = $('#form_search').val();
-    var time = $('#checkedTime').val();
-
-    window.location.href=`/category?search=${search}&location=${location}&sort=${sort}&lat=${lat}&lon=${lon}&time=${time}&distance=${distance}&keyword=${keyword}&category=${category}`;
+    var timeCurrent = $('#time_0').is(":checked");
+    var timeMorning = $('#time_1').is(":checked");
+    var timeAfternoon= $('#time_2').is(":checked");
+    var timeNight =$('#time_3').is(":checked");
+    console.log(timeCurrent)
+    window.location.href=`/category?search=${search}&location=${location}&sort=${sort}&lat=${lat}&lon=${lon}&filterTimeCurrent=${timeCurrent}&filterTimeMorning=${timeMorning}&filterTimeAfternoon=${timeAfternoon}&filterTimeNight=${timeNight}&distance=${distance}&keyword=${keyword}&category=${category}`;
     checkTimeUrl(time);
 }
 
