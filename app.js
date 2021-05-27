@@ -19,16 +19,6 @@ app.use(express.static('public'));
 
 // /* 파이썬 연동을 위한 모듈  */
 const {PythonShell} = require('python-shell');
-// let options = {
-//     mode: 'text',
-//     pythonOptions: ['-u'], // get print results in real-time
-//     scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
-//     args: ['카페데일리'] //An argument which can be accessed in the script using sys.argv[1]
-// };
-// PythonShell.run('user_history.py', options, function (err, result) {
-//     if (err) throw err;
-//     console.log('result: ', result.toString());
-// });
 
 /* connect DB */
 var mysql = require('mysql');
@@ -77,10 +67,142 @@ bookingsJson = JSON.parse(fs.readFileSync('pug/js/bookings.json', {
 app.get('/', function (req, res) {
     req.session.valid = true;
     if (req.session.id1) {
-        res.render('index', {
-            loggedUser: true,
-            //hideFooter: true,
-        })
+        let number = req.session.number;
+        let searchUserHistoryQuery = `select * from user where number = ${number}`;
+        connection.query(searchUserHistoryQuery, function (err, result) {
+            if (result[0].history !== null && (result[0].history).length !== 0 && result[0].history !== undefined) { // 히스토리가 있을 때
+                let history = (result[0].history).split("//");
+                let latest_history = [];
+                if (history.length > 50) { // 최근 몇개의 히스토리를 확인 할 것 인가
+                    let count = 0;
+                    for (let i = history.length - 1; i >= 0; i--, count++) {
+                        if (count > 49) break; // 최근 50개의 장소까지 확인
+                        latest_history.push(history[i]);
+                    }
+                } else if (history.length < 10) { // 의미있는 데이터를 확인할 만큼 히스토리가 누적되지 않을 때
+                    for (let i = history.length - 1; i >= 0; i--)
+                        latest_history.push(history[i]);
+                } else {
+                    for (let i = history.length - 1; i >= 0; i--)
+                        latest_history.push(history[i]);
+                }
+
+                const history_frequency = latest_history.reduce((t, a) => {
+                    t[a] = (t[a] || 0) + 1;
+                    return t
+                }, {});
+
+                const keys = Object.keys(history_frequency);
+                let array = [];
+                for (let i = 0; i < keys.length; i++) {
+                    array.push({
+                        'name': keys[i],
+                        'count': history_frequency[keys[i]],
+                    })
+                }
+
+                for (let i = 0; i < array.length; i++) {
+                    for (let j = i + 1; j < array.length; j++) {
+                        if (array[i].count < array[j].count) {
+                            let temp = array[i];
+                            array[i] = array[j];
+                            array[j] = temp;
+                        }
+                    }
+                }
+
+                let tempQuery = ``;
+                let count = 0;
+                for (let i = 0; i < array.length; i++, count++) {
+                    if (count >= 3) break;
+                    tempQuery += `select * from place where name = '${array[i].name}';`;
+                }
+                connection.query(tempQuery, function (err, assPlaces) {
+                    let data = [];
+                    let options;
+                    if (assPlaces.length >= 3) {
+                        for (let i = 0; i < assPlaces.length; i++) {
+                            data.push({
+                                name: assPlaces[i][0].name
+                            })
+                        }
+                        options = {
+                            mode: 'json', // json or text
+                            pythonOptions: ['-u'], // get print results in real-time
+                            scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
+                            encoding: 'utf8',
+                            args: [JSON.stringify(data[0]), JSON.stringify(data[1]), JSON.stringify(data[2])], //[`${result[0].name}`], //An argument which can be accessed in the script using sys.argv[1]
+                        };
+                    } else if (assPlaces.length === 2) {
+                        for (let i = 0; i < assPlaces.length; i++) {
+                            data.push({
+                                name: assPlaces[i][0].name
+                            })
+                        }
+                        options = {
+                            mode: 'json', // json or text
+                            pythonOptions: ['-u'], // get print results in real-time
+                            scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
+                            encoding: 'utf8',
+                            args: [JSON.stringify(data[0]), JSON.stringify(data[1])], //[`${result[0].name}`], //An argument which can be accessed in the script using sys.argv[1]
+                        };
+                    } else {
+                        data.push({
+                            name: assPlaces[0].name
+                        })
+                        options = {
+                            mode: 'json', // json or text
+                            pythonOptions: ['-u'], // get print results in real-time
+                            scriptPath: '', //If you are having python_test.py script in same folder, then it's optional.
+                            encoding: 'utf8',
+                            args: [JSON.stringify(data[0])], //[`${result[0].name}`], //An argument which can be accessed in the script using sys.argv[1]
+                        };
+                    }
+
+                    PythonShell.run('user_history.py', options, function (err, ap) {
+                        let associatedPlace = ap[0];
+                        let assPlaceList = [];
+                        if (associatedPlace == "not in vocabulary") { // 연관 장소가 없는 경우
+                            res.render('index', {
+                                loggedUser: true,
+                                //hideFooter: true,
+                            })
+                        } else { // 연관 장소가 있는 경우
+                            let searchAssPlaceQuery='';
+                            for (let i = 0; i < associatedPlace.length; i++)
+                                if (associatedPlace[i][1] > -2)
+                                    associatedPlace[i] = associatedPlace[i][0]
+                                else
+                                    associatedPlace.splice(i, i + 1);
+
+                            for (let i = 0; i < associatedPlace.length; i++)
+                                searchAssPlaceQuery += `select * from place where name = '${associatedPlace[i]}';`
+                            connection.query(searchAssPlaceQuery, function (err, assPlace) {
+                                assPlaceList = [];
+
+                                for (let i = 0; i < assPlace.length; i++)
+                                    if (assPlace[i].length !== 0) assPlaceList.push(assPlace[i][0])
+
+                                if (assPlaceList.length !== 0) {
+                                    for (let i = 0; i < assPlaceList.length; i++)
+                                        assPlaceList[i].image = ((assPlaceList[i].image).split("@#"))[1];
+                                }
+
+                                res.render('index', {
+                                    loggedUser: false,
+                                    assPlace: assPlaceList
+                                })
+                            })
+                        }
+                    });
+                })
+            } else { // 유저 히스토리가 존재하지 않을 때 -> 로그인 안한 것과 같은 액션이 이뤄져야 한다.
+                res.render('index', {
+                    loggedUser: true,
+                    //hideFooter: true,
+                })
+            }
+        });
     } else {
         res.render('index', {
             loggedUser: false,
@@ -259,8 +381,8 @@ app.post('/user-add', function (req, res) {
     var facebook = body.facebook;
     var instagram = body.instagram;
 
-    var query = `INSERT INTO place(name, explanation, category, phoneNumber, door, latitude, longitude, image, location, email, page, facebookID, instagramID, mon_open, tue_open, wed_open, thu_open, fri_open, sat_open, sun_open, mon_close, tue_close, wed_close, thu_close, fri_close, sat_close, sun_close) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    connection.query(query, [name, explanation, category, phoneNumber, door, latitude, longitude, filename, address, email, page, facebook, instagram, openTime[0], openTime[1], openTime[2], openTime[3], openTime[4], openTime[5], openTime[6], closeTime[0], closeTime[1], closeTime[2], closeTime[3], closeTime[4], closeTime[5], closeTime[6]], function (error, results, fields) {
+    var query = `INSERT INTO place(name, explanation, category, amenities, phoneNumber, door, latitude, longitude, image, location, email, page, facebookID, instagramID, mon_open, tue_open, wed_open, thu_open, fri_open, sat_open, sun_open, mon_close, tue_close, wed_close, thu_close, fri_close, sat_close, sun_close) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    connection.query(query, [name, explanation, category, amenities, phoneNumber, door, latitude, longitude, filename, address, email, page, facebook, instagram, openTime[0], openTime[1], openTime[2], openTime[3], openTime[4], openTime[5], openTime[6], closeTime[0], closeTime[1], closeTime[2], closeTime[3], closeTime[4], closeTime[5], closeTime[6]], function (error, results, fields) {
         if (error) {
             console.log(error);
         }
@@ -341,15 +463,16 @@ app.get('/user-profile', function (req, res) {
     })
 });
 
-function getDistance(lat1, lon1, lat2, lon2){
-    function deg2rad(deg){
-        return deg * (Math.PI/180);
+function getDistance(lat1, lon1, lat2, lon2) {
+    function deg2rad(deg) {
+        return deg * (Math.PI / 180);
     }
+
     var R = 6371;
     var dLat = deg2rad(lat2 - lat1);
     var dLon = deg2rad(lon2 - lon1);
-    var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     var d = R * c; // Distance in km
     return d;
 }
@@ -370,17 +493,17 @@ app.get('/category', function (req, res) {
     let timeMorning = false;
     let timeafternoon = false;
     let timenight = false;
-    if(req.query.time != null){
-        if(req.query.time.indexOf("지금") != -1){
+    if (req.query.time != null) {
+        if (req.query.time.indexOf("지금") != -1) {
             timeCurrent = true;
         }
-        if(req.query.time.indexOf("오전") != -1){
+        if (req.query.time.indexOf("오전") != -1) {
             timeMorning = true;
         }
-        if(req.query.time.indexOf("오후") != -1){
+        if (req.query.time.indexOf("오후") != -1) {
             timeafternoon = true;
         }
-        if(req.query.time.indexOf("저녁") != -1){
+        if (req.query.time.indexOf("저녁") != -1) {
             timenight = true;
         }
     }
@@ -402,7 +525,7 @@ app.get('/category', function (req, res) {
 
     if (searchWord === undefined || searchWord === "") // 검색어를 입력하변지 않은 경우 사용자 취향을 고려한 검색
         searchWord = '내 취향에 맞는 장소'
-    if (searchLocation === undefined || searchLocation === ""){
+    if (searchLocation === undefined || searchLocation === "") {
         // 장소를 입력하변지 않은 경우 내 주변으로 검색
         searchLocation = '근처'
     }
@@ -433,7 +556,7 @@ app.get('/category', function (req, res) {
                                     let allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣는다.
                                     if (places.length === 1) { // 해당 hashTag 를 갖는 장소가 1개인 경우
                                         for (let i = places.length - 1; i >= 0; i--) {
-                                            if(getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance){
+                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
                                                 places[i].image = ((places[i].image).split("@#"))[1];
                                                 allPlace.push(places[i]);
                                             }
@@ -448,7 +571,7 @@ app.get('/category', function (req, res) {
                                     }
 
                                     for (let i = 0; i < placeList.length; i++) { // allPlace 에 1 번 단계에서 얻은 결과를 넣는다.
-                                        if(getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < distance){
+                                        if (getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < distance) {
                                             placeList[i].image = ((placeList[i].image).split("@#"))[1];
                                             allPlace.push(placeList[i]);
                                         }
@@ -519,7 +642,7 @@ app.get('/category', function (req, res) {
                 } else {
                     let allPlace = []
                     for (let i = 0; i < placeList.length; i++) {
-                        if(getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < distance){
+                        if (getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < distance) {
                             placeList[i].image = ((placeList[i].image).split("@#"))[1]; // 대표 이미지 설정
                             allPlace.push(placeList[i]);
                         }
@@ -593,14 +716,14 @@ app.get('/category', function (req, res) {
                                     var allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
                                     if (places.length === 1) {
                                         for (var i = places.length - 1; i >= 0; i--) {
-                                            if(getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
+                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
                                                 places[i].image = ((places[i].image).split("@#"))[1];
                                                 allPlace.push(places[i]);
                                             }
                                         }
                                     } else {
                                         for (var i = 0; i < places.length; i++) {
-                                            if(getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
+                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
                                                 places[i][0].image = ((places[i][0].image).split("@#"))[1];
                                                 allPlace.push(places[i][0]);
                                             }
@@ -807,20 +930,20 @@ app.get('/detail', function (req, res) {
 
         // 오픈, 마감 시간
         result[0].oc = [];
-        result[0].oc.push((result[0].sun_open).slice(0,5)); // 일
-        result[0].oc.push(result[0].sun_close.slice(0,5));
-        result[0].oc.push(result[0].mon_open.slice(0,5)); // 월
-        result[0].oc.push(result[0].mon_close.slice(0,5));
-        result[0].oc.push(result[0].tue_open.slice(0,5)); // 화
-        result[0].oc.push(result[0].tue_close.slice(0,5));
-        result[0].oc.push(result[0].wed_open.slice(0,5)); // 수
-        result[0].oc.push(result[0].wed_close.slice(0,5));
-        result[0].oc.push(result[0].thu_open.slice(0,5)); // 목
-        result[0].oc.push(result[0].thu_close.slice(0,5));
-        result[0].oc.push(result[0].fri_open.slice(0,5)); // 금
-        result[0].oc.push(result[0].fri_close.slice(0,5));
-        result[0].oc.push(result[0].sat_open.slice(0,5)); // 토
-        result[0].oc.push(result[0].sat_close.slice(0,5));
+        result[0].oc.push((result[0].sun_open).slice(0, 5)); // 일
+        result[0].oc.push(result[0].sun_close.slice(0, 5));
+        result[0].oc.push(result[0].mon_open.slice(0, 5)); // 월
+        result[0].oc.push(result[0].mon_close.slice(0, 5));
+        result[0].oc.push(result[0].tue_open.slice(0, 5)); // 화
+        result[0].oc.push(result[0].tue_close.slice(0, 5));
+        result[0].oc.push(result[0].wed_open.slice(0, 5)); // 수
+        result[0].oc.push(result[0].wed_close.slice(0, 5));
+        result[0].oc.push(result[0].thu_open.slice(0, 5)); // 목
+        result[0].oc.push(result[0].thu_close.slice(0, 5));
+        result[0].oc.push(result[0].fri_open.slice(0, 5)); // 금
+        result[0].oc.push(result[0].fri_close.slice(0, 5));
+        result[0].oc.push(result[0].sat_open.slice(0, 5)); // 토
+        result[0].oc.push(result[0].sat_close.slice(0, 5));
 
         connection.query(searchHashtagNumber, placeId, function (err, hashtagNumberResult) {
             for (var i = 0; i < hashtagNumberResult.length; i++)
@@ -914,8 +1037,8 @@ app.get('/detail', function (req, res) {
                                 for (let i = 0; i < assPlace.length; i++)
                                     if (assPlace[i].length !== 0) assPlaceList.push(assPlace[i][0])
 
-                                if(assPlaceList.length !== 0){
-                                    for(let i=0; i<assPlaceList.length; i++)
+                                if (assPlaceList.length !== 0) {
+                                    for (let i = 0; i < assPlaceList.length; i++)
                                         assPlaceList[i].image = ((assPlaceList[i].image).split("@#"))[1];
                                 }
 
