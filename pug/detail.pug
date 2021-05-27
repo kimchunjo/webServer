@@ -76,18 +76,18 @@ block content
                                         img.img-fluid(src='./uploads/' + val.small, alt='...')
 
                     // Amenities
-                    .text-block
-                        h3.mb-4 Amenities
-
-                        - var amenitiesItems = ['Elevator', 'Vegan friendly', 'Alcohol served', 'No smoking', 'Parking spaces (paid)', 'WiFi']
-
-                        ul.amenities-list.list-inline
-                            each val in amenitiesItems
-                                li.list-inline-item.mb-3
-                                    .d-flex.align-items-center
-                                        .icon-circle.bg-secondary.mr-2
-                                            i.fa.fa-check
-                                        span #{val}
+                    //.text-block
+                    //    h3.mb-4 Amenities
+                    //
+                    //    - var amenitiesItems = ['Elevator', 'Vegan friendly', 'Alcohol served', 'No smoking', 'Parking spaces (paid)', 'WiFi']
+                    //
+                    //    ul.amenities-list.list-inline
+                    //        each val in amenitiesItems
+                    //            li.list-inline-item.mb-3
+                    //                .d-flex.align-items-center
+                    //                    .icon-circle.bg-secondary.mr-2
+                    //                        i.fa.fa-check
+                    //                    span #{val}
 
                     .text-block
                         include _pug-includes/inc-detail-reviews.pug
