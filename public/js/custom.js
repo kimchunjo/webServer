@@ -175,10 +175,11 @@ $(document).ready(function () {
         let selected = $(this).val();
         var searchWord = getParameterByName('search');
         var searchLocation = getParameterByName('location');
+        var urlParams = new URLSearchParams(window.location.search);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function (position) {
-                    window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${position.coords.latitude}&lon=${position.coords.longitude}`;
+                    window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${urlParams.get('lat')}&lon=${urlParams.get('lon')}`;
                 }
             )
         }else{
@@ -229,8 +230,6 @@ function successFunction(data) {
                 geocoder.addressSearch("광주광역시" + ui.item.value, function (result, status) {
                     // 정상적으로 검색이 완료됐으면
                     if (status === kakao.maps.services.Status.OK) {
-                        console.log(result[0].y);
-                        console.log(result[0].x);
                         $('#lat').val(result[0].y);
                         $('#lon').val(result[0].x);
                     }
@@ -243,8 +242,14 @@ function successFunction(data) {
 function getLocation() {
     if (navigator.geolocation) { // GPS를 지원하면
         navigator.geolocation.getCurrentPosition(function (position) {
-            $('.index_latitude').val(`${position.coords.latitude}`);
-            $('.index_longitude').val(`${position.coords.longitude}`);
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+            $('.index_latitude').val(lat);
+            $('.index_longitude').val(lon);
+            $("#linkCafe").attr("href", `/category?search=카페&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
+            $("#linkYummy").attr("href", `/category?search=맛집&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
+            $("#linkWalk").attr("href", `/category?search=산책&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
+            $("#linkWeekend").attr("href", `/category?search=주말&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
         }, function (error) {
             console.error(error);
         }, {
