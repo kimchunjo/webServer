@@ -347,24 +347,27 @@ mixin stepsAdd(step, finalStep, urlPrefix)
     - var next = step + 1;
     - var text = 'Next step'
 
-    - finalStep = finalStep || 6
+    - finalStep = finalStep || 5
     - urlPrefix = urlPrefix || 'user-add-'
 
     - previousUrl = urlPrefix + previous + ''
     - nextUrl = urlPrefix + next + ''
 
-    if (step == 6)
-        - var text = 'Finish'
+    if (step == 5)
+        - var text = '장소추가하기'
 
     .row.form-block.flex-column.flex-sm-row
         .col.text-center.text-sm-left
             if (previous != 0)
-                a.btn.btn-link.text-muted(href=previousUrl)
+                button.btn.btn-link.text-muted(type="button" onclick="history.back(-1);")
                     i.fa-chevron-left.fa.mr-2
                     | Back
+                //a.btn.btn-link.text-muted(href=previousUrl)
+                //    i.fa-chevron-left.fa.mr-2
+                //    | Back
         .col.text-center.text-sm-right
             button.btn.btn-primary.px-3(type="submit" id='btn-upload-file')
-                | 장소추가하기
+                | #{text}
                 i.fa-chevron-right.fa.ml-2
 
 mixin stepsHeading(name, step, heading)

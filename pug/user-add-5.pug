@@ -18,7 +18,7 @@ block content
     section.py-5
         .container
             
-            +stepsHeading('Photos', 5)
+            +stepsHeading('Photos', 4)
 
             form(action=`${path}user-add` method="post")
                 .row.form-block
@@ -65,7 +65,7 @@ block content
                         input(name="tag" value=`${placeInfo.tag}`)
                         input(name="openTime" value=`${placeInfo.openTime}`)
                         input(name="closeTime" value=`${placeInfo.closeTime}`)
-                        input(name="amenities" value=`${placeInfo.amenities}`)
+                        //input(name="amenities" value=`${placeInfo.amenities}`)
                         input(name="phoneNumber" value=`${placeInfo.phoneNumber}`)
                         input(name="email" value=`${placeInfo.email}`)
                         input(name="page" value=`${placeInfo.page}`)

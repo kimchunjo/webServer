@@ -151,31 +151,31 @@ app.post('/user-add-2', function (req, res) {
     })
 });
 
+// app.post('/user-add-3', function (req, res) {
+//     // 장소 장비(?)
+//     let body = req.body;
+//     let placeInfo = {
+//         // 이전 페이지에서 얻은 정보
+//         name: body.name,
+//         category: body.category,
+//         door: body.door,
+//         latitude: body.latitude,
+//         longitude: body.longitude,
+//         address: body.address,
+//         openTime: body.openTime,
+//         closeTime: body.closeTime,
+//         // 새롭게 추가된 정보
+//         explanation: body.explanation,
+//         tag: body.tag,
+//     }
+//
+//     res.render('user-add-3', {
+//         placeInfo: placeInfo
+//     })
+// });
+
+
 app.post('/user-add-3', function (req, res) {
-    // 장소 장비(?)
-    let body = req.body;
-    let placeInfo = {
-        // 이전 페이지에서 얻은 정보
-        name: body.name,
-        category: body.category,
-        door: body.door,
-        latitude: body.latitude,
-        longitude: body.longitude,
-        address: body.address,
-        openTime: body.openTime,
-        closeTime: body.closeTime,
-        // 새롭게 추가된 정보
-        explanation: body.explanation,
-        tag: body.tag,
-    }
-
-    res.render('user-add-3', {
-        placeInfo: placeInfo
-    })
-});
-
-
-app.post('/user-add-4', function (req, res) {
     // 장소 오픈 시간 및 연락처
     let body = req.body;
     let placeInfo = {
@@ -191,7 +191,7 @@ app.post('/user-add-4', function (req, res) {
         explanation: body.explanation,
         tag: body.tag,
         filename: body.filename,
-        amenities: body.amenities
+        //amenities: body.amenities
         // 새롭게 추가된 정보
 
     }
@@ -201,7 +201,7 @@ app.post('/user-add-4', function (req, res) {
     });
 })
 
-app.post('/user-add-5', function (req, res) {
+app.post('/user-add-4', function (req, res) {
     // 장소 사진
     let body = req.body;
     let placeInfo = {
@@ -218,7 +218,7 @@ app.post('/user-add-5', function (req, res) {
         tag: body.tag,
         // 새롭게 추가된 정보
         filename: body.filename,
-        amenities: body.amenities,
+        //amenities: body.amenities,
         phoneNumber: body.phone_number,
         email: body.email,
         page: body.page,
@@ -252,7 +252,7 @@ app.post('/user-add', function (req, res) {
     var latitude = body.latitude;
     var longitude = body.longitude;
     // amenities(시설) 출력 형식 -> Indoor fireplace, Breakfast, Buzzer/wireless intercom, Laptop friendly workspace, Hair dryer
-    var amenities = body.amenities;
+    //var amenities = body.amenities;
     var phoneNumber = body.phoneNumber;
     var email = body.email;
     var page = body.page;
@@ -360,6 +360,40 @@ app.get('/category', function (req, res) {
     let sortCatecory = req.query.sort;
     let lat = req.query.lat;
     let lon = req.query.lon;
+
+    // filter query
+    let fiterCategory = req.query.category;
+    let fiterDistance = req.query.distance;
+    let fiterKeyword = req.query.keyword;
+    // filter에서 체크된 시간대 확인
+    let timeCurrent = false;
+    let timeMorning = false;
+    let timeafternoon = false;
+    let timenight = false;
+    if(req.query.time != null){
+        if(req.query.time.indexOf("지금") != -1){
+            timeCurrent = true;
+        }
+        if(req.query.time.indexOf("오전") != -1){
+            timeMorning = true;
+        }
+        if(req.query.time.indexOf("오후") != -1){
+            timeafternoon = true;
+        }
+        if(req.query.time.indexOf("저녁") != -1){
+            timenight = true;
+        }
+    }
+
+    //filter 값 확인
+    console.log(fiterCategory);
+    console.log(fiterDistance);
+    console.log(fiterKeyword);
+    console.log(timeCurrent);
+    console.log(timeMorning);
+    console.log(timeafternoon);
+    console.log(timenight);
+
     let distance = 3;
 
     let pagination = req.query.pagination;

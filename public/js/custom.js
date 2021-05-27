@@ -37,6 +37,41 @@ $(document).ready(function () {
         changeTime();
     });
 
+    $('#checkedTime').val(getParameterByName('time'));
+    if(getParameterByName('time').indexOf("지금") != -1){
+        $("#time_0").prop('checked', true);
+    }
+    if(getParameterByName('time').indexOf("오전") != -1){
+        $("#time_1").prop('checked', true);
+    }
+    if(getParameterByName('time').indexOf("오후") != -1){
+        $("#time_2").prop('checked', true);
+    }
+    if(getParameterByName('time').indexOf("저녁") != -1){
+        $("#time_3").prop('checked', true);
+    }
+
+
+    $(".checkTime").change(function () {
+        if ($(this).is(":checked")){
+            var checkedValue = $('#checkedTime').val();
+            if (checkedValue == "")
+                $('#checkedTime').val($(this).val());
+            else
+                $('#checkedTime').val(checkedValue + "," + $(this).val());
+        }else{
+            if ($('#checkedTime').val() == $(this).val()) {
+                $('#checkedTime').val("");
+            }
+            if ($('#checkedTime').val().indexOf($(this).val()) == 0) {
+                var deletedValue = $('#checkedTime').val().replace($(this).val() + ",", "");
+                $('#checkedTime').val(deletedValue);
+            } else {
+                var deletedValue = $('#checkedTime').val().replace("," + $(this).val(), "");
+                $('#checkedTime').val(deletedValue);
+            }
+        }
+    });
 
     $(".amenities-check").change(function () {
         if ($(this).is(":checked")) {
@@ -56,7 +91,6 @@ $(document).ready(function () {
                 var deletedValue = $('#amenities').val().replace(", " + $(this).val(), "");
                 $('#amenities').val(deletedValue);
             }
-
         }
     });
 
@@ -179,11 +213,12 @@ $(document).ready(function () {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function (position) {
-                    window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${urlParams.get('lat')}&lon=${urlParams.get('lon')}`;
+                    window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${urlParams.get('lat')}&lon=${urlParams.get('lon')}&time=${urlParams.get('time')}&distance=${urlParams.get('distance')}&keyword=${urlParams.get('keyword')}&category=${urlParams.get('category')}`;
+                    checkTimeUrl(urlParams.get('time'));
                 }
             )
         }else{
-            window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}`
+            window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&time=${urlParams.get('time')}&distance=${urlParams.get('distance')}&keyword=${urlParams.get('keyword')}&category=${urlParams.get('category')}`
         }
     });
 
@@ -262,6 +297,20 @@ function getLocation() {
     }
 }
 
+function filterUse(){
+    var search = getParameterByName('search');
+    var location = getParameterByName('location');
+    var sort = getParameterByName('sort');
+    var lat = getParameterByName('lat');
+    var lon = getParameterByName('lon');
+    var category = $('#form_category').val();
+    var distance = $('#distance').val();
+    var keyword = $('#form_search').val();
+    var time = $('#checkedTime').val();
+
+    window.location.href=`/category?search=${search}&location=${location}&sort=${sort}&lat=${lat}&lon=${lon}&time=${time}&distance=${distance}&keyword=${keyword}&category=${category}`;
+    checkTimeUrl(time);
+}
 
 function checkRelease(checkbox) {
     if (!checkbox.is(":checked")) {

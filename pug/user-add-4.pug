@@ -18,9 +18,9 @@ block content
     section.py-5
         .container
 
-            +stepsHeading('Contact', 4)
+            +stepsHeading('Contact', 3)
 
-            form(action=`${path}user-add-5` method="post")
+            form(action=`${path}user-add-4` method="post")
                 .row.form-block
                     .col-lg-4
                         h4 연락
@@ -55,5 +55,5 @@ block content
                         input(name="filename" value=`${placeInfo.filename}`)
                         input(name="openTime" value=`${placeInfo.openTime}`)
                         input(name="closeTime" value=`${placeInfo.closeTime}`)
-                        input(name="amenities" value=`${placeInfo.amenities}`)
+                        //input(name="amenities" value=`${placeInfo.amenities}`)
                 +stepsAdd(4)
