@@ -564,8 +564,9 @@ app.get('/category', function (req, res) {
                                     }
 
                                     if (filterTimeCurrent === 'true') {
-                                        let hours = (new Date()).getHours()
-                                        let minutes = (new Date()).getMinutes();  // 분
+                                        let day = new Date.toLocaleString("ko-KR", {timeZone: "Asia/Seoul"});
+                                        let hours = (day).getHours()
+                                        let minutes = (day).getMinutes();  // 분
                                         for (let i = 0; i < allPlace.length; i++) {
                                             let openTime = parseInt(allPlace[i].time.slice(0, 2));
                                             let closeTime = parseInt(allPlace[i].time.slice(8, allPlace[i].time.length - 3));
