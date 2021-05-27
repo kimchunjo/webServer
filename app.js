@@ -573,21 +573,18 @@ app.get('/category', function (req, res) {
                                                 if (openTime === hours) {
                                                     openTime = openTime = allPlace[i].time.slice(3, 5);
                                                     if (openTime > minutes) {
-                                                        allPlace.splice(i,1);
-                                                        i--;
+                                                        allPlace.splice(i--,1);
                                                         continue
                                                     }
                                                 }
                                                 if (closeTime === hours) {
                                                     closeTime = allPlace[i].time.slice(11, allPlace[i].time.length);
                                                     if (closeTime < minutes) {
-                                                        allPlace.splice(i,1);
-                                                        i--;
+                                                        allPlace.splice(i--,1);
                                                     }
                                                 }
                                             } else {
-                                                allPlace.splice(i,1);
-                                                i--;
+                                                allPlace.splice(i--,1);
                                             }
                                         }
                                     }
@@ -596,8 +593,7 @@ app.get('/category', function (req, res) {
                                         for (let i = 0; i < allPlace.length; i++) {
                                             let openTime = parseInt(allPlace[i].time.slice(0, 2));
                                             if (openTime >= 12) {
-                                                allPlace.splice(i,1);
-                                                i--;
+                                                allPlace.splice(i--,1);
                                             }
                                         }
                                     }
@@ -606,8 +602,7 @@ app.get('/category', function (req, res) {
                                         for (let i = 0; i < allPlace.length; i++) {
                                             let closeTime = parseInt(allPlace[i].time.slice(8, allPlace[i].time.length - 3));
                                             if (closeTime < 12) {
-                                                allPlace.splice(i,1);
-                                                i--;
+                                                allPlace.splice(i--,1);
                                             }
                                         }
                                     }
@@ -616,8 +611,7 @@ app.get('/category', function (req, res) {
                                         for (let i = 0; i < allPlace.length; i++) {
                                             let closeTime = parseInt(allPlace[i].time.slice(8, allPlace[i].time.length - 3));
                                             if (closeTime < 18) {
-                                                allPlace.splice(i,1);
-                                                i--;
+                                                allPlace.splice(i--,1);
                                             }
                                         }
                                     }
