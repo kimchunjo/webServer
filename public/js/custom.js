@@ -50,10 +50,6 @@ $(document).ready(function () {
     if(getParameterByName('time').indexOf("저녁") != -1){
         $("#time_3").prop('checked', true);
     }
-    if(getParameterByName('distance') != ""){
-        $("#distance").val(getParameterByName('distance'));
-        $("#distanceValuelabel").text(getParameterByName('distance') + 'km');
-    }
 
 
     $(".checkTime").change(function () {
@@ -197,11 +193,11 @@ $(document).ready(function () {
             navigator.geolocation.getCurrentPosition(
                 function (position) {
                     window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${urlParams.get('lat')}&lon=${urlParams.get('lon')}&time=${urlParams.get('time')}&distance=${urlParams.get('distance')}&keyword=${urlParams.get('keyword')}&category=${urlParams.get('category')}&filterTimeCurrent=${urlParams.get('filterTimeCurrent')}&filterTimeMorning=${urlParams.get('filterTimeMorning')}&filterTimeAfternoon=${urlParams.get('filterTimeAfternoon')}&filterTimeNight=${urlParams.get('filterTimeNight')}`;
-                    //checkTimeUrl(urlParams.get('time'));
+                    checkTimeUrl(urlParams.get('time'));
                 }
             )
         }else{
-            window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&time=${urlParams.get('time')}&distance=${urlParams.get('distance')}&keyword=${urlParams.get('keyword')}&category=${urlParams.get('category')}&filterTimeCurrent=${urlParams.get('filterTimeCurrent')}&filterTimeMorning=${urlParams.get('filterTimeMorning')}&filterTimeAfternoon=${urlParams.get('filterTimeAfternoon')}&filterTimeNight=${urlParams.get('filterTimeNight')}`
+            window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&time=${urlParams.get('time')}&filterDistance=${urlParams.get('filterDistance')}&keyword=${urlParams.get('keyword')}&category=${urlParams.get('category')}&filterTimeCurrent=${urlParams.get('filterTimeCurrent')}&filterTimeMorning=${urlParams.get('filterTimeMorning')}&filterTimeAfternoon=${urlParams.get('filterTimeAfternoon')}&filterTimeNight=${urlParams.get('filterTimeNight')}`
         }
     });
 
@@ -287,15 +283,15 @@ function filterUse(){
     var lat = getParameterByName('lat');
     var lon = getParameterByName('lon');
     var category = $('#form_category').val();
-    var distance = $('#distance').val();
+    var filterDistance = $('#filterDistance').val();
     var keyword = $('#form_search').val();
     var timeCurrent = $('#time_0').is(":checked");
     var timeMorning = $('#time_1').is(":checked");
     var timeAfternoon= $('#time_2').is(":checked");
     var timeNight =$('#time_3').is(":checked");
     console.log(timeCurrent)
-    window.location.href=`/category?search=${search}&location=${location}&sort=${sort}&lat=${lat}&lon=${lon}&filterTimeCurrent=${timeCurrent}&filterTimeMorning=${timeMorning}&filterTimeAfternoon=${timeAfternoon}&filterTimeNight=${timeNight}&distance=${distance}&keyword=${keyword}&category=${category}`;
-    //checkTimeUrl(time);
+    window.location.href=`/category?search=${search}&location=${location}&sort=${sort}&lat=${lat}&lon=${lon}&filterTimeCurrent=${timeCurrent}&filterTimeMorning=${timeMorning}&filterTimeAfternoon=${timeAfternoon}&filterTimeNight=${timeNight}&filterDistance=${filterDistance}&keyword=${keyword}&category=${category}`;
+    checkTimeUrl(time);
 }
 
 function checkRelease(checkbox) {
