@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 const fs = require('fs');
 const url = require('url');
-
+let fn = require('./server'); // 서버에서 사용 할 함수들
 /* 현재 시간을 얻기 위한 모듈 */
 var moment = require('moment');
 require('moment-timezone'); // 필요 ?
@@ -417,27 +417,6 @@ app.get('/user-profile', function (req, res) {
     })
 });
 
-function getDistance(lat1, lon1, lat2, lon2) {
-    function deg2rad(deg) {
-        return deg * (Math.PI / 180);
-    }
-
-    var R = 6371;
-    var dLat = deg2rad(lat2 - lat1);
-    var dLon = deg2rad(lon2 - lon1);
-    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c; // Distance in km
-    return d;
-}
-
-function getTodayLabel() {
-    var week = new Array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
-    var today = new Date().getDay();
-    var todayLabel = week[today];
-    return todayLabel;
-}
-
 app.get('/category', function (req, res) {
     /* url query */
     let searchWord = req.query.search;
@@ -466,6 +445,12 @@ app.get('/category', function (req, res) {
     if (filterTimeMorning === undefined) filterTimeMorning = false;
     if (filterTimeAfternoon === undefined) filterTimeAfternoon = false;
     if (filterTimeNight === undefined) filterTimeNight = false;
+    let timeFilter = {
+        current: filterTimeCurrent,
+        morning: filterTimeMorning,
+        afternoon:filterTimeAfternoon,
+        night:filterTimeNight
+    }
 
     if (filterDistance === undefined) filterDistance = 3;
 
@@ -479,7 +464,8 @@ app.get('/category', function (req, res) {
     connection.query(searchPlaceNameQuery, function (err, placeName) {
         if (placeName.length !== 0) { // searchWord 가 placeName 에 포함된 장소가 있을 때 ex) searchWord 가 스타벅스 일 때, 전남대학교 스타벅스
             let placeList = [];
-            for (let i = 0; i < placeName.length; i++) placeList.push(placeName[i]); // placeList 배열에 해당 장소를 push 한다.
+            for (let i = 0; i < placeName.length; i++)
+                placeList.push(placeName[i]); // placeList 배열에 해당 장소를 push 한다.
             /* ******** 2. hashTag 를 이용한 검색 ******* */
             connection.query(searchHashtagQuery, function (err, hashTag) {
                 if (hashTag.length !== 0) { // searchWord 와 일치하는 해시태그 값을 갖는 장소가 있을 때
@@ -490,16 +476,17 @@ app.get('/category', function (req, res) {
                                 /* ******** 3. placeName 과 hashTag 모두에 대한 결과가 있는 경우 ******* */
                                 connection.query(searchPlaceQuery, function (err, places) {
                                     let allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣는다.
+                                    /* 거리 계산 및 장소 넣기 */
                                     if (places.length === 1) { // 해당 hashTag 를 갖는 장소가 1개인 경우
                                         for (let i = places.length - 1; i >= 0; i--) {
-                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
+                                            if (fn.getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
                                                 places[i].image = ((places[i].image).split("@#"))[1];
                                                 allPlace.push(places[i]);
                                             }
                                         }
                                     } else { // 해당 hashTag 를 갖는 장소가 여러개인 경우
                                         for (let i = 0; i < places.length; i++) {
-                                            if (places[i][0] !== undefined && getDistance(lat, lon, places[i][0].latitude, places[i][0].longitude) < filterDistance) {
+                                            if (places[i][0] !== undefined && fn.getDistance(lat, lon, places[i][0].latitude, places[i][0].longitude) < filterDistance) {
                                                 places[i][0].image = ((places[i][0].image).split("@#"))[1];
                                                 allPlace.push(places[i][0]);
                                             }
@@ -507,119 +494,19 @@ app.get('/category', function (req, res) {
                                     }
 
                                     for (let i = 0; i < placeList.length; i++) { // allPlace 에 1 번 단계에서 얻은 결과를 넣는다.
-                                        if (getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < filterDistance) {
+                                        if (fn.getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < filterDistance) {
                                             placeList[i].image = ((placeList[i].image).split("@#"))[1];
                                             allPlace.push(placeList[i]);
                                         }
                                     }
 
                                     /* sortBy */
-                                    if (sortCategory === "STAR") { // 정렬 기준에 맞게 검색 결과를 정렬한다.
-                                        for (let i = 0; i < allPlace.length; i++) { // 평점 순서로 정렬
-                                            for (let j = i + 1; j < allPlace.length; j++) {
-                                                if (allPlace[i].star < allPlace[j].star) {
-                                                    let temp = allPlace[i];
-                                                    allPlace[i] = allPlace[j];
-                                                    allPlace[j] = temp;
-                                                }
-                                            }
-                                        }
-                                    } else if (sortCategory === 'CLOSESET') {
-                                        for (var i = 0; i < allPlace.length; i++) {
-                                            for (var j = i + 1; j < allPlace.length; j++) {
-                                                if ((((allPlace[i].latitude) - (lat)) * ((allPlace[i].latitude) - (lat))) + (((allPlace[i].longitude) - (lon)) * ((allPlace[i].longitude) - (lon))) > (((allPlace[j].latitude) - (lat)) * ((allPlace[j].latitude) - (lat))) + (((allPlace[j].longitude) - (lon)) * ((allPlace[j].longitude) - (lon)))) {
-                                                    let temp = allPlace[i];
-                                                    allPlace[i] = allPlace[j];
-                                                    allPlace[j] = temp;
-                                                }
-                                            }
-                                        }
-                                    }
-
+                                    allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
                                     /* time */
-                                    for (let i = 0; i < allPlace.length; i++) {
-                                        switch (getTodayLabel()) {
-                                            case 'Sun':
-                                                allPlace[i].time = allPlace[i].sun_open.slice(0, 5) + ' - ' + allPlace[i].sun_close.slice(0, 5);
-                                                break;
-                                            case 'Mon':
-                                                allPlace[i].time = allPlace[i].mon_open.slice(0, 5) + ' - ' + allPlace[i].mon_close.slice(0, 5);
-                                                break;
-                                            case 'Tue':
-                                                allPlace[i].time = allPlace[i].tue_open.slice(0, 5) + ' - ' + allPlace[i].tue_close.slice(0, 5);
-                                                break;
-                                            case 'Wed':
-                                                allPlace[i].time = allPlace[i].wed_open.slice(0, 5) + ' - ' + allPlace[i].wed_close.slice(0, 5);
-                                                break;
-                                            case 'Thu':
-                                                allPlace[i].time = allPlace[i].thu_open.slice(0, 5) + ' - ' + allPlace[i].thu_close.slice(0, 5);
-                                                break;
-                                            case 'Fri':
-                                                allPlace[i].time = allPlace[i].fri_open.slice(0, 5) + ' - ' + allPlace[i].fri_close.slice(0, 5);
-                                                break;
-                                            case 'Sat':
-                                                allPlace[i].time = allPlace[i].sat_open.slice(0, 5) + ' - ' + allPlace[i].sat_close.slice(0, 5);
-                                                break;
-                                        }
-                                    }
-
-                                    if (filterTimeCurrent === 'true') {
-                                        let day = new Date;
-                                        let hours = day.getHours()
-                                        let minutes = day.getMinutes();  // 분
-                                        for (let i = 0; i < allPlace.length; i++) {
-                                            let openTime = parseInt(allPlace[i].time.slice(0, 2));
-                                            let closeTime = parseInt(allPlace[i].time.slice(8, allPlace[i].time.length - 3));
-                                            if (openTime <= hours && hours <= closeTime) {
-                                                if (openTime === hours) {
-                                                    openTime = openTime = allPlace[i].time.slice(3, 5);
-                                                    if (openTime > minutes) {
-                                                        allPlace.splice(i--, 1);
-                                                        continue
-                                                    }
-                                                }
-                                                if (closeTime === hours) {
-                                                    closeTime = allPlace[i].time.slice(11, allPlace[i].time.length);
-                                                    if (closeTime < minutes) {
-                                                        allPlace.splice(i--, 1);
-                                                    }
-                                                }
-                                            } else {
-                                                allPlace.splice(i--, 1);
-                                            }
-                                        }
-                                    }
-
-                                    if (filterTimeMorning === 'true') {
-                                        for (let i = 0; i < allPlace.length; i++) {
-                                            let openTime = parseInt(allPlace[i].time.slice(0, 2));
-                                            if (openTime >= 12) {
-                                                allPlace.splice(i--, 1);
-                                            }
-                                        }
-                                    }
-
-                                    if (filterTimeAfternoon === 'true') {
-                                        for (let i = 0; i < allPlace.length; i++) {
-                                            let closeTime = parseInt(allPlace[i].time.slice(8, allPlace[i].time.length - 3));
-                                            if (closeTime < 12) {
-                                                allPlace.splice(i--, 1);
-                                            }
-                                        }
-                                    }
-
-                                    if (filterTimeNight === 'true') {
-                                        for (let i = 0; i < allPlace.length; i++) {
-                                            let closeTime = parseInt(allPlace[i].time.slice(8, allPlace[i].time.length - 3));
-                                            if (closeTime < 18) {
-                                                allPlace.splice(i--, 1);
-                                            }
-                                        }
-                                    }
-
-                                    let count = allPlace.length
+                                    allPlace = fn.applyTimeFilter(allPlace, timeFilter);
+                                    /* 결과를 각 페이지에 분리 */
+                                    let totalPlaceCount = allPlace.length
                                     allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1)); // 각 페이지에 12개의 장소를 노출한다.
-
                                     if (req.session.id1) {
                                         res.render('category-custom', {
                                             path: '',
@@ -627,7 +514,7 @@ app.get('/category', function (req, res) {
                                             searchWord: searchWord,
                                             searchLocation: searchLocation,
                                             allPlace: allPlace,
-                                            placeCount: count,
+                                            placeCount: totalPlaceCount,
                                             pagination: pagination,
                                             loggedUser: true,
                                             sortCategory: sortCategory,
@@ -646,7 +533,7 @@ app.get('/category', function (req, res) {
                                             searchWord: searchWord,
                                             searchLocation: searchLocation,
                                             allPlace: allPlace,
-                                            placeCount: count,
+                                            placeCount: totalPlaceCount,
                                             pagination: pagination,
                                             loggedUser: false,
                                             sortCategory: sortCategory,
@@ -667,123 +554,29 @@ app.get('/category', function (req, res) {
                         }
                     );
                 } else {
-                    let allPlace = []
+                    let allPlace = []; // 장소를 넣을 배열
+                    /* 거리 계산 및 장소 넣기 */
                     for (let i = 0; i < placeList.length; i++) {
-                        if (getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < filterDistance) {
+                        if (fn.getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < filterDistance) {
                             placeList[i].image = ((placeList[i].image).split("@#"))[1]; // 대표 이미지 설정
                             allPlace.push(placeList[i]);
                         }
                     }
-                    if (sortCategory === "STAR") {
-                        for (let i = 0; i < allPlace.length; i++) { // 평점 순서로 정렬
-                            for (let j = i + 1; j < allPlace.length; j++) {
-                                if (allPlace[i].star < allPlace[j].star) {
-                                    let temp = allPlace[i];
-                                    allPlace[i] = allPlace[j];
-                                    allPlace[j] = temp;
-                                }
-                            }
-                        }
-                    } else if (sortCategory === 'CLOSESET') {
-                        for (var i = 0; i < allPlace.length; i++) {
-                            for (var j = i + 1; j < allPlace.length; j++) {
-                                if ((((allPlace[i].latitude) - (lat)) * ((allPlace[i].latitude) - (lat))) + (((allPlace[i].longitude) - (lon)) * ((allPlace[i].longitude) - (lon))) > (((allPlace[j].latitude) - (lat)) * ((allPlace[j].latitude) - (lat))) + (((allPlace[j].longitude) - (lon)) * ((allPlace[j].longitude) - (lon)))) {
-                                    let temp = allPlace[i];
-                                    allPlace[i] = allPlace[j];
-                                    allPlace[j] = temp;
-                                }
-                            }
-                        }
-                    }
-
-                    // 금일의 운영시간
-                    for (let i = 0; i < allPlace.length; i++) {
-                        switch (getTodayLabel()) {
-                            case 'Sun':
-                                allPlace[i].time = allPlace[i].sun_open.slice(0, 5) + ' - ' + allPlace[i].sun_close.slice(0, 5);
-                                break;
-                            case 'Mon':
-                                allPlace[i].time = allPlace[i].mon_open.slice(0, 5) + ' - ' + allPlace[i].mon_close.slice(0, 5);
-                                break;
-                            case 'Tue':
-                                allPlace[i].time = allPlace[i].tue_open.slice(0, 5) + ' - ' + allPlace[i].tue_close.slice(0, 5);
-                                break;
-                            case 'Wed':
-                                allPlace[i].time = allPlace[i].wed_open.slice(0, 5) + ' - ' + allPlace[i].wed_close.slice(0, 5);
-                                break;
-                            case 'Thu':
-                                allPlace[i].time = allPlace[i].thu_open.slice(0, 5) + ' - ' + allPlace[i].thu_close.slice(0, 5);
-                                break;
-                            case 'Fri':
-                                allPlace[i].time = allPlace[i].fri_open.slice(0, 5) + ' - ' + allPlace[i].fri_close.slice(0, 5);
-                                break;
-                            case 'Sat':
-                                allPlace[i].time = allPlace[i].sat_open.slice(0, 5) + ' - ' + allPlace[i].sat_close.slice(0, 5);
-                                break;
-                        }
-                    }
-
-                    if (filterTimeCurrent === 'true') {
-                        let hours = (new Date()).getHours()
-                        let minutes = (new Date()).getMinutes();  // 분
-                        for (let i = 0; i < allPlace.length; i++) {
-                            let openTime = allPlace[i].time.slice(0, 2);
-
-                            let closeTime = allPlace[i].time.slice(8, allPlace[i].time.length - 3);
-                            if (openTime <= hours && hours <= closeTime) {
-                                if (openTime === hours) {
-                                    openTime = openTime = allPlace[i].time.slice(3, 5);
-                                    if (openTime > minutes) {
-                                        allPlace.splice(i, 1);
-                                    }
-                                }
-                                if (closeTime === hours) {
-                                    closeTime = allPlace[i].time.slice(11, allPlace[i].time.length);
-                                    if (closeTime < minutes) {
-                                        allPlace.splice(i, 1);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (filterTimeMorning === 'true') {
-                        for (let i = 0; i < allPlace.length; i++) {
-                            let openTime = allPlace[i].time.slice(0, 2);
-                            if (openTime >= 12) {
-                                allPlace.splice(i, 1);
-                            }
-                        }
-                    }
-
-                    if (filterTimeAfternoon === 'true') {
-                        for (let i = 0; i < allPlace.length; i++) {
-                            let closeTime = allPlace[i].time.slice(8, allPlace[i].time.length - 3);
-                            if (closeTime < 12) {
-                                allPlace.splice(i, 1);
-                            }
-                        }
-                    }
-
-                    if (filterTimeNight === 'true') {
-                        for (let i = 0; i < allPlace.length; i++) {
-                            let closeTime = allPlace[i].time.slice(8, allPlace[i].time.length - 3);
-                            if (closeTime < 18) {
-                                allPlace.splice(i, 1);
-                            }
-                        }
-                    }
-
-                    let count = allPlace.length
+                    /* sortBy */
+                    allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
+                    /* time */
+                    allPlace = fn.applyTimeFilter(allPlace, timeFilter);
+                    /* 결과를 각 페이지에 분리*/
+                    let totalPlaceCount = allPlace.length;
+                    allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
                     if (req.session.id1) {
-
                         res.render('category-custom', {
                             path: '',
                             title: '검색결과',
                             searchWord: searchWord,
                             searchLocation: searchLocation,
                             allPlace: allPlace, // 검색 된 모든 장소
-                            placeCount: count, // 검색 된 장소의 개수
+                            placeCount: totalPlaceCount, // 검색 된 장소의 개수
                             pagination: pagination,
                             loggedUser: true,
                             sortCategory: sortCategory,
@@ -802,7 +595,7 @@ app.get('/category', function (req, res) {
                                 searchWord: searchWord,
                                 searchLocation: searchLocation,
                                 allPlace: allPlace,
-                                placeCount: count,
+                                placeCount: totalPlaceCount,
                                 pagination: pagination,
                                 loggedUser: false,
                                 sortCategory: sortCategory,
@@ -828,122 +621,29 @@ app.get('/category', function (req, res) {
                             if (placeNumber.length !== 0) {
                                 connection.query(searchPlaceQuery, function (err2, places) {
                                     var allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
+                                    /* 거리 계산 및 장소 넣기 */
                                     if (places.length === 1) {
                                         for (var i = places.length - 1; i >= 0; i--) {
-                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
+                                            if (fn.getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
                                                 places[i].image = ((places[i].image).split("@#"))[1];
                                                 allPlace.push(places[i]);
                                             }
                                         }
                                     } else {
                                         for (var i = 0; i < places.length; i++) {
-                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
+                                            if (fn.getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
                                                 places[i][0].image = ((places[i][0].image).split("@#"))[1];
                                                 allPlace.push(places[i][0]);
                                             }
                                         }
                                     }
-
-                                    if (sortCategory === "STAR") {
-                                        for (let i = 0; i < allPlace.length; i++) { // 평점 순서로 정렬
-                                            for (let j = i + 1; j < allPlace.length; j++) {
-                                                if (allPlace[i].star < allPlace[j].star) {
-                                                    let temp = allPlace[i];
-                                                    allPlace[i] = allPlace[j];
-                                                    allPlace[j] = temp;
-                                                }
-                                            }
-                                        }
-                                    } else if (sortCategory === 'CLOSESET') {
-                                        for (var i = 0; i < allPlace.length; i++) {
-                                            for (var j = i + 1; j < allPlace.length; j++) {
-                                                if ((((allPlace[i].latitude) - (lat)) * ((allPlace[i].latitude) - (lat))) + (((allPlace[i].longitude) - (lon)) * ((allPlace[i].longitude) - (lon))) > (((allPlace[j].latitude) - (lat)) * ((allPlace[j].latitude) - (lat))) + (((allPlace[j].longitude) - (lon)) * ((allPlace[j].longitude) - (lon)))) {
-                                                    let temp = allPlace[i];
-                                                    allPlace[i] = allPlace[j];
-                                                    allPlace[j] = temp;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    // 금일의 운영시간
-                                    for (let i = 0; i < allPlace.length; i++) {
-                                        switch (getTodayLabel()) {
-                                            case 'Sun':
-                                                allPlace[i].time = allPlace[i].sun_open.slice(0, 5) + ' - ' + allPlace[i].sun_close.slice(0, 5);
-                                                break;
-                                            case 'Mon':
-                                                allPlace[i].time = allPlace[i].mon_open.slice(0, 5) + ' - ' + allPlace[i].mon_close.slice(0, 5);
-                                                break;
-                                            case 'Tue':
-                                                allPlace[i].time = allPlace[i].tue_open.slice(0, 5) + ' - ' + allPlace[i].tue_close.slice(0, 5);
-                                                break;
-                                            case 'Wed':
-                                                allPlace[i].time = allPlace[i].wed_open.slice(0, 5) + ' - ' + allPlace[i].wed_close.slice(0, 5);
-                                                break;
-                                            case 'Thu':
-                                                allPlace[i].time = allPlace[i].thu_open.slice(0, 5) + ' - ' + allPlace[i].thu_close.slice(0, 5);
-                                                break;
-                                            case 'Fri':
-                                                allPlace[i].time = allPlace[i].fri_open.slice(0, 5) + ' - ' + allPlace[i].fri_close.slice(0, 5);
-                                                break;
-                                            case 'Sat':
-                                                allPlace[i].time = allPlace[i].sat_open.slice(0, 5) + ' - ' + allPlace[i].sat_close.slice(0, 5);
-                                                break;
-                                        }
-                                    }
-                                    if (filterTimeCurrent === 'true') {
-                                        let hours = (new Date()).getHours()
-                                        let minutes = (new Date()).getMinutes();  // 분
-                                        for (let i = 0; i < allPlace.length; i++) {
-                                            let openTime = allPlace[i].time.slice(0, 2);
-
-                                            let closeTime = allPlace[i].time.slice(8, allPlace[i].time.length - 3);
-                                            if (openTime <= hours && hours <= closeTime) {
-                                                if (openTime === hours) {
-                                                    openTime = openTime = allPlace[i].time.slice(3, 5);
-                                                    if (openTime > minutes) {
-                                                        allPlace.splice(i, 1);
-                                                    }
-                                                }
-                                                if (closeTime === hours) {
-                                                    closeTime = allPlace[i].time.slice(11, allPlace[i].time.length);
-                                                    if (closeTime < minutes) {
-                                                        allPlace.splice(i, 1);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    if (filterTimeMorning === 'true') {
-                                        for (let i = 0; i < allPlace.length; i++) {
-                                            let openTime = allPlace[i].time.slice(0, 2);
-                                            if (openTime >= 12) {
-                                                allPlace.splice(i, 1);
-                                            }
-                                        }
-                                    }
-
-                                    if (filterTimeAfternoon === 'true') {
-                                        for (let i = 0; i < allPlace.length; i++) {
-                                            let closeTime = allPlace[i].time.slice(8, allPlace[i].time.length - 3);
-                                            if (closeTime < 12) {
-                                                allPlace.splice(i, 1);
-                                            }
-                                        }
-                                    }
-
-                                    if (filterTimeNight === 'true') {
-                                        for (let i = 0; i < allPlace.length; i++) {
-                                            let closeTime = allPlace[i].time.slice(8, allPlace[i].time.length - 3);
-                                            if (closeTime < 18) {
-                                                allPlace.splice(i, 1);
-                                            }
-                                        }
-                                    }
-                                    let count = allPlace.length
+                                    /* sortBy */
+                                    allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
+                                    /* time */
+                                    allPlace = fn.applyTimeFilter(allPlace, timeFilter);
+                                    /* 결과를 각 페이지에 분리 */
+                                    let totalPlaceCount = allPlace.length;
                                     allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
-
                                     if (req.session.id1) {
                                         res.render('category-custom', {
                                             path: '',
@@ -951,7 +651,7 @@ app.get('/category', function (req, res) {
                                             searchWord: searchWord,
                                             searchLocation: searchLocation,
                                             allPlace: allPlace,
-                                            placeCount: count,
+                                            placeCount: totalPlaceCount,
                                             pagination: pagination,
                                             loggedUser: true,
                                             sortCategory: sortCategory,
