@@ -59,8 +59,8 @@ block content
                         //거리 표시 추가
                         .mb-4
                             label.form-label 거리
-                            input.form-control-range(id="filterDistance" type="range" min="0" max="10" step="0.1" value='3' oninput="document.getElementById('distanceValuelabel').innerHTML=this.value + 'km';")
-                            #distanceValuelabel.form-label.float-right 3km
+                            input.form-control-range(id="filterDistance" type="range" min="0" max="10" step="0.1" value=`${filterDistance}` oninput="document.getElementById('distanceValuelabel').innerHTML=this.value + 'km';")
+                            #distanceValuelabel.form-label.float-right #{filterDistance}km
 
 
                         .pb-4
