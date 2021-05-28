@@ -447,7 +447,7 @@ app.get('/category', function (req, res) {
     let pagination = req.query.pagination;
     let sortCategory = req.query.sort; // sortBy
     let filterCategory = req.query.category; // filter
-    let filterDistance = req.query.distance;
+    let filterDistance = req.query.filterDistance;
     let filterKeyword = req.query.keyword;
     let filterTimeCurrent = req.query.filterTimeCurrent;
     let filterTimeMorning = req.query.filterTimeMorning;
@@ -467,7 +467,7 @@ app.get('/category', function (req, res) {
     if (filterTimeAfternoon === undefined) filterTimeAfternoon = false;
     if (filterTimeNight === undefined) filterTimeNight = false;
 
-    let distance = 3;
+    if (filterDistance === undefined) filterDistance = 3;
 
     /* DB query */
     var searchHashtagQuery = `select number from hashtag where hashtag.name = '${searchWord}'`; // searchWord 와 일치하는 해쉬 태그 id 를 찾는 쿼리
@@ -492,14 +492,14 @@ app.get('/category', function (req, res) {
                                     let allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣는다.
                                     if (places.length === 1) { // 해당 hashTag 를 갖는 장소가 1개인 경우
                                         for (let i = places.length - 1; i >= 0; i--) {
-                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
+                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
                                                 places[i].image = ((places[i].image).split("@#"))[1];
                                                 allPlace.push(places[i]);
                                             }
                                         }
                                     } else { // 해당 hashTag 를 갖는 장소가 여러개인 경우
                                         for (let i = 0; i < places.length; i++) {
-                                            if (places[i][0] !== undefined && getDistance(lat, lon, places[i][0].latitude, places[i][0].longitude) < distance) {
+                                            if (places[i][0] !== undefined && getDistance(lat, lon, places[i][0].latitude, places[i][0].longitude) < filterDistance) {
                                                 places[i][0].image = ((places[i][0].image).split("@#"))[1];
                                                 allPlace.push(places[i][0]);
                                             }
@@ -507,7 +507,7 @@ app.get('/category', function (req, res) {
                                     }
 
                                     for (let i = 0; i < placeList.length; i++) { // allPlace 에 1 번 단계에서 얻은 결과를 넣는다.
-                                        if (getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < distance) {
+                                        if (getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < filterDistance) {
                                             placeList[i].image = ((placeList[i].image).split("@#"))[1];
                                             allPlace.push(placeList[i]);
                                         }
@@ -564,9 +564,9 @@ app.get('/category', function (req, res) {
                                     }
 
                                     if (filterTimeCurrent === 'true') {
-                                        let day = new Date.toLocaleString("ko-KR", {timeZone: "Asia/Seoul"});
-                                        let hours = (day).getHours();
-                                        let minutes = (day).getMinutes();  // 분
+                                        let day = new Date;
+                                        let hours = day.getHours()
+                                        let minutes = day.getMinutes();  // 분
                                         for (let i = 0; i < allPlace.length; i++) {
                                             let openTime = parseInt(allPlace[i].time.slice(0, 2));
                                             let closeTime = parseInt(allPlace[i].time.slice(8, allPlace[i].time.length - 3));
@@ -574,18 +574,18 @@ app.get('/category', function (req, res) {
                                                 if (openTime === hours) {
                                                     openTime = openTime = allPlace[i].time.slice(3, 5);
                                                     if (openTime > minutes) {
-                                                        allPlace.splice(i--,1);
+                                                        allPlace.splice(i--, 1);
                                                         continue
                                                     }
                                                 }
                                                 if (closeTime === hours) {
                                                     closeTime = allPlace[i].time.slice(11, allPlace[i].time.length);
                                                     if (closeTime < minutes) {
-                                                        allPlace.splice(i--,1);
+                                                        allPlace.splice(i--, 1);
                                                     }
                                                 }
                                             } else {
-                                                allPlace.splice(i--,1);
+                                                allPlace.splice(i--, 1);
                                             }
                                         }
                                     }
@@ -594,7 +594,7 @@ app.get('/category', function (req, res) {
                                         for (let i = 0; i < allPlace.length; i++) {
                                             let openTime = parseInt(allPlace[i].time.slice(0, 2));
                                             if (openTime >= 12) {
-                                                allPlace.splice(i--,1);
+                                                allPlace.splice(i--, 1);
                                             }
                                         }
                                     }
@@ -603,7 +603,7 @@ app.get('/category', function (req, res) {
                                         for (let i = 0; i < allPlace.length; i++) {
                                             let closeTime = parseInt(allPlace[i].time.slice(8, allPlace[i].time.length - 3));
                                             if (closeTime < 12) {
-                                                allPlace.splice(i--,1);
+                                                allPlace.splice(i--, 1);
                                             }
                                         }
                                     }
@@ -612,7 +612,7 @@ app.get('/category', function (req, res) {
                                         for (let i = 0; i < allPlace.length; i++) {
                                             let closeTime = parseInt(allPlace[i].time.slice(8, allPlace[i].time.length - 3));
                                             if (closeTime < 18) {
-                                                allPlace.splice(i--,1);
+                                                allPlace.splice(i--, 1);
                                             }
                                         }
                                     }
@@ -636,7 +636,8 @@ app.get('/category', function (req, res) {
                                             filterTimeCurrent: filterTimeCurrent,
                                             filterTimeMorning: filterTimeMorning,
                                             filterTimeAfternoon: filterTimeAfternoon,
-                                            filterTimeNight: filterTimeNight
+                                            filterTimeNight: filterTimeNight,
+                                            filterDistance: filterDistance
                                         });
                                     } else {
                                         res.render('category-custom', {
@@ -654,7 +655,8 @@ app.get('/category', function (req, res) {
                                             filterTimeCurrent: filterTimeCurrent,
                                             filterTimeMorning: filterTimeMorning,
                                             filterTimeAfternoon: filterTimeAfternoon,
-                                            filterTimeNight: filterTimeNight
+                                            filterTimeNight: filterTimeNight,
+                                            filterDistance: filterDistance
                                         });
                                     }
                                 });
@@ -667,7 +669,7 @@ app.get('/category', function (req, res) {
                 } else {
                     let allPlace = []
                     for (let i = 0; i < placeList.length; i++) {
-                        if (getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < distance) {
+                        if (getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < filterDistance) {
                             placeList[i].image = ((placeList[i].image).split("@#"))[1]; // 대표 이미지 설정
                             allPlace.push(placeList[i]);
                         }
@@ -790,7 +792,8 @@ app.get('/category', function (req, res) {
                             filterTimeCurrent: filterTimeCurrent,
                             filterTimeMorning: filterTimeMorning,
                             filterTimeAfternoon: filterTimeAfternoon,
-                            filterTimeNight: filterTimeNight
+                            filterTimeNight: filterTimeNight,
+                            filterDistance: filterDistance
                         });
                     } else {
                         res.render('category-custom', {
@@ -808,7 +811,8 @@ app.get('/category', function (req, res) {
                                 filterTimeCurrent: filterTimeCurrent,
                                 filterTimeMorning: filterTimeMorning,
                                 filterTimeAfternoon: filterTimeAfternoon,
-                                filterTimeNight: filterTimeNight
+                                filterTimeNight: filterTimeNight,
+                                filterDistance: filterDistance
                             }
                         );
                     }
@@ -826,14 +830,14 @@ app.get('/category', function (req, res) {
                                     var allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
                                     if (places.length === 1) {
                                         for (var i = places.length - 1; i >= 0; i--) {
-                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
+                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
                                                 places[i].image = ((places[i].image).split("@#"))[1];
                                                 allPlace.push(places[i]);
                                             }
                                         }
                                     } else {
                                         for (var i = 0; i < places.length; i++) {
-                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < distance) {
+                                            if (getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
                                                 places[i][0].image = ((places[i][0].image).split("@#"))[1];
                                                 allPlace.push(places[i][0]);
                                             }
@@ -956,7 +960,8 @@ app.get('/category', function (req, res) {
                                             filterTimeCurrent: filterTimeCurrent,
                                             filterTimeMorning: filterTimeMorning,
                                             filterTimeAfternoon: filterTimeAfternoon,
-                                            filterTimeNight: filterTimeNight
+                                            filterTimeNight: filterTimeNight,
+                                            filterDistance: filterDistance
                                         });
                                     } else {
                                         res.render('category-custom', {
@@ -974,7 +979,8 @@ app.get('/category', function (req, res) {
                                             filterTimeCurrent: filterTimeCurrent,
                                             filterTimeMorning: filterTimeMorning,
                                             filterTimeAfternoon: filterTimeAfternoon,
-                                            filterTimeNight: filterTimeNight
+                                            filterTimeNight: filterTimeNight,
+                                            filterDistance: filterDistance
                                         });
                                     }
                                 });
