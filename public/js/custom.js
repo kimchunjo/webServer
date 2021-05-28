@@ -38,19 +38,6 @@ $(document).ready(function () {
     });
 
     $('#checkedTime').val(getParameterByName('time'));
-    if(getParameterByName('time').indexOf("지금") != -1){
-        $("#time_0").prop('checked', true);
-    }
-    if(getParameterByName('time').indexOf("오전") != -1){
-        $("#time_1").prop('checked', true);
-    }
-    if(getParameterByName('time').indexOf("오후") != -1){
-        $("#time_2").prop('checked', true);
-    }
-    if(getParameterByName('time').indexOf("저녁") != -1){
-        $("#time_3").prop('checked', true);
-    }
-
 
     $(".checkTime").change(function () {
         if ($(this).is(":checked")){
