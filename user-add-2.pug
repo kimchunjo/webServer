@@ -1,0 +1,48 @@
+extends _pug-includes/layout.pug
+
+block vars
+    - var loggedUser = true
+   
+
+block content
+       
+    - var breadcrumbs = []
+    - breadcrumbs.push({name: 'Home', link: 'index.html'})
+    - breadcrumbs.push({name: 'Add new listing'})
+    - var heroHeading = 'Add new listing'
+    - var heroHeadingClass = 'hero-heading mb-5'
+    
+    //- include _pug-includes/inc-hero
+    
+    +progress(40)
+
+    section.py-5
+        .container
+            
+            +stepsHeading('Texts', 2)
+
+            form(action=`${path}user-add-3` method="post")
+                .row.form-block
+                    .col-lg-4
+                        h4 장소 설명
+                        p.text-muted.text-sm  #을 이용해 태그를 만들 수 있습니다! <br/> 태그는 장소 노출에 도움이 됩니다.
+                    .col-lg-7.ml-auto
+                        .form-group.mb-5
+                            label.form-label(for="form_description") 설명
+                            textarea.form-control(name="explanation", id="form_description", rows="5", aria-describedby="descriptionHelp", required)
+                            //.small.form-text.text-muted #을 이용해 태그를 만들 수 있습니다! 태그는 장소 노출에 도움이 됩니다.
+                            textarea.d-none.form-control(name="tag" id="hide_tag_box")
+                            div(id="description_tag_box")
+
+                .row.form-block.d-none
+                    .form-group.d-none
+                        input(name="name" value=`${placeInfo.name}`)
+                        input(name="category" value=`${placeInfo.category}`)
+                        input(name="door" value=`${placeInfo.door}`)
+                        input(name="latitude" value=`${placeInfo.latitude}`)
+                        input(name="longitude" value=`${placeInfo.longitude}`)
+                        input(name="address" value=`${placeInfo.address}`)
+                        input(name="openTime" value=`${placeInfo.openTime}`)
+                        input(name="closeTime" value=`${placeInfo.closeTime}`)
+
+                +stepsAdd(2)

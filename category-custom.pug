@@ -1,0 +1,105 @@
+extends _pug-includes/layout.pug
+
+block vars 
+    - var active = 'category'
+    - var mapUsed = true
+    - var hideTopbar = true
+
+
+block content
+
+    .container-fluid.py-4.py-sm-5.px-lg-5
+            .row.border-bottom.mb-1.mb-sm-4
+                .col-12
+                    h1.mb-4.text-xl.font-weight-bold.d-none.d-sm-block #{searchLocation} #{searchWord}에 대한 결과
+                    h5.mb-2.text-lg.font-weight-bold.d-block.d-sm-none #{searchLocation} #{searchWord}에 대한 결과
+                // 지도로 표시하기 버튼 추가
+                .col-12.d-sm-block.d-none
+                     a.btn.btn-outline-primary.mb-4.float-right(href=`/category-map?search=${searchWord}&location=${searchLocation}&sort=${sortCatecory}&lat=${lat}&lon=${lon}`)
+                        | MAP ON
+            .row
+                .col-lg-3.pt-3
+
+                    include _pug-includes/inc-var-neighbourhoods.pug
+
+
+                        // 방문 시간 추가
+                        .mb-4
+                            label.form-label 시간
+                            ul.list-inline.mb-0
+                                li.list-inline-item
+                                    .custom-control.custom-radio
+                                        if (filterTimeCurrent ==='true')
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_0`, name="time", value=`지금` checked)
+                                        else
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_0`, name="time", value=`지금`)
+                                        label.custom-control-label(for=`time_0`) 지금
+                                li.list-inline-item
+                                    .custom-control.custom-radio
+                                        if (filterTimeMorning === 'true')
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_1`, name="time", value=`오전` checked)
+                                        else
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_1`, name="time", value=`오전`)
+                                        label.custom-control-label(for=`time_1`) 오전
+                                li.list-inline-item
+                                    .custom-control.custom-radio
+                                        if (filterTimeAfternoon === 'true')
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_2`, name="time", value=`오후` checked)
+                                        else
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_2`, name="time", value=`오후`)
+                                        label.custom-control-label(for=`time_2`) 오후
+                                li.list-inline-item
+                                    .custom-control.custom-radio
+                                        if (filterTimeNight === 'true')
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_3`, name="time", value=`저녁` checked)
+                                        else
+                                            input.custom-control-input.checkTime(type='checkbox', id=`time_3`, name="time", value=`저녁`)
+                                        label.custom-control-label(for=`time_3`) 저녁
+
+                        //거리 표시 추가
+                        .mb-4
+                            label.form-label 거리
+                            input.form-control-range(id="filterDistance" type="range" min="0" max="10" step="0.1" value=`${filterDistance}` oninput="document.getElementById('distanceValuelabel').innerHTML=this.value + 'km';")
+                            #distanceValuelabel.form-label.float-right #{filterDistance}km
+
+
+                        .pb-4
+                            #moreFilters.collapse
+                                .mb-4
+                                    label.form-label(for="form_search") Keyword
+                                    .input-label-absolute.input-label-absolute-right
+                                        .label-absolute
+                                            i.fa.fa-search
+                                        input.form-control.pr-4(type="search", name="search", placeholder="Keywords", id="form_search")
+
+                                .mb-4
+                                    - var types = ['가볼만한곳','카페/디저트' ,'맛집', '쇼핑', '공연', '명소', '문화', '테마', '체험']
+                                    label.form-label(for="form_category") Category
+                                    select.selectpicker.form-control(name="category", id="form_category", multiple, data-style="btn-selectpicker", data-selected-text-format="count > 1", title="")
+                                        each val, index in types
+                                            option(value=`${val}`) #{val}
+                            .mb-4
+
+                                +collapseButton('moreFilters', 'More filters', 'Less filters')   
+
+                            .mb-4
+                                button.btn.btn-primary(onclick='filterUse()')
+                                    i.fas.fa-filter.mr-1
+                                    | Filter                
+                
+                .col-lg-9
+
+                    include _pug-includes/inc-category-sortby.pug
+                    - var itemClass = 'col-sm-6 col-xl-4 mb-5 hover-animate'
+
+                    .row
+                        if allPlace != undefined
+                            each val, index in allPlace
+                                +venue(val, itemClass)
+
+                    include _pug-includes/inc-pagination.pug
+
+
+
+block additionalScripts
+    //include _pug-includes/scripts-nouislider.pug
