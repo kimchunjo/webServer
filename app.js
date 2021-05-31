@@ -690,7 +690,45 @@ app.get('/category', function (req, res) {
                         }
                     );
                 } else { // placeName, hashTag 모두 검색 결과가 없는 경우이다.
-                    res.redirect('/');
+                    if (req.session.id1) {
+                        res.render('category-custom', {
+                            path: '',
+                            title: '검색결과',
+                            searchWord: searchWord,
+                            searchLocation: searchLocation,
+                            allPlace: null,
+                            placeCount: 0,
+                            pagination: pagination,
+                            loggedUser: true,
+                            sortCategory: sortCategory,
+                            lat: lat,
+                            lon: lon,
+                            filterTimeCurrent: filterTimeCurrent,
+                            filterTimeMorning: filterTimeMorning,
+                            filterTimeAfternoon: filterTimeAfternoon,
+                            filterTimeNight: filterTimeNight,
+                            filterDistance: filterDistance
+                        });
+                    } else {
+                        res.render('category-custom', {
+                            path: '',
+                            title: '검색결과',
+                            searchWord: searchWord,
+                            searchLocation: searchLocation,
+                            allPlace: null,
+                            placeCount: 0,
+                            pagination: pagination,
+                            loggedUser: false,
+                            sortCategory: sortCategory,
+                            lat: lat,
+                            lon: lon,
+                            filterTimeCurrent: filterTimeCurrent,
+                            filterTimeMorning: filterTimeMorning,
+                            filterTimeAfternoon: filterTimeAfternoon,
+                            filterTimeNight: filterTimeNight,
+                            filterDistance: filterDistance
+                        });
+                    }
                 }
             });
         }

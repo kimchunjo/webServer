@@ -22,7 +22,9 @@ header(class=headerClass)
                             i.fa.fa-search
                             span.sr-only What are you looking for?
                         input.form-control.form-control-sm.border-0.shadow-0.bg-gray-200(name="search" id="search_search", placeholder="Search", aria-label="Search")
-                        button.btn.btn-reset.btn-sm(type="reset")
+                        input.form-control.d-none(type="text" name="lat" class="index_latitude" id="navbar_lat")
+                        input.form-control.d-none(type="text" name="lon" class="index_longitude" id="navbar_lon")
+                        button.btn.btn-reset.btn-sm(type="submit")
                             i.fa-times.fas
 
 
