@@ -211,6 +211,32 @@ app.get('/', function (req, res) {
                                         assPlaceList[i].image = ((assPlaceList[i].image).split("@#"))[1];
                                 }
 
+                                for (let i = 0; i < assPlaceList.length; i++) {
+                                    switch (fn.getToday()) {
+                                        case 'Sun':
+                                            assPlaceList[i].time = assPlaceList[i].sun_open.slice(0, 5) + ' - ' + assPlaceList[i].sun_close.slice(0, 5);
+                                            break;
+                                        case 'Mon':
+                                            assPlaceList[i].time = assPlaceList[i].mon_open.slice(0, 5) + ' - ' + assPlaceList[i].mon_close.slice(0, 5);
+                                            break;
+                                        case 'Tue':
+                                            assPlaceList[i].time = assPlaceList[i].tue_open.slice(0, 5) + ' - ' + assPlaceList[i].tue_close.slice(0, 5);
+                                            break;
+                                        case 'Wed':
+                                            assPlaceList[i].time = assPlaceList[i].wed_open.slice(0, 5) + ' - ' + assPlaceList[i].wed_close.slice(0, 5);
+                                            break;
+                                        case 'Thu':
+                                            assPlaceList[i].time = assPlaceList[i].thu_open.slice(0, 5) + ' - ' + assPlaceList[i].thu_close.slice(0, 5);
+                                            break;
+                                        case 'Fri':
+                                            assPlaceList[i].time =assPlaceList[i].fri_open.slice(0, 5) + ' - ' + assPlaceList[i].fri_close.slice(0, 5);
+                                            break;
+                                        case 'Sat':
+                                            assPlaceList[i].time = assPlaceList[i].sat_open.slice(0, 5) + ' - ' + assPlaceList[i].sat_close.slice(0, 5);
+                                            break;
+                                    }
+                                }
+
                                 res.render('index', {
                                     loggedUser: true,
                                     assPlace: assPlaceList
