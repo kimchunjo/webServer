@@ -889,7 +889,7 @@ app.get('/category-map', function (req, res) {
         searchWord = '내 취향에 맞는 장소'
     if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
         searchLocation = '내 주변'
-    if (sortCategory === undefined || sortCategory === "" || sortCategory === 'undefined') // 기본 검색은 평점 순서
+    if (sortCategory === undefined || sortCategory === "") // 기본 검색은 평점 순서
         sortCategory = 'STAR'
     if (pagination === undefined) pagination = 0;
     else pagination = parseInt(pagination);
@@ -949,7 +949,6 @@ app.get('/category-map', function (req, res) {
                                             }
                                         }
                                     }
-
                                     for (let i = 0; i < placeList.length; i++) { // allPlace 에 1 번 단계에서 얻은 결과를 넣는다.
                                         if (fn.getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < filterDistance) {
                                             placeList[i].image = ((placeList[i].image).split("@#"))[1];
@@ -1049,7 +1048,7 @@ app.get('/category-map', function (req, res) {
                     let totalPlaceCount = allPlace.length;
                     allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
                     if (req.session.id1) {
-                        res.render('category-custom', {
+                        res.render('category-map-custom', {
                             path: '',
                             title: '검색결과',
                             searchWord: searchWord,
@@ -1096,30 +1095,32 @@ app.get('/category-map', function (req, res) {
             })
         } else { // searchWord 가 placeName 에 포함된 장소가 없을 때
             /* ******** 2. hashTag 를 이용한 검색 ******* */
-            connection.query(searchHashtagQuery, searchWord, function (err, hashTag) {
+            connection.query(searchHashtagQuery, function (err, hashTag) {
                 if (hashTag.length !== 0) { // searchWord 와 일치하는 해시태그 값을 갖는 장소가 있을 때
-                    connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err1, placeNumber) { // hashTag Number 을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
+                    connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err, placeNumber) { // hashTag Number 을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
                             for (var i = 0; i < placeNumber.length; i++)
-                                searchPlaceQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
+                                searchPlaceQuery += `select * from place where name NOT LIKE '%${searchWord}%' and number = ${placeNumber[i].fk_place_number};`;
                             if (placeNumber.length !== 0) {
-                                connection.query(searchPlaceQuery, function (err2, places) {
-                                    var allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
+                                /* ******** 3. placeName 과 hashTag 모두에 대한 결과가 있는 경우 ******* */
+                                connection.query(searchPlaceQuery, function (err, places) {
+                                    let allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣는다.
                                     /* 거리 계산 및 장소 넣기 */
-                                    if (places.length === 1) {
-                                        for (var i = places.length - 1; i >= 0; i--) {
+                                    if (places.length === 1) { // 해당 hashTag 를 갖는 장소가 1개인 경우
+                                        for (let i = places.length - 1; i >= 0; i--) {
                                             if (fn.getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
                                                 places[i].image = ((places[i].image).split("@#"))[1];
                                                 allPlace.push(places[i]);
                                             }
                                         }
-                                    } else {
-                                        for (var i = 0; i < places.length; i++) {
-                                            if (fn.getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
+                                    } else { // 해당 hashTag 를 갖는 장소가 여러개인 경우
+                                        for (let i = 0; i < places.length; i++) {
+                                            if (places[i][0] !== undefined && fn.getDistance(lat, lon, places[i][0].latitude, places[i][0].longitude) < filterDistance) {
                                                 places[i][0].image = ((places[i][0].image).split("@#"))[1];
                                                 allPlace.push(places[i][0]);
                                             }
                                         }
                                     }
+
                                     /* sortBy */
                                     allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
                                     /* time */
@@ -1132,9 +1133,11 @@ app.get('/category-map', function (req, res) {
                                             }
                                         }
                                     }
+
+
                                     /* 결과를 각 페이지에 분리 */
-                                    let totalPlaceCount = allPlace.length;
-                                    allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
+                                    let totalPlaceCount = allPlace.length
+                                    allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1)); // 각 페이지에 12개의 장소를 노출한다.
                                     if (req.session.id1) {
                                         res.render('category-map-custom', {
                                             path: '',
@@ -1163,7 +1166,7 @@ app.get('/category-map', function (req, res) {
                                             searchWord: searchWord,
                                             searchLocation: searchLocation,
                                             allPlace: allPlace,
-                                            placeCount: allPlace.length,
+                                            placeCount: totalPlaceCount,
                                             pagination: pagination,
                                             loggedUser: false,
                                             sortCategory: sortCategory,
@@ -1180,19 +1183,36 @@ app.get('/category-map', function (req, res) {
                                     }
                                 });
                             } else {
+                                // 해쉬 태그는 존재하지만 해당 해쉬 태그를 갖는 장소가 존재하지 않는 경우
                                 res.redirect('/');
                             }
                         }
                     );
-                } else { // placeName, hashTag 모두 검색 결과가 없는 경우이다.
+                } else {
+                    let allPlace = []; // 장소를 넣을 배열
+                    /* sortBy */
+                    allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
+                    /* time */
+                    allPlace = fn.applyTimeFilter(allPlace, timeFilter);
+                    /* keyword */
+                    if (filterKeyword !== undefined && filterKeyword !== null) {
+                        for (let i = 0; i < allPlace.length; i++) {
+                            if ((allPlace[i].explanation).indexOf(filterKeyword) === -1) {
+                                allPlace.splice(i--, 1);
+                            }
+                        }
+                    }
+                    /* 결과를 각 페이지에 분리*/
+                    let totalPlaceCount = allPlace.length;
+                    allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
                     if (req.session.id1) {
                         res.render('category-map-custom', {
                             path: '',
                             title: '검색결과',
                             searchWord: searchWord,
                             searchLocation: searchLocation,
-                            allPlace: null,
-                            placeCount: 0,
+                            allPlace: allPlace, // 검색 된 모든 장소
+                            placeCount: totalPlaceCount, // 검색 된 장소의 개수
                             pagination: pagination,
                             loggedUser: true,
                             sortCategory: sortCategory,
@@ -1208,29 +1228,29 @@ app.get('/category-map', function (req, res) {
                         });
                     } else {
                         res.render('category-map-custom', {
-                            path: '',
-                            title: '검색결과',
-                            searchWord: searchWord,
-                            searchLocation: searchLocation,
-                            allPlace: null,
-                            placeCount: 0,
-                            pagination: pagination,
-                            loggedUser: false,
-                            sortCategory: sortCategory,
-                            lat: lat,
-                            lon: lon,
-                            filterTimeCurrent: filterTimeCurrent,
-                            filterTimeMorning: filterTimeMorning,
-                            filterTimeAfternoon: filterTimeAfternoon,
-                            filterTimeNight: filterTimeNight,
-                            filterDistance: filterDistance,
-                            filterKeyword: filterKeyword,
-                            filterCategory: filterCategory
-
-                        });
+                                path: '',
+                                title: '검색결과',
+                                searchWord: searchWord,
+                                searchLocation: searchLocation,
+                                allPlace: allPlace,
+                                placeCount: totalPlaceCount,
+                                pagination: pagination,
+                                loggedUser: false,
+                                sortCategory: sortCategory,
+                                lat: lat,
+                                lon: lon,
+                                filterTimeCurrent: filterTimeCurrent,
+                                filterTimeMorning: filterTimeMorning,
+                                filterTimeAfternoon: filterTimeAfternoon,
+                                filterTimeNight: filterTimeNight,
+                                filterDistance: filterDistance,
+                                filterKeyword: filterKeyword,
+                                filterCategory: filterCategory
+                            }
+                        );
                     }
                 }
-            });
+            })
         }
     });
 });
