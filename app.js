@@ -889,7 +889,7 @@ app.get('/category-map', function (req, res) {
         searchWord = '내 취향에 맞는 장소'
     if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
         searchLocation = '내 주변'
-    if (sortCategory === undefined || sortCategory === "") // 기본 검색은 평점 순서
+    if (sortCategory === undefined || sortCategory === "" || sortCategory === 'undefined') // 기본 검색은 평점 순서
         sortCategory = 'STAR'
     if (pagination === undefined) pagination = 0;
     else pagination = parseInt(pagination);

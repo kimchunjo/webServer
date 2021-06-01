@@ -248,9 +248,11 @@ function getLocation() {
             $('.index_latitude').val(lat);
             $('.index_longitude').val(lon);
             $("#linkCafe").attr("href", `/category?search=카페&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
-            $("#linkYummy").attr("href", `/category?search=맛집&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
-            $("#linkWalk").attr("href", `/category?search=산책&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
-            $("#linkWeekend").attr("href", `/category?search=주말&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
+            $("#korea").attr("href", `/category?search=한식&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
+            $("#china").attr("href", `/category?search=중식&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
+            $("#yang").attr("href", `/category?search=양식&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
+            $("#bun").attr("href", `/category?search=분식&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
+            $("#meat").attr("href", `/category?search=고기&location=내 주변&sort=star&lat=${lat}&lon=${lon}`);
         }, function (error) {
             console.error(error);
         }, {
