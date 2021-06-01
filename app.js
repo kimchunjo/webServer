@@ -192,9 +192,19 @@ app.get('/', function (req, res) {
             }
         });
     } else { // 비로그인
-        res.render('index', {
-            loggedUser: false,
-        })
+        var query = `select * from place ORDER BY viewed DESC limit 5;`
+        connection.query(query, function(err, result){
+            //console.log(result);
+            if (result.length !== 0) {
+                for (let i = 0; i < result.length; i++)
+                    result[i].image = ((result[i].image).split("@#"))[1];
+            }
+            res.render('index', {
+                loggedUser: false,
+                assPlace: result
+            });
+        });
+
     }
 });
 
