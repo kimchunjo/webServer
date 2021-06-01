@@ -1,0 +1,26 @@
+p.subtitle.text-sm.text-primary Reviews    
+h5.mb-4 Listing Reviews 
+
+- var result = []
+- var count = 0
+- for(let i =0 ; i< reviews.length; i++ , count++)
+    if(count  < 5 )
+        - var time = String(reviews[i].datetime)
+        - result.push({name: `${reviews[i].user_id}`, role: 'founder', image: 'img/avatar/avatar-8.jpg', date: `${time}`, stars: `${reviews[i].starpoint}`})
+
+- stars = [1,2,3,4,5]
+
+each val, index in result
+    .media.d-block.d-sm-flex.review.review-in-detail
+        .text-md-center.mr-2.mr-xl-4
+            img.d-block.avatar.avatar-lg.p-1.mb-2(src=val.image, alt=val.name)
+            span.text-uppercase.text-muted.text-sm #{val.date}
+        .media-body
+            h6.mt-2.mb-1 #{val.name}
+            .mb-2
+                for star, starIndex in stars
+                    if (starIndex + 1 <= val.stars)
+                        i.fa.fa-xs.fa-star.text-primary
+                    else
+                        i.fa.fa-xs.fa-star.text-gray-200
+            p.text-muted.text-sm #{reviews[index].contents}
