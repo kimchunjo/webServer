@@ -502,18 +502,22 @@ app.get('/category', function (req, res) {
 
                                     /* sortBy */
                                     allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
+
                                     /* time */
                                     allPlace = fn.applyTimeFilter(allPlace, timeFilter);
+
                                     /* keyword */
-                                    if (filterKeyword !== undefined) {
+                                    if (filterKeyword !== undefined && filterKeyword !== null && filterKeyword.length !== 0) {
                                         for (let i = 0; i < allPlace.length; i++) {
                                             if ((allPlace[i].explanation).indexOf(filterKeyword) === -1) {
                                                 allPlace.splice(i--, 1);
                                             }
                                         }
                                     }
+
                                     /* category */
-                                    if (filterCategory !== undefined && filterCategory !== null) {
+                                    if (!filterCategory) {
+                                        console.log("sdfsdf")
                                         filterCategory = filterCategory.split(',');
                                         for (let i = 0; i < allPlace.length; i++) {
                                             let included = false;
@@ -528,6 +532,8 @@ app.get('/category', function (req, res) {
                                             }
                                         }
                                     }
+
+
                                     /* 결과를 각 페이지에 분리 */
                                     let totalPlaceCount = allPlace.length
                                     allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1)); // 각 페이지에 12개의 장소를 노출한다.
@@ -594,6 +600,32 @@ app.get('/category', function (req, res) {
                     allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
                     /* time */
                     allPlace = fn.applyTimeFilter(allPlace, timeFilter);
+                    /* keyword */
+                    if (filterKeyword !== undefined && filterKeyword !== null && filterKeyword.length !== 0) {
+                        for (let i = 0; i < allPlace.length; i++) {
+                            if ((allPlace[i].explanation).indexOf(filterKeyword) === -1) {
+                                allPlace.splice(i--, 1);
+                            }
+                        }
+                    }
+
+                    /* category */
+                    if (!filterCategory) {
+                        console.log("sdfsdf")
+                        filterCategory = filterCategory.split(',');
+                        for (let i = 0; i < allPlace.length; i++) {
+                            let included = false;
+                            for (let j = 0; j < filterCategory.length; j++) {
+                                if (allPlace[i].category === filterCategory[j]) {
+                                    included = true;
+                                    break;
+                                }
+                            }
+                            if (included === false) {
+                                allPlace.splice(i--, 1);
+                            }
+                        }
+                    }
                     /* 결과를 각 페이지에 분리*/
                     let totalPlaceCount = allPlace.length;
                     allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
@@ -673,6 +705,32 @@ app.get('/category', function (req, res) {
                                     allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
                                     /* time */
                                     allPlace = fn.applyTimeFilter(allPlace, timeFilter);
+                                    /* keyword */
+                                    if (filterKeyword !== undefined && filterKeyword !== null && filterKeyword.length !== 0) {
+                                        for (let i = 0; i < allPlace.length; i++) {
+                                            if ((allPlace[i].explanation).indexOf(filterKeyword) === -1) {
+                                                allPlace.splice(i--, 1);
+                                            }
+                                        }
+                                    }
+
+                                    /* category */
+                                    if (!filterCategory) {
+                                        console.log("sdfsdf")
+                                        filterCategory = filterCategory.split(',');
+                                        for (let i = 0; i < allPlace.length; i++) {
+                                            let included = false;
+                                            for (let j = 0; j < filterCategory.length; j++) {
+                                                if (allPlace[i].category === filterCategory[j]) {
+                                                    included = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (included === false) {
+                                                allPlace.splice(i--, 1);
+                                            }
+                                        }
+                                    }
                                     /* 결과를 각 페이지에 분리 */
                                     let totalPlaceCount = allPlace.length;
                                     allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
@@ -695,7 +753,7 @@ app.get('/category', function (req, res) {
                                             filterTimeNight: filterTimeNight,
                                             filterDistance: filterDistance,
                                             filterKeyword: filterKeyword,
-                                            filterCategory:filterCategory
+                                            filterCategory: filterCategory
                                         });
                                     } else {
                                         res.render('category-custom', {
@@ -716,7 +774,7 @@ app.get('/category', function (req, res) {
                                             filterTimeNight: filterTimeNight,
                                             filterDistance: filterDistance,
                                             filterKeyword: filterKeyword,
-                                            filterCategory:filterCategory
+                                            filterCategory: filterCategory
                                         });
                                     }
                                 });
@@ -745,7 +803,7 @@ app.get('/category', function (req, res) {
                             filterTimeNight: filterTimeNight,
                             filterDistance: filterDistance,
                             filterKeyword: filterKeyword,
-                            filterCategory:filterCategory
+                            filterCategory: filterCategory
                         });
                     } else {
                         res.render('category-custom', {
@@ -766,7 +824,7 @@ app.get('/category', function (req, res) {
                             filterTimeNight: filterTimeNight,
                             filterDistance: filterDistance,
                             filterKeyword: filterKeyword,
-                            filterCategory:filterCategory
+                            filterCategory: filterCategory
 
                         });
                     }
