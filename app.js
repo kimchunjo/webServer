@@ -425,9 +425,9 @@ app.get('/category', function (req, res) {
     let lon = req.query.lon;
     let pagination = req.query.pagination;
     let sortCategory = req.query.sort; // sortBy
-    let filterCategory = req.query.category; // filter
+    let filterCategory = req.query.filterCategory; // filter
     let filterDistance = req.query.filterDistance;
-    let filterKeyword = req.query.keyword;
+    let filterKeyword = req.query.filterKeyword;
     let filterTimeCurrent = req.query.filterTimeCurrent;
     let filterTimeMorning = req.query.filterTimeMorning;
     let filterTimeAfternoon = req.query.filterTimeAfternoon;
@@ -448,8 +448,8 @@ app.get('/category', function (req, res) {
     let timeFilter = {
         current: filterTimeCurrent,
         morning: filterTimeMorning,
-        afternoon:filterTimeAfternoon,
-        night:filterTimeNight
+        afternoon: filterTimeAfternoon,
+        night: filterTimeNight
     }
 
     if (filterDistance === undefined) filterDistance = 3;
@@ -504,6 +504,30 @@ app.get('/category', function (req, res) {
                                     allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
                                     /* time */
                                     allPlace = fn.applyTimeFilter(allPlace, timeFilter);
+                                    /* keyword */
+                                    if (filterKeyword !== undefined) {
+                                        for (let i = 0; i < allPlace.length; i++) {
+                                            if ((allPlace[i].explanation).indexOf(filterKeyword) === -1) {
+                                                allPlace.splice(i--, 1);
+                                            }
+                                        }
+                                    }
+                                    /* category */
+                                    if (filterCategory !== undefined && filterCategory !== null) {
+                                        filterCategory = filterCategory.split(',');
+                                        for (let i = 0; i < allPlace.length; i++) {
+                                            let included = false;
+                                            for (let j = 0; j < filterCategory.length; j++) {
+                                                if (allPlace[i].category === filterCategory[j]) {
+                                                    included = true;
+                                                    break;
+                                                }
+                                            }
+                                            if (included === false) {
+                                                allPlace.splice(i--, 1);
+                                            }
+                                        }
+                                    }
                                     /* 결과를 각 페이지에 분리 */
                                     let totalPlaceCount = allPlace.length
                                     allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1)); // 각 페이지에 12개의 장소를 노출한다.
@@ -524,7 +548,9 @@ app.get('/category', function (req, res) {
                                             filterTimeMorning: filterTimeMorning,
                                             filterTimeAfternoon: filterTimeAfternoon,
                                             filterTimeNight: filterTimeNight,
-                                            filterDistance: filterDistance
+                                            filterDistance: filterDistance,
+                                            filterKeyword: filterKeyword,
+                                            filterCategory: filterCategory
                                         });
                                     } else {
                                         res.render('category-custom', {
@@ -543,7 +569,9 @@ app.get('/category', function (req, res) {
                                             filterTimeMorning: filterTimeMorning,
                                             filterTimeAfternoon: filterTimeAfternoon,
                                             filterTimeNight: filterTimeNight,
-                                            filterDistance: filterDistance
+                                            filterDistance: filterDistance,
+                                            filterKeyword: filterKeyword,
+                                            filterCategory: filterCategory
                                         });
                                     }
                                 });
@@ -586,7 +614,9 @@ app.get('/category', function (req, res) {
                             filterTimeMorning: filterTimeMorning,
                             filterTimeAfternoon: filterTimeAfternoon,
                             filterTimeNight: filterTimeNight,
-                            filterDistance: filterDistance
+                            filterDistance: filterDistance,
+                            filterKeyword: filterKeyword,
+                            filterCategory: filterCategory
                         });
                     } else {
                         res.render('category-custom', {
@@ -605,7 +635,9 @@ app.get('/category', function (req, res) {
                                 filterTimeMorning: filterTimeMorning,
                                 filterTimeAfternoon: filterTimeAfternoon,
                                 filterTimeNight: filterTimeNight,
-                                filterDistance: filterDistance
+                                filterDistance: filterDistance,
+                                filterKeyword: filterKeyword,
+                                filterCategory: filterCategory
                             }
                         );
                     }
@@ -661,7 +693,9 @@ app.get('/category', function (req, res) {
                                             filterTimeMorning: filterTimeMorning,
                                             filterTimeAfternoon: filterTimeAfternoon,
                                             filterTimeNight: filterTimeNight,
-                                            filterDistance: filterDistance
+                                            filterDistance: filterDistance,
+                                            filterKeyword: filterKeyword,
+                                            filterCategory:filterCategory
                                         });
                                     } else {
                                         res.render('category-custom', {
@@ -680,7 +714,9 @@ app.get('/category', function (req, res) {
                                             filterTimeMorning: filterTimeMorning,
                                             filterTimeAfternoon: filterTimeAfternoon,
                                             filterTimeNight: filterTimeNight,
-                                            filterDistance: filterDistance
+                                            filterDistance: filterDistance,
+                                            filterKeyword: filterKeyword,
+                                            filterCategory:filterCategory
                                         });
                                     }
                                 });
@@ -707,7 +743,9 @@ app.get('/category', function (req, res) {
                             filterTimeMorning: filterTimeMorning,
                             filterTimeAfternoon: filterTimeAfternoon,
                             filterTimeNight: filterTimeNight,
-                            filterDistance: filterDistance
+                            filterDistance: filterDistance,
+                            filterKeyword: filterKeyword,
+                            filterCategory:filterCategory
                         });
                     } else {
                         res.render('category-custom', {
@@ -726,7 +764,10 @@ app.get('/category', function (req, res) {
                             filterTimeMorning: filterTimeMorning,
                             filterTimeAfternoon: filterTimeAfternoon,
                             filterTimeNight: filterTimeNight,
-                            filterDistance: filterDistance
+                            filterDistance: filterDistance,
+                            filterKeyword: filterKeyword,
+                            filterCategory:filterCategory
+
                         });
                     }
                 }
