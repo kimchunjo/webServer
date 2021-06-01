@@ -20,7 +20,8 @@ for(var i = 0; i< item.length; i++){
             latitude:   item[i].querySelector('.latitude').value,
             itemName:   item[i].querySelector('.itemName').value,
             itemImage:  item[i].querySelector('.itemImage').value,
-            itemLocation:  item[i].querySelector('.itemLocation').value
+            itemLocation:  item[i].querySelector('.itemLocation').value,
+            itemNumber:  item[i].querySelector('.itemNumber').value,
         }
     );
 }
@@ -36,14 +37,14 @@ var contentArray = ['<div class="wrap">' +
 '                <img src="uploads/banana.jpg" width="73" height="70">' +
 '           </div>' +
 '            <div class="desc">' +
-'                <div><a href="#" target="_blank" class="link">홈페이지</a></div>' +
+'                <div><a href="/" target="_blank" class="link">홈페이지</a></div>' +
 '            </div>' +
 '        </div>' +
 '    </div>' +
 '</div>'];
 
 for(var i = 0; i < selectedPlaceArray.length; i++){
-    console.log(selectedPlaceArray[i]);
+    //console.log(selectedPlaceArray[i]);
     var content = '<div class="wrap">' +
         '    <div class="info">' +
         '        <div class="title">' +
@@ -55,7 +56,7 @@ for(var i = 0; i < selectedPlaceArray.length; i++){
         '           </div>' +
         '            <div class="desc">' +
         `                <div class="ellipsis">${selectedPlaceArray[i].itemLocation}</div>` +
-        '                <div><a href="#" target="_blank" class="link">홈페이지</a></div>' +
+        `                <div><a href="/detail?placeId=${selectedPlaceArray[i].itemNumber}" target="_blank" class="link">홈페이지</a></div>` +
         '            </div>' +
         '        </div>' +
         '    </div>' +
