@@ -443,7 +443,7 @@ app.get('/category', function (req, res) {
 
     if (!filterKeyword)
         filterKeyword = undefined;
-    if (filterKeyword == "null")
+    if (filterKeyword == "null" || filterKeyword == "undefined")
         filterKeyword = undefined;
 
     if (filterTimeCurrent === undefined) filterTimeCurrent = false;
