@@ -67,7 +67,7 @@ block content
                             .input-label-absolute.input-label-absolute-right
                                 .label-absolute
                                     i.fa.fa-search
-                                if(filterKeyword !== undefined)
+                                if(filterKeyword !== undefined && filterKeyword !== "null")
                                     input.form-control.pr-4(type="search", name="search", placeholder="Keywords", id="form_search" value=`${filterKeyword}`)
                                 else
                                     input.form-control.pr-4(type="search", name="search", placeholder="Keywords", id="form_search")
