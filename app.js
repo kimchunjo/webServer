@@ -851,108 +851,367 @@ app.get('/category', function (req, res) {
 });
 
 app.get('/category-map', function (req, res) {
+    /* url query */
     let searchWord = req.query.search;
     let searchLocation = req.query.location;
-    let sortCatecory = req.query.sort;
     let lat = req.query.lat;
     let lon = req.query.lon;
-
+    let pagination = req.query.pagination;
+    let sortCategory = req.query.sort; // sortBy
+    let filterCategory = req.query.filterCategory; // filter
+    let filterDistance = req.query.filterDistance;
+    let filterKeyword = req.query.filterKeyword;
+    let filterTimeCurrent = req.query.filterTimeCurrent;
+    let filterTimeMorning = req.query.filterTimeMorning;
+    let filterTimeAfternoon = req.query.filterTimeAfternoon;
+    let filterTimeNight = req.query.filterTimeNight;
     if (searchWord === undefined || searchWord === "") // 검색어를 입력하변지 않은 경우 사용자 취향을 고려한 검색
         searchWord = '내 취향에 맞는 장소'
     if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
-        searchLocation = '근처'
+        searchLocation = '내 주변'
+    if (sortCategory === undefined || sortCategory === "" || sortCategory === 'undefined') // 기본 검색은 평점 순서
+        sortCategory = 'STAR'
+    if (pagination === undefined) pagination = 0;
+    else pagination = parseInt(pagination);
 
+    if (!filterKeyword)
+        filterKeyword = undefined;
+    if (filterKeyword == "null" || filterKeyword == "undefined")
+        filterKeyword = undefined;
 
-    /* DB 조회를 위한 쿼리 */
-    var searchHashtagQuery = `select number from hashtag where hashtag.name = ?`;
+    if (filterTimeCurrent === undefined) filterTimeCurrent = false;
+    if (filterTimeMorning === undefined) filterTimeMorning = false;
+    if (filterTimeAfternoon === undefined) filterTimeAfternoon = false;
+    if (filterTimeNight === undefined) filterTimeNight = false;
+    let timeFilter = {
+        current: filterTimeCurrent,
+        morning: filterTimeMorning,
+        afternoon: filterTimeAfternoon,
+        night: filterTimeNight
+    }
+    if (filterDistance === undefined) filterDistance = 3;
+
+    /* DB query */
+    var searchHashtagQuery = `select number from hashtag where hashtag.name = '${searchWord}'`; // searchWord 와 일치하는 해쉬 태그 id 를 찾는 쿼리
     var searchPlaceNumberQuery = `select fk_place_number from place_hashtag where fk_hashtag_number = ? and hashtag_point >= 3`;
-    var searchPlaceNameQuery = "";
-    var searchLatitude = `select latitude from place where hashtag.name = ?`;
-    var searchLongitude;
+    var searchPlaceQuery = ""; // placeNumber 과 일치하는 place를 찾는 쿼리
+    var searchPlaceNameQuery = `select * from place where name LIKE '%${searchWord}%'` // searchWord 와 placeName 이 일치하는 장소를 찾는 쿼리
 
-    /* DB 조회를 통해 장소 배열을 생성하고 렌더링 */
-    connection.query(searchHashtagQuery, searchWord, function (err1, hashTag) {
-        // searchWord를 이용해 hashTag Table을 조회하고 해당 해쉬태그의 id(number)를 가져온다.
-        connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err3, placeNumber) {
-            // hashTag Number을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
-            for (var i = 0; i < placeNumber.length; i++)
-                searchPlaceNameQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
-            connection.query(searchPlaceNameQuery, function (err4, places) {
-                // searchWord에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
-                var allPlace = [];
-                var count = places.length;
-                var allPlace = [];
-                var count = places.length;
-                if (count === 1) {
-                    for (var i = count - 1; i >= 0; i--) {
-                        let temp = places[i].image;
-                        temp = temp.split("@#");
-                        places[i].image = temp[1];
-                        allPlace.push(places[i]);
-                    }
-                } else {
-                    if (sortCatecory == "Newest") {
-                        for (var i = count - 1; i >= 0; i--) {
-                            let temp = places[i][0].image;
-                            temp = temp.split("@#");
-                            places[i][0].image = temp[1];
-                            allPlace.push(places[i][0]);
-                        }
-                    } else if (sortCatecory == "Oldest") {
-                        for (var i = 0; i < count; i++) {
-                            let temp = places[i][0].image;
-                            temp = temp.split("@#");
-                            places[i][0].image = temp[1];
-                            allPlace.push(places[i][0]);
-                        }
-                    } else if (sortCatecory == "Closest") {
-                        for (var i = 0; i < count; i++) {
-                            for (var j = i + 1; j < count; j++) {
-                                if ((((places[i][0].latitude) - (lat)) * ((places[i][0].latitude) - (lat))) + (((places[i][0].longitude) - (lon)) * ((places[i][0].longitude) - (lon))) > (((places[j][0].latitude) - (lat)) * ((places[j][0].latitude) - (lat))) + (((places[j][0].longitude) - (lon)) * ((places[j][0].longitude) - (lon)))) {
-                                    let temp = places[i][0];
-                                    places[i][0] = places[j][0];
-                                    places[j][0] = temp;
-                                }
+    /* ******** 1. searchWord 가 placeName 에 포함된 장소를 찾는다. ******* */
+    connection.query(searchPlaceNameQuery, function (err, placeName) {
+        if (placeName.length !== 0) { // searchWord 가 placeName 에 포함된 장소가 있을 때 ex) searchWord 가 스타벅스 일 때, 전남대학교 스타벅스
+            let placeList = [];
+            for (let i = 0; i < placeName.length; i++)
+                placeList.push(placeName[i]); // placeList 배열에 해당 장소를 push 한다.
+            /* ******** 2. hashTag 를 이용한 검색 ******* */
+            connection.query(searchHashtagQuery, function (err, hashTag) {
+                if (hashTag.length !== 0) { // searchWord 와 일치하는 해시태그 값을 갖는 장소가 있을 때
+                    connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err, placeNumber) { // hashTag Number 을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
+                            for (var i = 0; i < placeNumber.length; i++)
+                                searchPlaceQuery += `select * from place where name NOT LIKE '%${searchWord}%' and number = ${placeNumber[i].fk_place_number};`;
+                            if (placeNumber.length !== 0) {
+                                /* ******** 3. placeName 과 hashTag 모두에 대한 결과가 있는 경우 ******* */
+                                connection.query(searchPlaceQuery, function (err, places) {
+                                    let allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣는다.
+                                    /* 거리 계산 및 장소 넣기 */
+                                    if (places.length === 1) { // 해당 hashTag 를 갖는 장소가 1개인 경우
+                                        for (let i = places.length - 1; i >= 0; i--) {
+                                            if (fn.getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
+                                                places[i].image = ((places[i].image).split("@#"))[1];
+                                                allPlace.push(places[i]);
+                                            }
+                                        }
+                                    } else { // 해당 hashTag 를 갖는 장소가 여러개인 경우
+                                        for (let i = 0; i < places.length; i++) {
+                                            if (places[i][0] !== undefined && fn.getDistance(lat, lon, places[i][0].latitude, places[i][0].longitude) < filterDistance) {
+                                                places[i][0].image = ((places[i][0].image).split("@#"))[1];
+                                                allPlace.push(places[i][0]);
+                                            }
+                                        }
+                                    }
+
+                                    for (let i = 0; i < placeList.length; i++) { // allPlace 에 1 번 단계에서 얻은 결과를 넣는다.
+                                        if (fn.getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < filterDistance) {
+                                            placeList[i].image = ((placeList[i].image).split("@#"))[1];
+                                            allPlace.push(placeList[i]);
+                                        }
+                                    }
+
+                                    /* sortBy */
+                                    allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
+                                    /* time */
+                                    allPlace = fn.applyTimeFilter(allPlace, timeFilter);
+                                    /* keyword */
+                                    if (filterKeyword !== undefined && filterKeyword !== null) {
+                                        for (let i = 0; i < allPlace.length; i++) {
+                                            if ((allPlace[i].explanation).indexOf(filterKeyword) === -1) {
+                                                allPlace.splice(i--, 1);
+                                            }
+                                        }
+                                    }
+
+
+                                    /* 결과를 각 페이지에 분리 */
+                                    let totalPlaceCount = allPlace.length
+                                    allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1)); // 각 페이지에 12개의 장소를 노출한다.
+                                    if (req.session.id1) {
+                                        res.render('category-map-custom', {
+                                            path: '',
+                                            title: '검색결과',
+                                            searchWord: searchWord,
+                                            searchLocation: searchLocation,
+                                            allPlace: allPlace,
+                                            placeCount: totalPlaceCount,
+                                            pagination: pagination,
+                                            loggedUser: true,
+                                            sortCategory: sortCategory,
+                                            lat: lat,
+                                            lon: lon,
+                                            filterTimeCurrent: filterTimeCurrent,
+                                            filterTimeMorning: filterTimeMorning,
+                                            filterTimeAfternoon: filterTimeAfternoon,
+                                            filterTimeNight: filterTimeNight,
+                                            filterDistance: filterDistance,
+                                            filterKeyword: filterKeyword,
+                                            filterCategory: filterCategory
+                                        });
+                                    } else {
+                                        res.render('category-map-custom', {
+                                            path: '',
+                                            title: '검색결과',
+                                            searchWord: searchWord,
+                                            searchLocation: searchLocation,
+                                            allPlace: allPlace,
+                                            placeCount: totalPlaceCount,
+                                            pagination: pagination,
+                                            loggedUser: false,
+                                            sortCategory: sortCategory,
+                                            lat: lat,
+                                            lon: lon,
+                                            filterTimeCurrent: filterTimeCurrent,
+                                            filterTimeMorning: filterTimeMorning,
+                                            filterTimeAfternoon: filterTimeAfternoon,
+                                            filterTimeNight: filterTimeNight,
+                                            filterDistance: filterDistance,
+                                            filterKeyword: filterKeyword,
+                                            filterCategory: filterCategory
+                                        });
+                                    }
+                                });
+                            } else {
+                                // 해쉬 태그는 존재하지만 해당 해쉬 태그를 갖는 장소가 존재하지 않는 경우
+                                res.redirect('/');
                             }
                         }
-                        for (var i = 0; i < count; i++) {
-                            let temp = places[i][0].image;
-                            temp = temp.split("@#");
-                            places[i][0].image = temp[1];
-                            allPlace.push(places[i][0]);
+                    );
+                } else {
+                    let allPlace = []; // 장소를 넣을 배열
+                    /* 거리 계산 및 장소 넣기 */
+                    for (let i = 0; i < placeList.length; i++) {
+                        if (fn.getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < filterDistance) {
+                            placeList[i].image = ((placeList[i].image).split("@#"))[1]; // 대표 이미지 설정
+                            allPlace.push(placeList[i]);
                         }
                     }
+                    /* sortBy */
+                    allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
+                    /* time */
+                    allPlace = fn.applyTimeFilter(allPlace, timeFilter);
+                    /* keyword */
+                    if (filterKeyword !== undefined && filterKeyword !== null) {
+                        for (let i = 0; i < allPlace.length; i++) {
+                            if ((allPlace[i].explanation).indexOf(filterKeyword) === -1) {
+                                allPlace.splice(i--, 1);
+                            }
+                        }
+                    }
+                    /* 결과를 각 페이지에 분리*/
+                    let totalPlaceCount = allPlace.length;
+                    allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
+                    if (req.session.id1) {
+                        res.render('category-custom', {
+                            path: '',
+                            title: '검색결과',
+                            searchWord: searchWord,
+                            searchLocation: searchLocation,
+                            allPlace: allPlace, // 검색 된 모든 장소
+                            placeCount: totalPlaceCount, // 검색 된 장소의 개수
+                            pagination: pagination,
+                            loggedUser: true,
+                            sortCategory: sortCategory,
+                            lat: lat,
+                            lon: lon,
+                            filterTimeCurrent: filterTimeCurrent,
+                            filterTimeMorning: filterTimeMorning,
+                            filterTimeAfternoon: filterTimeAfternoon,
+                            filterTimeNight: filterTimeNight,
+                            filterDistance: filterDistance,
+                            filterKeyword: filterKeyword,
+                            filterCategory: filterCategory
+                        });
+                    } else {
+                        res.render('category-map-custom', {
+                                path: '',
+                                title: '검색결과',
+                                searchWord: searchWord,
+                                searchLocation: searchLocation,
+                                allPlace: allPlace,
+                                placeCount: totalPlaceCount,
+                                pagination: pagination,
+                                loggedUser: false,
+                                sortCategory: sortCategory,
+                                lat: lat,
+                                lon: lon,
+                                filterTimeCurrent: filterTimeCurrent,
+                                filterTimeMorning: filterTimeMorning,
+                                filterTimeAfternoon: filterTimeAfternoon,
+                                filterTimeNight: filterTimeNight,
+                                filterDistance: filterDistance,
+                                filterKeyword: filterKeyword,
+                                filterCategory: filterCategory
+                            }
+                        );
+                    }
                 }
+            })
+        } else { // searchWord 가 placeName 에 포함된 장소가 없을 때
+            /* ******** 2. hashTag 를 이용한 검색 ******* */
+            connection.query(searchHashtagQuery, searchWord, function (err, hashTag) {
+                if (hashTag.length !== 0) { // searchWord 와 일치하는 해시태그 값을 갖는 장소가 있을 때
+                    connection.query(searchPlaceNumberQuery, hashTag[0].number, function (err1, placeNumber) { // hashTag Number 을 이용해 해당 해쉬 태그를 가지고 있는 장소의 place id(number)을 가져온다.
+                            for (var i = 0; i < placeNumber.length; i++)
+                                searchPlaceQuery += `select * from place where number = ${placeNumber[i].fk_place_number};`;
+                            if (placeNumber.length !== 0) {
+                                connection.query(searchPlaceQuery, function (err2, places) {
+                                    var allPlace = []; // searchWord 에 해당하는 모든 장소를 allPlace 배열에 넣고 결과를 노출한다.
+                                    /* 거리 계산 및 장소 넣기 */
+                                    if (places.length === 1) {
+                                        for (var i = places.length - 1; i >= 0; i--) {
+                                            if (fn.getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
+                                                places[i].image = ((places[i].image).split("@#"))[1];
+                                                allPlace.push(places[i]);
+                                            }
+                                        }
+                                    } else {
+                                        for (var i = 0; i < places.length; i++) {
+                                            if (fn.getDistance(lat, lon, places[i].latitude, places[i].longitude) < filterDistance) {
+                                                places[i][0].image = ((places[i][0].image).split("@#"))[1];
+                                                allPlace.push(places[i][0]);
+                                            }
+                                        }
+                                    }
+                                    /* sortBy */
+                                    allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
+                                    /* time */
+                                    allPlace = fn.applyTimeFilter(allPlace, timeFilter);
+                                    /* keyword */
+                                    if (filterKeyword !== undefined && filterKeyword !== null) {
+                                        for (let i = 0; i < allPlace.length; i++) {
+                                            if ((allPlace[i].explanation).indexOf(filterKeyword) === -1) {
+                                                allPlace.splice(i--, 1);
+                                            }
+                                        }
+                                    }
+                                    /* 결과를 각 페이지에 분리 */
+                                    let totalPlaceCount = allPlace.length;
+                                    allPlace = allPlace.slice(12 * pagination, 12 * (pagination + 1));
+                                    if (req.session.id1) {
+                                        res.render('category-map-custom', {
+                                            path: '',
+                                            title: '검색결과',
+                                            searchWord: searchWord,
+                                            searchLocation: searchLocation,
+                                            allPlace: allPlace,
+                                            placeCount: totalPlaceCount,
+                                            pagination: pagination,
+                                            loggedUser: true,
+                                            sortCategory: sortCategory,
+                                            lat: lat,
+                                            lon: lon,
+                                            filterTimeCurrent: filterTimeCurrent,
+                                            filterTimeMorning: filterTimeMorning,
+                                            filterTimeAfternoon: filterTimeAfternoon,
+                                            filterTimeNight: filterTimeNight,
+                                            filterDistance: filterDistance,
+                                            filterKeyword: filterKeyword,
+                                            filterCategory: filterCategory
+                                        });
+                                    } else {
+                                        res.render('category-map-custom', {
+                                            path: '',
+                                            title: '검색결과',
+                                            searchWord: searchWord,
+                                            searchLocation: searchLocation,
+                                            allPlace: allPlace,
+                                            placeCount: allPlace.length,
+                                            pagination: pagination,
+                                            loggedUser: false,
+                                            sortCategory: sortCategory,
+                                            lat: lat,
+                                            lon: lon,
+                                            filterTimeCurrent: filterTimeCurrent,
+                                            filterTimeMorning: filterTimeMorning,
+                                            filterTimeAfternoon: filterTimeAfternoon,
+                                            filterTimeNight: filterTimeNight,
+                                            filterDistance: filterDistance,
+                                            filterKeyword: filterKeyword,
+                                            filterCategory: filterCategory
+                                        });
+                                    }
+                                });
+                            } else {
+                                res.redirect('/');
+                            }
+                        }
+                    );
+                } else { // placeName, hashTag 모두 검색 결과가 없는 경우이다.
+                    if (req.session.id1) {
+                        res.render('category-map-custom', {
+                            path: '',
+                            title: '검색결과',
+                            searchWord: searchWord,
+                            searchLocation: searchLocation,
+                            allPlace: null,
+                            placeCount: 0,
+                            pagination: pagination,
+                            loggedUser: true,
+                            sortCategory: sortCategory,
+                            lat: lat,
+                            lon: lon,
+                            filterTimeCurrent: filterTimeCurrent,
+                            filterTimeMorning: filterTimeMorning,
+                            filterTimeAfternoon: filterTimeAfternoon,
+                            filterTimeNight: filterTimeNight,
+                            filterDistance: filterDistance,
+                            filterKeyword: filterKeyword,
+                            filterCategory: filterCategory
+                        });
+                    } else {
+                        res.render('category-map-custom', {
+                            path: '',
+                            title: '검색결과',
+                            searchWord: searchWord,
+                            searchLocation: searchLocation,
+                            allPlace: null,
+                            placeCount: 0,
+                            pagination: pagination,
+                            loggedUser: false,
+                            sortCategory: sortCategory,
+                            lat: lat,
+                            lon: lon,
+                            filterTimeCurrent: filterTimeCurrent,
+                            filterTimeMorning: filterTimeMorning,
+                            filterTimeAfternoon: filterTimeAfternoon,
+                            filterTimeNight: filterTimeNight,
+                            filterDistance: filterDistance,
+                            filterKeyword: filterKeyword,
+                            filterCategory: filterCategory
 
-                if (req.session.id1) {
-                    res.render('category-map-custom', {
-                        path: '',
-                        title: '지도 검색결과',
-                        searchWord: searchWord,
-                        searchLocation: searchLocation,
-                        example: allPlace,
-                        placeCount: count,
-                        loggedUser: true,
-                        sortCatecory: sortCatecory,
-                        lat: lat,
-                        lon: lon
-                    });
-                } else {
-                    res.render('category-map-custom', {
-                        path: '',
-                        title: '지도 검색결과',
-                        searchWord: searchWord,
-                        searchLocation: searchLocation,
-                        example: allPlace,
-                        placeCount: count,
-                        loggedUser: false,
-                        sortCatecory: sortCatecory,
-                        lat: lat,
-                        lon: lon
-                    });
+                        });
+                    }
                 }
             });
-        });
+        }
     });
 });
 

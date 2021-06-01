@@ -19,7 +19,7 @@ block content
 
                 include _pug-includes/inc-var-neighbourhoods.pug
 
-                form(action="#")
+
                     .row.border-top.pt-3
                         .col-12.col-md-6.mb-4
                             label.form-label 시간
@@ -131,9 +131,9 @@ block content
                         //                                label.custom-control-label(for=`vegetarians_${index}`) #{val}
 
                         .col-12.mb-4
-                            button.btn.btn-primary.float-right(type="submit")
+                            button.btn.btn-primary(onclick='mapFilterUse()')
                                 i.fas.fa-filter.mr-1
-                                | Filter                
+                                | Filter
                         //.col-6.mb-4.text-right
                             +collapseButton('moreFilters', 'More filters', 'Less filters')
 
@@ -152,7 +152,7 @@ block content
                             +venue(val, itemClass)
 
 
-                include _pug-includes/inc-pagination.pug
+                include _pug-includes/inc-map-pagination.pug
             // 카카오맵 추가
             .col-lg-6.map-side-lg.pr-lg-0
                 div(id="map")
