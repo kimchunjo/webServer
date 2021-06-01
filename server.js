@@ -4,6 +4,13 @@ function getTodayLabel() {
     var todayLabel = week[today];
     return todayLabel;
 }
+exports.getToday= function () {
+    var week = new Array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
+    var today = new Date().getDay();
+    var todayLabel = week[today];
+    console.log(11);
+    return todayLabel;
+}
 
 function deg2rad(deg) {
     return deg * (Math.PI / 180);
