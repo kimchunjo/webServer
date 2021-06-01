@@ -441,6 +441,9 @@ app.get('/category', function (req, res) {
     if (pagination === undefined) pagination = 0;
     else pagination = parseInt(pagination);
 
+    if (!filterKeyword)
+        filterKeyword = undefined;
+
     if (filterTimeCurrent === undefined) filterTimeCurrent = false;
     if (filterTimeMorning === undefined) filterTimeMorning = false;
     if (filterTimeAfternoon === undefined) filterTimeAfternoon = false;
@@ -451,7 +454,6 @@ app.get('/category', function (req, res) {
         afternoon: filterTimeAfternoon,
         night: filterTimeNight
     }
-
     if (filterDistance === undefined) filterDistance = 3;
 
     /* DB query */
@@ -502,18 +504,17 @@ app.get('/category', function (req, res) {
 
                                     /* sortBy */
                                     allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
-
                                     /* time */
                                     allPlace = fn.applyTimeFilter(allPlace, timeFilter);
-
                                     /* keyword */
-                                    if (filterKeyword !== undefined && filterKeyword !== null && filterKeyword.length !== 0) {
+                                    if (filterKeyword !== undefined && filterKeyword !== null) {
                                         for (let i = 0; i < allPlace.length; i++) {
                                             if ((allPlace[i].explanation).indexOf(filterKeyword) === -1) {
                                                 allPlace.splice(i--, 1);
                                             }
                                         }
                                     }
+
 
                                     /* 결과를 각 페이지에 분리 */
                                     let totalPlaceCount = allPlace.length
@@ -582,7 +583,7 @@ app.get('/category', function (req, res) {
                     /* time */
                     allPlace = fn.applyTimeFilter(allPlace, timeFilter);
                     /* keyword */
-                    if (filterKeyword !== undefined && filterKeyword !== null && filterKeyword.length !== 0) {
+                    if (filterKeyword !== undefined && filterKeyword !== null) {
                         for (let i = 0; i < allPlace.length; i++) {
                             if ((allPlace[i].explanation).indexOf(filterKeyword) === -1) {
                                 allPlace.splice(i--, 1);
@@ -669,7 +670,7 @@ app.get('/category', function (req, res) {
                                     /* time */
                                     allPlace = fn.applyTimeFilter(allPlace, timeFilter);
                                     /* keyword */
-                                    if (filterKeyword !== undefined && filterKeyword !== null && filterKeyword.length !== 0) {
+                                    if (filterKeyword !== undefined && filterKeyword !== null) {
                                         for (let i = 0; i < allPlace.length; i++) {
                                             if ((allPlace[i].explanation).indexOf(filterKeyword) === -1) {
                                                 allPlace.splice(i--, 1);

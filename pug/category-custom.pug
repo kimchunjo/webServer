@@ -72,12 +72,12 @@ block content
                                 else
                                     input.form-control.pr-4(type="search", name="search", placeholder="Keywords", id="form_search")
 
-                        .mb-4
-                            - var types = ['가볼만한곳','카페/디저트' ,'맛집', '쇼핑', '공연', '명소', '문화', '테마', '체험']
-                            label.form-label(for="form_category") Category
-                            select.selectpicker.form-control(name="category", id="form_category", multiple, data-style="btn-selectpicker", data-selected-text-format="count > 1", title="")
-                                each val, index in types
-                                    option(value=`${val}`) #{val}
+                        //.mb-4
+                        //    - var types = ['가볼만한곳','카페/디저트' ,'맛집', '쇼핑', '공연', '명소', '문화', '테마', '체험']
+                        //    label.form-label(for="form_category") Category
+                        //    select.selectpicker.form-control(name="category", id="form_category", multiple, data-style="btn-selectpicker", data-selected-text-format="count > 1", title="")
+                        //        each val, index in types
+                        //            option(value=`${val}`) #{val}
                         .mb-4
                             button.btn.btn-primary(onclick='filterUse()')
                                 i.fas.fa-filter.mr-1
