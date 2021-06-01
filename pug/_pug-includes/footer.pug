@@ -8,16 +8,14 @@ footer.position-relative.z-index-10.d-print-none
                 .col-lg-4.mb-5.mb-lg-0
                     .font-weight-bold.text-uppercase.text-dark.mb-3 Allplace
 
-                    p(style="margin-bottom:0") 웹 이용 후 피드백을 남겨주세요
-                    a(href='http://naver.me/5EQST9M9') http://naver.me/5EQST9M9
-                    //br
-                    //br
-                    //ul.list-inline
-                    //    - social = ['twitter', 'facebook', 'instagram', 'pinterest', 'vimeo']
-                    //    each val in social
-                    //        li.list-inline-item
-                    //            a.text-muted.text-hover-primary(href="#", target="_blank", title=val)
-                    //                i(class=`fab fa-${val}`)
+                    p Lorem ipsum dolor sit amet, consectetur adipisicing.
+
+                    ul.list-inline
+                        - social = ['twitter', 'facebook', 'instagram', 'pinterest', 'vimeo']
+                        each val in social
+                            li.list-inline-item
+                                a.text-muted.text-hover-primary(href="#", target="_blank", title=val)
+                                    i(class=`fab fa-${val}`)
 
                 //.col-lg-2.col-md-6.mb-5.mb-lg-0
                 //    h6.text-uppercase.text-dark.mb-3 Rentals
@@ -36,14 +34,14 @@ footer.position-relative.z-index-10.d-print-none
                 //
 
                 .col-lg-4
-                    h6.text-uppercase.text-dark.mb-3 웹 이용관련 문의사항
-                    //p.mb-3  웹 이용관련 문의사항
+                    h6.text-uppercase.text-dark.mb-3 Daily Offers & Discounts
+                    p.mb-3  Lorem ipsum dolor sit amet, consectetur adipisicing elit. At itaque temporibus.
 
                     form(action="#", id="newsletter-form")
                         .input-group.mb-3
-                            input.form-control.bg-transparent.border-dark.border-right-0(type='email', placeholder="Your Email Address", aria-label="Your Email Address" value="qpwo943@naver.com ")
+                            input.form-control.bg-transparent.border-dark.border-right-0(type='email', placeholder="Your Email Address", aria-label="Your Email Address")
                             .input-group-append
-                                button.btn.btn-outline-dark.border-left-0.disabled(type='button')
+                                button.btn.btn-outline-dark.border-left-0(type='submit')
                                     i.fa.fa-paper-plane.text-lg
 
 
