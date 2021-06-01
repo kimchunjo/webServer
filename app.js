@@ -893,17 +893,17 @@ app.get('/category-map', function (req, res) {
 app.get('/detail', function (req, res) {
     let placeId = req.query.placeId;
     /* DB 조회를 위한 쿼리 */
-    var searchPlace = `select * from place where place.number = ?`;
+    var searchPlace = `select * from place where place.number = ?; UPDATE place SET viewed = viewed + 1 where place.number = ?;`;
     var searchReview = `select * from review where review.fk_place_number = ?`
     var searchHashtagNumber = `select * from place_hashtag where fk_place_number = ? and hashtag_point >= 3`
     var searchHashtag = "";
-    var historyAddQuery = `UPDATE place SET viewed = viewed + 1 where place.number = ?; UPDATE user SET history = CONCAT ( CONCAT (history, "//"), ?) WHERE user.id = ? and history is not null;`;
+    var historyAddQuery = `UPDATE user SET history = CONCAT ( CONCAT (history, "//"), ?) WHERE user.id = ? and history is not null;`;
     var historyAddNullQuery = `UPDATE user SET history = ? WHERE user.id = ? and history is null;`;
     var increViewdQuery = `UPDATE place SET viewed = viewed + 1 where place.number = ?`;
     var searchAssPlaceQuery = '';
 
 
-    connection.query(searchPlace, placeId, function (err, result) {
+    connection.query(searchPlace, [placeId, placeId], function (err, result) {
         // 이미지
         let mainImage = ((result[0].image).split("@#"))[1]; // main 에 보여질 이미지를 선택한다.
         let temp = (result[0].image).split("@#");
@@ -994,7 +994,7 @@ app.get('/detail', function (req, res) {
                                     loggedUser: true,
                                     hashtagNames: hashtagNames,
                                 });
-                                connection.query(historyAddQuery, [placeID, result[0].name, req.session.id1], function (err, hashTag) {
+                                connection.query(historyAddQuery, [result[0].name, req.session.id1], function (err, hashTag) {
                                 });
                                 connection.query(historyAddNullQuery, [result[0].name, req.session.id1], function (err, hashTag) {
                                 });
@@ -1038,7 +1038,7 @@ app.get('/detail', function (req, res) {
                                         hashtagNames: hashtagNames,
                                         assPlace: assPlaceList,
                                     });
-                                    connection.query(historyAddQuery, [placeId, result[0].name, req.session.id1], function (err, hashTag) {
+                                    connection.query(historyAddQuery, [result[0].name, req.session.id1], function (err, hashTag) {
                                     });
                                     connection.query(historyAddNullQuery, [result[0].name, req.session.id1], function (err, hashTag) {
                                     });
