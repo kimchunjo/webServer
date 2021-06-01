@@ -192,9 +192,8 @@ app.get('/', function (req, res) {
             }
         });
     } else { // 비로그인
-        var query = `select * from place ORDER BY viewed DESC limit 5;`
+        var query = `select * from place ORDER BY viewed DESC limit 10;`
         connection.query(query, function(err, allPlace){
-            //console.log(result);
             for (let i = 0; i < allPlace.length; i++) {
                 switch (fn.getToday()) {
                     case 'Sun':
@@ -224,7 +223,6 @@ app.get('/', function (req, res) {
                 for (let i = 0; i < allPlace.length; i++)
                     allPlace[i].image = ((allPlace[i].image).split("@#"))[1];
             }
-            console.log(allPlace);
             res.render('index', {
                 loggedUser: false,
                 assPlace: allPlace
