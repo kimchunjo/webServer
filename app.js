@@ -897,9 +897,11 @@ app.get('/detail', function (req, res) {
     var searchReview = `select * from review where review.fk_place_number = ?`
     var searchHashtagNumber = `select * from place_hashtag where fk_place_number = ? and hashtag_point >= 3`
     var searchHashtag = "";
-    var historyAddQuery = `UPDATE user SET history = CONCAT ( CONCAT (history, "//"), ?) WHERE user.id = ? and history is not null;`;
+    var historyAddQuery = `UPDATE place SET viewed = viewed + 1 where place.number = ?; UPDATE user SET history = CONCAT ( CONCAT (history, "//"), ?) WHERE user.id = ? and history is not null;`;
     var historyAddNullQuery = `UPDATE user SET history = ? WHERE user.id = ? and history is null;`;
+    var increViewdQuery = `UPDATE place SET viewed = viewed + 1 where place.number = ?`;
     var searchAssPlaceQuery = '';
+
 
     connection.query(searchPlace, placeId, function (err, result) {
         // 이미지
@@ -992,7 +994,7 @@ app.get('/detail', function (req, res) {
                                     loggedUser: true,
                                     hashtagNames: hashtagNames,
                                 });
-                                connection.query(historyAddQuery, [result[0].name, req.session.id1], function (err, hashTag) {
+                                connection.query(historyAddQuery, [placeID, result[0].name, req.session.id1], function (err, hashTag) {
                                 });
                                 connection.query(historyAddNullQuery, [result[0].name, req.session.id1], function (err, hashTag) {
                                 });
@@ -1036,7 +1038,7 @@ app.get('/detail', function (req, res) {
                                         hashtagNames: hashtagNames,
                                         assPlace: assPlaceList,
                                     });
-                                    connection.query(historyAddQuery, [result[0].name, req.session.id1], function (err, hashTag) {
+                                    connection.query(historyAddQuery, [placeId, result[0].name, req.session.id1], function (err, hashTag) {
                                     });
                                     connection.query(historyAddNullQuery, [result[0].name, req.session.id1], function (err, hashTag) {
                                     });
