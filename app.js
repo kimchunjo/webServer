@@ -730,13 +730,6 @@ app.get('/category', function (req, res) {
                                         }
                                     }
 
-                                    for (let i = 0; i < placeList.length; i++) { // allPlace 에 1 번 단계에서 얻은 결과를 넣는다.
-                                        if (fn.getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < filterDistance) {
-                                            placeList[i].image = ((placeList[i].image).split("@#"))[1];
-                                            allPlace.push(placeList[i]);
-                                        }
-                                    }
-
                                     /* sortBy */
                                     allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
                                     /* time */
@@ -806,13 +799,6 @@ app.get('/category', function (req, res) {
                     );
                 } else {
                     let allPlace = []; // 장소를 넣을 배열
-                    /* 거리 계산 및 장소 넣기 */
-                    for (let i = 0; i < placeList.length; i++) {
-                        if (fn.getDistance(lat, lon, placeList[i].latitude, placeList[i].longitude) < filterDistance) {
-                            placeList[i].image = ((placeList[i].image).split("@#"))[1]; // 대표 이미지 설정
-                            allPlace.push(placeList[i]);
-                        }
-                    }
                     /* sortBy */
                     allPlace = fn.applySortFilter(allPlace, sortCategory, lat, lon);
                     /* time */
