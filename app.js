@@ -186,9 +186,43 @@ app.get('/', function (req, res) {
                     });
                 })
             } else { // 유저 히스토리가 존재하지 않을 때 -> 로그인 안한 것과 같은 액션이 이뤄져야 한다.
-                res.render('index', {
-                    loggedUser: true,
-                })
+                var query = `select * from place ORDER BY viewed DESC limit 10;`
+                connection.query(query, function(err, allPlace){
+                    for (let i = 0; i < allPlace.length; i++) {
+                        switch (fn.getToday()) {
+                            case 'Sun':
+                                allPlace[i].time = allPlace[i].sun_open.slice(0, 5) + ' - ' + allPlace[i].sun_close.slice(0, 5);
+                                break;
+                            case 'Mon':
+                                allPlace[i].time = allPlace[i].mon_open.slice(0, 5) + ' - ' + allPlace[i].mon_close.slice(0, 5);
+                                break;
+                            case 'Tue':
+                                allPlace[i].time = allPlace[i].tue_open.slice(0, 5) + ' - ' + allPlace[i].tue_close.slice(0, 5);
+                                break;
+                            case 'Wed':
+                                allPlace[i].time = allPlace[i].wed_open.slice(0, 5) + ' - ' + allPlace[i].wed_close.slice(0, 5);
+                                break;
+                            case 'Thu':
+                                allPlace[i].time = allPlace[i].thu_open.slice(0, 5) + ' - ' + allPlace[i].thu_close.slice(0, 5);
+                                break;
+                            case 'Fri':
+                                allPlace[i].time = allPlace[i].fri_open.slice(0, 5) + ' - ' + allPlace[i].fri_close.slice(0, 5);
+                                break;
+                            case 'Sat':
+                                allPlace[i].time = allPlace[i].sat_open.slice(0, 5) + ' - ' + allPlace[i].sat_close.slice(0, 5);
+                                break;
+                        }
+                    }
+                    if (allPlace.length !== 0) {
+                        for (let i = 0; i < allPlace.length; i++)
+                            allPlace[i].image = ((allPlace[i].image).split("@#"))[1];
+                    }
+                    res.render('index', {
+                        loggedUser: false,
+                        assPlace: allPlace
+                    });
+                });
+
             }
         });
     } else { // 비로그인
