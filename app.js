@@ -193,15 +193,41 @@ app.get('/', function (req, res) {
         });
     } else { // 비로그인
         var query = `select * from place ORDER BY viewed DESC limit 5;`
-        connection.query(query, function(err, result){
+        connection.query(query, function(err, allPlace){
             //console.log(result);
-            if (result.length !== 0) {
-                for (let i = 0; i < result.length; i++)
-                    result[i].image = ((result[i].image).split("@#"))[1];
+            for (let i = 0; i < allPlace.length; i++) {
+                switch (fn.getToday()) {
+                    case 'Sun':
+                        allPlace[i].time = allPlace[i].sun_open.slice(0, 5) + ' - ' + allPlace[i].sun_close.slice(0, 5);
+                        break;
+                    case 'Mon':
+                        allPlace[i].time = allPlace[i].mon_open.slice(0, 5) + ' - ' + allPlace[i].mon_close.slice(0, 5);
+                        break;
+                    case 'Tue':
+                        allPlace[i].time = allPlace[i].tue_open.slice(0, 5) + ' - ' + allPlace[i].tue_close.slice(0, 5);
+                        break;
+                    case 'Wed':
+                        allPlace[i].time = allPlace[i].wed_open.slice(0, 5) + ' - ' + allPlace[i].wed_close.slice(0, 5);
+                        break;
+                    case 'Thu':
+                        allPlace[i].time = allPlace[i].thu_open.slice(0, 5) + ' - ' + allPlace[i].thu_close.slice(0, 5);
+                        break;
+                    case 'Fri':
+                        allPlace[i].time = allPlace[i].fri_open.slice(0, 5) + ' - ' + allPlace[i].fri_close.slice(0, 5);
+                        break;
+                    case 'Sat':
+                        allPlace[i].time = allPlace[i].sat_open.slice(0, 5) + ' - ' + allPlace[i].sat_close.slice(0, 5);
+                        break;
+                }
             }
+            if (allPlace.length !== 0) {
+                for (let i = 0; i < allPlace.length; i++)
+                    allPlace[i].image = ((allPlace[i].image).split("@#"))[1];
+            }
+            console.log(allPlace);
             res.render('index', {
                 loggedUser: false,
-                assPlace: result
+                assPlace: allPlace
             });
         });
 
