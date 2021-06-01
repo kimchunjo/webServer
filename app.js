@@ -186,7 +186,7 @@ app.get('/', function (req, res) {
                                         allPlace[i].image = ((allPlace[i].image).split("@#"))[1];
                                 }
                                 res.render('index', {
-                                    loggedUser: false,
+                                    loggedUser: true,
                                     assPlace: allPlace
                                 });
                             });
@@ -252,7 +252,7 @@ app.get('/', function (req, res) {
                             allPlace[i].image = ((allPlace[i].image).split("@#"))[1];
                     }
                     res.render('index', {
-                        loggedUser: false,
+                        loggedUser: true,
                         assPlace: allPlace
                     });
                 });
