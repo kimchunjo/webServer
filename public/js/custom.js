@@ -179,12 +179,12 @@ $(document).ready(function () {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function (position) {
-                    window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${urlParams.get('lat')}&lon=${urlParams.get('lon')}&time=${urlParams.get('time')}&distance=${urlParams.get('distance')}&keyword=${urlParams.get('keyword')}&category=${urlParams.get('category')}&filterTimeCurrent=${urlParams.get('filterTimeCurrent')}&filterTimeMorning=${urlParams.get('filterTimeMorning')}&filterTimeAfternoon=${urlParams.get('filterTimeAfternoon')}&filterTimeNight=${urlParams.get('filterTimeNight')}`;
+                    window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&lat=${urlParams.get('lat')}&lon=${urlParams.get('lon')}&time=${urlParams.get('time')}&distance=${urlParams.get('distance')}&filterTimeCurrent=${urlParams.get('filterTimeCurrent')}&filterTimeMorning=${urlParams.get('filterTimeMorning')}&filterTimeAfternoon=${urlParams.get('filterTimeAfternoon')}&filterTimeNight=${urlParams.get('filterTimeNight')}&filterKeyword=${urlParams.get('filterKeyword')}&filterCategory=${urlParams.get('filterCategory')}`;
                     checkTimeUrl(urlParams.get('time'));
                 }
             )
         }else{
-            window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&time=${urlParams.get('time')}&filterDistance=${urlParams.get('filterDistance')}&keyword=${urlParams.get('keyword')}&category=${urlParams.get('category')}&filterTimeCurrent=${urlParams.get('filterTimeCurrent')}&filterTimeMorning=${urlParams.get('filterTimeMorning')}&filterTimeAfternoon=${urlParams.get('filterTimeAfternoon')}&filterTimeNight=${urlParams.get('filterTimeNight')}`
+            window.location.href = `/category?search=${searchWord}&location=${searchLocation}&sort=${selected}&time=${urlParams.get('time')}&filterDistance=${urlParams.get('filterDistance')}&filterTimeCurrent=${urlParams.get('filterTimeCurrent')}&filterTimeMorning=${urlParams.get('filterTimeMorning')}&filterTimeAfternoon=${urlParams.get('filterTimeAfternoon')}&filterTimeNight=${urlParams.get('filterTimeNight')}&filterKeyword=${urlParams.get('filterKeyword')}&filterCategory=${urlParams.get('filterCategory')}`
         }
     });
 
@@ -277,7 +277,7 @@ function filterUse(){
     var timeAfternoon= $('#time_2').is(":checked");
     var timeNight =$('#time_3').is(":checked");
     console.log(timeCurrent)
-    window.location.href=`/category?search=${search}&location=${location}&sort=${sort}&lat=${lat}&lon=${lon}&filterTimeCurrent=${timeCurrent}&filterTimeMorning=${timeMorning}&filterTimeAfternoon=${timeAfternoon}&filterTimeNight=${timeNight}&filterDistance=${filterDistance}&keyword=${keyword}&category=${category}`;
+    window.location.href=`/category?search=${search}&location=${location}&sort=${sort}&lat=${lat}&lon=${lon}&filterTimeCurrent=${timeCurrent}&filterTimeMorning=${timeMorning}&filterTimeAfternoon=${timeAfternoon}&filterTimeNight=${timeNight}&filterDistance=${filterDistance}&filterKeyword=${keyword}&filterCategory=${category}`;
     checkTimeUrl(time);
 }
 
