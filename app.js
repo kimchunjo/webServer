@@ -292,10 +292,11 @@ app.post('/coming-soon', function (req, res) {
         if (error) {
             console.log(error);
         }
-        console.log(results);
+        req.session.id1 = id;
+        req.session.pw1 = password;
+        req.session.number = results.insertId;
+        res.redirect('/');
     });
-
-    res.render('coming-soon', {});
 });
 
 
