@@ -566,7 +566,7 @@ app.get('/category', function (req, res) {
     if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
         searchLocation = '내 주변'
     if (sortCategory === undefined || sortCategory === "") // 기본 검색은 평점 순서
-        sortCategory = 'STAR'
+        sortCategory = '평점순'
     if (pagination === undefined) pagination = 0;
     else pagination = parseInt(pagination);
 
@@ -951,7 +951,7 @@ app.get('/category-map', function (req, res) {
     if (searchLocation === undefined || searchLocation === "") // 장소를 입력하변지 않은 경우 내 주변으로 검색
         searchLocation = '내 주변'
     if (sortCategory === undefined || sortCategory === "" || sortCategory === 'undefined') // 기본 검색은 평점 순서
-        sortCategory = 'STAR'
+        sortCategory = '평점순'
     if (pagination === undefined) pagination = 0;
     else pagination = parseInt(pagination);
 

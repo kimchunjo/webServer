@@ -1,13 +1,13 @@
 .d-flex.justify-content-between.align-items-center.flex-column.flex-md-row.mb-4
 
     .mr-3
-        p.mb-3.mb-md-0 <strong>#{placeCount}</strong> results found
+        p.mb-3.mb-md-0 검색결과 <strong>#{placeCount}</strong>건
     div
-        label.form-label.mr-2(for="form_sort_map") Sort by
+        label.form-label.mr-2(for="form_sort_map") 정렬
         select.selectpicker(name="sort", id="form_sort_map", data-style="btn-selectpicker", title="")
             option(selected) #{sortCategory}
-            option(value=STAR) STAR
-            option(value=CLOSESET) CLOSESET
+            option(value=STAR) 평점순
+            option(value=CLOSESET) 거리순
             //- var sortBy = ['Most popular', 'Recommended', 'Newest', 'Oldest', 'Closest']
             //each val, index in sortBy
             //option(selected) 실내외

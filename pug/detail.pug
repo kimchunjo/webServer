@@ -51,20 +51,20 @@ block content
 
                     // About Listing
                     .text-block
-                        h3.mb-3 About
+                        h3.mb-3 설명
 
                         p.text-muted  #{placeInfo.explanation}
 
                     .text-block
                         // Listing Location
-                        h3.mb-4 Location
+                        h3.mb-4 위치
 
                         .map-wrapper-300.mb-3
                             #detailMap.h-100
 
                     .text-block
                         // Gallery
-                        h3.mb-4 Gallery
+                        h3.mb-4 사진
                         - gallery = []
                         - for (let i =0; i<placeInfo.image.length; i++)
                             - gallery.push({small: `${placeInfo.image[i]}`, big:  `${placeInfo.image[i]}`})
@@ -120,13 +120,13 @@ block content
                             .card-header.bg-gray-100.py-4.border-0
                                 .media.align-items-center
                                         .media-body
-                                            p.subtitle.text-sm.text-primary Opening in 5 minutes
-                                            h4.mb-0 Opening Hours
+                                            p.subtitle.text-sm.text-primary 요일별
+                                            h4.mb-0 오픈 시간
                                         +svgIcon('wall-clock-1', 'svg-icon svg-icon-light w-3rem h-3rem ml-3 text-muted')
 
                             .card-body
 
-                                - var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+                                - var days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
                                 - var dayindex = 0
                                 table.table.text-sm.mb-0
 
@@ -154,8 +154,8 @@ block content
                             .card-header.bg-gray-100.py-4.border-0
                                 .media.align-items-center
                                         .media-body
-                                            p.subtitle.text-sm.text-primary Drop Us a Line
-                                            h4.mb-0 Contact
+                                            p.subtitle.text-sm.text-primary 장소 문의 가능한
+                                            h4.mb-0 연락처
                                         +svgIcon('fountain-pen-1', 'svg-icon svg-icon-light w-3rem h-3rem ml-3 text-muted')
 
                             .card-body
@@ -176,24 +176,24 @@ block content
                                                 span.text-muted #{val.text}
 
 
-                                .text-center
-                                    a.btn.btn-outline-primary.btn-block(href="#")
-                                        i.far.fa-paper-plane.mr-2
-                                        | Send a Message
+                                //.text-center
+                                //    a.btn.btn-outline-primary.btn-block(href="#")
+                                //        i.far.fa-paper-plane.mr-2
+                                //        | Send a Message
 
 
-                        .text-center
-                            p
-                                a.text-secondary(href="#")
-                                    i.fa.fa-heart
-                                    |  Bookmark This Listing
-                            span 79 people bookmarked this place 
+                        //.text-center
+                        //    p
+                        //        a.text-secondary(href="#")
+                        //            i.fa.fa-heart
+                        //            |  Bookmark This Listing
+                        //    span 79 people bookmarked this place
 
 
     .py-6.bg-gray-100
         .container
-            h5.mb-0 Similar places
-            p.subtitle.text-sm.text-primary.mb-4 You may also like         
+            h5.mb-0 유사한 장소 추천
+            p.subtitle.text-sm.text-primary.mb-4
 
             // Slider main container
             - var itemClass = 'w-100 h-100'

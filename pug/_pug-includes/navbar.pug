@@ -82,13 +82,13 @@ header(class=headerClass)
 
                     if (!loggedUser)
                         li.nav-item.mt-3.mt-lg-0.mr-lg-3.d-xl-inline-block
-                            a.btn.btn-primary(href=`${path}login`) Add a listing
+                            a.btn.btn-primary(href=`${path}login`) 장소 추가하기
                         li.nav-item.dropdown
                             a#homeDropdownMenuLink(href="index", class=`nav-link dropdown-toggle ${activeClass}`, data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
-                                | Sign
+                                | 로그인
                             .dropdown-menu.dropdown-menu-right(aria-labelledby='homeDropdownMenuLink')
-                                a.dropdown-item(href=`${path}login`) Sign in
-                                a.form.dropdown-item(href=`${path}signup`) Sign up
+                                a.dropdown-item(href=`${path}login`) 로그인
+                                a.form.dropdown-item(href=`${path}signup`) 회원가입
                         //li.nav-item
                         //    a.nav-link(href=`${path}login.html`) Sign in
                         //
@@ -98,16 +98,16 @@ header(class=headerClass)
 
                     else
                         li.nav-item.mt-3.mt-lg-0.mr-lg-3.d-xl-inline-block
-                            a.btn.btn-primary(href=`${path}user-add-0`) Add a listing
+                            a.btn.btn-primary(href=`${path}user-add-0`) 장소 추가하기
                         li.nav-item.dropdown.ml-lg-3
                             a#userDropdownMenuLink(href="#",data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
                                 svg.theme-line-0.avatar.avatar-sm.avatar-border-white.mr-2
                                     use(xlink:href="#user-1")
                                 //img.avatar.avatar-sm.avatar-border-white.mr-2(src=`${path}img/avatar/avatar-10.jpg`, alt='Jack London')
                             .dropdown-menu.dropdown-menu-right(aria-labelledby='userDropdownMenuLink')
-                                - userDropdownLinks = {'/user-profile' : 'User Profile'}
+                                - userDropdownLinks = {'/user-profile' : '회원 정보'}
                                 +dropdownList('Components', userDropdownLinks, true)
                                 .dropdown-divider
-                                a.dropdown-item(href=`${path}/logout`) <i class="fas fa-sign-out-alt mr-2 text-muted"></i> Sign out
+                                a.dropdown-item(href=`${path}/logout`) <i class="fas fa-sign-out-alt mr-2 text-muted"></i> 로그아웃
 
     // /Navbar 

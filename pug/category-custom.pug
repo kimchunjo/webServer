@@ -15,8 +15,8 @@ block content
                     h5.mb-2.text-lg.font-weight-bold.d-block.d-sm-none #{searchLocation}, #{searchWord}에 대한 결과
                 // 지도로 표시하기 버튼 추가
                 .col-12.d-sm-block.d-none
-                     a.btn.btn-outline-primary.mb-4.float-right(href=`/category-map?search=${searchWord}&location=${searchLocation}&sort=${sortCatecory}&lat=${lat}&lon=${lon}`)
-                        | MAP ON
+                     a.btn.btn-outline-primary.mb-4.float-right(href=`/category-map?search=${searchWord}&location=${searchLocation}&sort=${sortCategory}&lat=${lat}&lon=${lon}`)
+                        | 지도 보기
             .row
                 .col-lg-3.pt-3
 
@@ -63,7 +63,7 @@ block content
                             #distanceValuelabel.form-label.float-right #{filterDistance}km
 
                         .mb-4
-                            label.form-label(for="form_search") Keyword
+                            label.form-label(for="form_search") 결과 내 재검색
                             .input-label-absolute.input-label-absolute-right
                                 .label-absolute
                                     i.fa.fa-search
@@ -81,8 +81,7 @@ block content
                         .mb-4
                             button.btn.btn-primary(onclick='filterUse()')
                                 i.fas.fa-filter.mr-1
-                                | Filter
-
+                                | 상세검색
                 .col-lg-9
                     if placeCount == 0
                         form.form-inline

@@ -14,8 +14,8 @@ block content
                     //h1.display-4.font-weight-bold.text-serif.mb-4 #{searchWord}
                     h1.mb-4.text-xl.font-weight-bold.d-none.d-sm-block #{searchLocation}, #{searchWord}에 대한 결과
                     .col-12
-                        a.btn.btn-outline-primary.mb-4.float-right(href=`/category?search=${searchWord}&location=${searchLocation}&sort=${sortCatecory}&lat=${lat}&lon=${lon}`)
-                            | MAP OFF
+                        a.btn.btn-outline-primary.mb-4.float-right(href=`/category?search=${searchWord}&location=${searchLocation}&sort=${sortCategory}&lat=${lat}&lon=${lon}`)
+                            | 지도 보지 않기
 
                 include _pug-includes/inc-var-neighbourhoods.pug
 
@@ -54,7 +54,7 @@ block content
                                         label.custom-control-label(for=`time_3`) 저녁
 
                         .col-12.col-md-6.mb-4
-                            label.form-label(for="form_search") Keyword
+                            label.form-label(for="form_search") 결과 내 재검색
                             .input-label-absolute.input-label-absolute-right
                                 .label-absolute
                                     i.fa.fa-search
@@ -133,7 +133,7 @@ block content
                         .col-12.mb-4
                             button.btn.btn-primary(onclick='mapFilterUse()')
                                 i.fas.fa-filter.mr-1
-                                | Filter
+                                | 상세검색
                         //.col-6.mb-4.text-right
                             +collapseButton('moreFilters', 'More filters', 'Less filters')
 
