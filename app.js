@@ -152,10 +152,44 @@ app.get('/', function (req, res) {
                     PythonShell.run('user_history.py', options, function (err, ap) {
                         let associatedPlace = ap[0];
                         let assPlaceList = [];
+
                         if (associatedPlace == "not in vocabulary") { // 연관 장소가 없는 경우
-                            res.render('index', {
-                                loggedUser: true,
-                            })
+                            var query = `select * from place ORDER BY viewed DESC limit 10;`
+                            connection.query(query, function(err, allPlace){
+                                for (let i = 0; i < allPlace.length; i++) {
+                                    switch (fn.getToday()) {
+                                        case 'Sun':
+                                            allPlace[i].time = allPlace[i].sun_open.slice(0, 5) + ' - ' + allPlace[i].sun_close.slice(0, 5);
+                                            break;
+                                        case 'Mon':
+                                            allPlace[i].time = allPlace[i].mon_open.slice(0, 5) + ' - ' + allPlace[i].mon_close.slice(0, 5);
+                                            break;
+                                        case 'Tue':
+                                            allPlace[i].time = allPlace[i].tue_open.slice(0, 5) + ' - ' + allPlace[i].tue_close.slice(0, 5);
+                                            break;
+                                        case 'Wed':
+                                            allPlace[i].time = allPlace[i].wed_open.slice(0, 5) + ' - ' + allPlace[i].wed_close.slice(0, 5);
+                                            break;
+                                        case 'Thu':
+                                            allPlace[i].time = allPlace[i].thu_open.slice(0, 5) + ' - ' + allPlace[i].thu_close.slice(0, 5);
+                                            break;
+                                        case 'Fri':
+                                            allPlace[i].time = allPlace[i].fri_open.slice(0, 5) + ' - ' + allPlace[i].fri_close.slice(0, 5);
+                                            break;
+                                        case 'Sat':
+                                            allPlace[i].time = allPlace[i].sat_open.slice(0, 5) + ' - ' + allPlace[i].sat_close.slice(0, 5);
+                                            break;
+                                    }
+                                }
+                                if (allPlace.length !== 0) {
+                                    for (let i = 0; i < allPlace.length; i++)
+                                        allPlace[i].image = ((allPlace[i].image).split("@#"))[1];
+                                }
+                                res.render('index', {
+                                    loggedUser: true,
+                                    assPlace: allPlace
+                                });
+                            });
                         } else { // 연관 장소가 있는 경우
                             let searchAssPlaceQuery = '';
                             for (let i = 0; i < associatedPlace.length; i++)
@@ -175,6 +209,32 @@ app.get('/', function (req, res) {
                                 if (assPlaceList.length !== 0) {
                                     for (let i = 0; i < assPlaceList.length; i++)
                                         assPlaceList[i].image = ((assPlaceList[i].image).split("@#"))[1];
+                                }
+
+                                for (let i = 0; i < assPlaceList.length; i++) {
+                                    switch (fn.getToday()) {
+                                        case 'Sun':
+                                            assPlaceList[i].time = assPlaceList[i].sun_open.slice(0, 5) + ' - ' + assPlaceList[i].sun_close.slice(0, 5);
+                                            break;
+                                        case 'Mon':
+                                            assPlaceList[i].time = assPlaceList[i].mon_open.slice(0, 5) + ' - ' + assPlaceList[i].mon_close.slice(0, 5);
+                                            break;
+                                        case 'Tue':
+                                            assPlaceList[i].time = assPlaceList[i].tue_open.slice(0, 5) + ' - ' + assPlaceList[i].tue_close.slice(0, 5);
+                                            break;
+                                        case 'Wed':
+                                            assPlaceList[i].time = assPlaceList[i].wed_open.slice(0, 5) + ' - ' + assPlaceList[i].wed_close.slice(0, 5);
+                                            break;
+                                        case 'Thu':
+                                            assPlaceList[i].time = assPlaceList[i].thu_open.slice(0, 5) + ' - ' + assPlaceList[i].thu_close.slice(0, 5);
+                                            break;
+                                        case 'Fri':
+                                            assPlaceList[i].time =assPlaceList[i].fri_open.slice(0, 5) + ' - ' + assPlaceList[i].fri_close.slice(0, 5);
+                                            break;
+                                        case 'Sat':
+                                            assPlaceList[i].time = assPlaceList[i].sat_open.slice(0, 5) + ' - ' + assPlaceList[i].sat_close.slice(0, 5);
+                                            break;
+                                    }
                                 }
 
                                 res.render('index', {
@@ -218,7 +278,7 @@ app.get('/', function (req, res) {
                             allPlace[i].image = ((allPlace[i].image).split("@#"))[1];
                     }
                     res.render('index', {
-                        loggedUser: false,
+                        loggedUser: true,
                         assPlace: allPlace
                     });
                 });
